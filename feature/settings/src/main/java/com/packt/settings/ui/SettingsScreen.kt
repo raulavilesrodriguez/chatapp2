@@ -47,7 +47,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.request.ImageRequest
 import com.packt.ui.composables.BasicToolbar
 import com.packt.settings.R
 import com.packt.settings.ui.model.SetUserData
@@ -75,7 +74,7 @@ fun SettingsScreen(
                 updatePhotoUri = viewModel::updatePhotoUri,
                 updateName = viewModel::updateName,
                 updateNumber = viewModel::updateNumber,
-                onSettingClick = {}
+                onSettingClick = {viewModel.onSettingClick()}
             )
         }
     )

@@ -1,15 +1,17 @@
 package com.packt.settings.ui
 
-import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import com.packt.settings.R
 import com.packt.settings.ui.model.SetUserData
+import com.packt.ui.ext.isOnlyNumbers
 import com.packt.ui.ext.isValidNumber
+import com.packt.ui.snackbar.SnackbarManager
+import com.packt.ui.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor() : ViewModel() {
+class SettingsViewModel @Inject constructor() : BaseViewModel() {
 
     var uiState = mutableStateOf(SetUserData())
         private set
@@ -29,13 +31,26 @@ class SettingsViewModel @Inject constructor() : ViewModel() {
     }
 
     fun updateNumber(newNumber: String) {
-        if(newNumber.isValidNumber()){
+        if(newNumber.isOnlyNumbers()){
             uiState.value = uiState.value.copy(number = newNumber)
         } else {
-
+            SnackbarManager.showMessage(R.string.number_error)
         }
     }
 
+    fun onSettingClick() {
+        if (name.isBlank() || number.isBlank()) {
+            SnackbarManager.showMessage(R.string.empty_fields)
+            return
+        }
+
+        if (number.isValidNumber()) {
+            SnackbarManager.showMessage(R.string.number_error)
+            return
+        }
+
+
+    }
 
 
 }

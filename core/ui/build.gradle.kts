@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.coil)
     implementation(libs.android.image.cropper)
+    implementation(libs.androidx.navigation.compose)
 }
 
 // Este bloque reemplaza al `kotlinOptions` de antes:

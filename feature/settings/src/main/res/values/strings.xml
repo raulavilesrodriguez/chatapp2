@@ -12,4 +12,6 @@
     <string name="keep">Continuar</string>
     <string name="left">Salir</string>
     <string name="select_photo">Seleccionar Foto</string>
+    <string name="number_error">Número no válido</string>
+    <string name="empty_fields">Campo vacío</string>
 </resources>
