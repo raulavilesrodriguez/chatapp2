@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings">Registro</string>
+    <string name="app_name">Chatapp</string>
+    <string name="user_name">Nombre</string>
+    <string name="user_number">Número móvil</string>
+    <string name="sign_in">Regístrate</string>
+    <string name="send">Enviar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="warning">Salir de la app?</string>
+    <string name="text_warning">Si sales tendrás que iniciar nuevamente el proceso de registro</string>
+    <string name="keep">Continuar</string>
+    <string name="left">Salir</string>
+    <string name="select_photo">Seleccionar Foto</string>
+</resources>

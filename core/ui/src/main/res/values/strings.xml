@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cancel_crooper">Cancelar</string>
+    <string name="confirm_crooper">Recortar</string>
+    <string name="generic_error">Algo malo pasó. Trata otra vez</string>
+</resources>
