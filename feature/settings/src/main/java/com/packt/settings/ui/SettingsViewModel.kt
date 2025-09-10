@@ -5,6 +5,7 @@ import com.packt.settings.R
 import com.packt.settings.ui.model.SetUserData
 import com.packt.ui.ext.isOnlyNumbers
 import com.packt.ui.ext.isValidNumber
+import com.packt.ui.navigation.NavRoutes
 import com.packt.ui.snackbar.SnackbarManager
 import com.packt.ui.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,22 +32,22 @@ class SettingsViewModel @Inject constructor() : BaseViewModel() {
     }
 
     fun updateNumber(newNumber: String) {
-        if(newNumber.isOnlyNumbers()){
-            uiState.value = uiState.value.copy(number = newNumber)
-        } else {
-            SnackbarManager.showMessage(R.string.number_error)
-        }
+        uiState.value = uiState.value.copy(number = newNumber)
     }
 
-    fun onSettingClick() {
+    fun onSettingClick(openAndPopUp: (String, String) -> Unit) {
         if (name.isBlank() || number.isBlank()) {
             SnackbarManager.showMessage(R.string.empty_fields)
             return
         }
 
-        if (number.isValidNumber()) {
+        if (!number.isValidNumber()) {
             SnackbarManager.showMessage(R.string.number_error)
             return
+        }
+
+        launchCatching {
+            openAndPopUp(NavRoutes.ConversationsList, NavRoutes.Settings)
         }
 
 

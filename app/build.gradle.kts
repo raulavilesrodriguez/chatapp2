@@ -46,6 +46,9 @@ android {
 dependencies {
 
     implementation(project(":feature:settings"))
+    implementation(project(":feature:create_chat"))
+    implementation(project(":feature:conversations"))
+    implementation(project(":feature:chat"))
     implementation(project(":core:ui"))
 
     implementation(libs.androidx.core.ktx)
@@ -68,6 +71,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.accompanist.permissions)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
     implementation(libs.coil)

@@ -7,6 +7,7 @@
     <string name="sign_in">Regístrate</string>
     <string name="send">Enviar</string>
     <string name="cancel">Cancelar</string>
+    <string name="made_by">Elaborado por: Raúl Avilés Rodríguez Tec</string>
     <string name="warning">Salir de la app?</string>
     <string name="text_warning">Si sales tendrás que iniciar nuevamente el proceso de registro</string>
     <string name="keep">Continuar</string>

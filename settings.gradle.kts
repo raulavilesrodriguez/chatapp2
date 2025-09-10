@@ -24,3 +24,6 @@ rootProject.name = "chat"
 include(":app")
 include(":feature:settings")
 include(":core:ui")
+include(":feature:conversations")
+include(":feature:chat")
+include(":feature:create_chat")

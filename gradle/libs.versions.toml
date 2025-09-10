@@ -20,8 +20,10 @@ hiltNavigationCompose = "1.2.0"
 firebaseBom = "34.2.0"
 coil = "2.7.0"
 ucrop = "2.2.11"
+accompanistPermissions = "0.37.3"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 android-image-cropper = { module = "com.vanniktech:android-image-cropper", version.ref = "androidImageCropper" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 imagecropview = { module = "io.github.rroohit:ImageCropView", version.ref = "imagecropview" }

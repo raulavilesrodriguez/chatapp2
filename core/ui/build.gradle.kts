@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.android.image.cropper)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.accompanist.permissions)
 }
 
 // Este bloque reemplaza al `kotlinOptions` de antes:

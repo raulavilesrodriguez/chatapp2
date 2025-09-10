@@ -20,10 +20,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -51,6 +53,7 @@ import com.packt.ui.composables.BasicToolbar
 import com.packt.settings.R
 import com.packt.settings.ui.model.SetUserData
 import com.packt.ui.avatar.Avatar
+import com.packt.ui.composables.BasicBottomBar
 import com.packt.ui.composables.DialogCancelButton
 import com.packt.ui.composables.DialogConfirmButton
 import com.yalantis.ucrop.UCrop
@@ -58,6 +61,7 @@ import java.io.File
 
 @Composable
 fun SettingsScreen(
+    openAndPopUp: (String, String) -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ){
     val uiState by viewModel.uiState
@@ -67,6 +71,9 @@ fun SettingsScreen(
         topBar = {
             BasicToolbar(R.string.settings)
         },
+        bottomBar = {
+            BasicBottomBar(R.string.made_by)
+        },
         content = { innerPadding ->
             SettingsScreenContent(
                 modifier = Modifier.padding(innerPadding),
@@ -74,7 +81,7 @@ fun SettingsScreen(
                 updatePhotoUri = viewModel::updatePhotoUri,
                 updateName = viewModel::updateName,
                 updateNumber = viewModel::updateNumber,
-                onSettingClick = {viewModel.onSettingClick()}
+                onSettingClick = {viewModel.onSettingClick(openAndPopUp)}
             )
         }
     )
@@ -152,8 +159,8 @@ fun SettingsScreenContent(
         Text(
             stringResource(R.string.app_name),
             color = Color.Green,
-            fontSize = 48.sp,
-            modifier = Modifier.padding(12.dp)
+            fontSize = 40.sp,
+            modifier = Modifier.padding(8.dp)
         )
 
         Box(
@@ -253,6 +260,12 @@ fun SettingsScreenContent(
 @Composable
 fun SettingsScreenPreview(){
     MaterialTheme {
-        SettingsScreen()
+        SettingsScreenContent(
+            uiState = SetUserData(),
+            updatePhotoUri = {},
+            updateName = {},
+            updateNumber = {},
+            onSettingClick = {}
+        )
     }
 }
