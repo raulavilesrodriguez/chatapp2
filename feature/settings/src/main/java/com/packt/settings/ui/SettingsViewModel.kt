@@ -215,6 +215,8 @@ class SettingsViewModel @Inject constructor(
 
             var finalPhotoUrl = uiState.value.photoUri
 
+            // To upload local Uri to Firebase Storage. Firestorage don't know remote URLs
+            // such as DEFAULT_AVATAR_URL
             if(finalPhotoUrl.startsWith("content://") ||
                 finalPhotoUrl.startsWith("android.resource://") ||
                 finalPhotoUrl.startsWith("file://")){
