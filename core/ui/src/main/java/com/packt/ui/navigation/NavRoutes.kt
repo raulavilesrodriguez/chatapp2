@@ -1,6 +1,8 @@
 package com.packt.ui.navigation
 
 object NavRoutes {
+    const val Login = "login"
+
     const val Settings = "settings"
 
     const val ConversationsList = "conversations_list"

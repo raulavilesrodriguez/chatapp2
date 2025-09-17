@@ -37,6 +37,7 @@ import androidx.navigation.compose.composable
 import com.packt.chat.ui.theme.ChatTheme
 import com.packt.conversations.ui.ConversationsListScreen
 import com.packt.create_chat.ui.CreateConversationScreen
+import com.packt.settings.ui.LoginScreen
 import com.packt.settings.ui.SettingsScreen
 import com.packt.ui.navigation.NavRoutes
 
@@ -63,9 +64,10 @@ fun MainNavigation(){
             ) { innerPadding ->
                 NavHost(
                     navController = appState.navController,
-                    startDestination = NavRoutes.Settings,
+                    startDestination = NavRoutes.Login,
                     modifier = Modifier.padding(innerPadding)
                 ) {
+                    addLogin(appState)
                     addSettings(appState)
                     addConversationsList(appState)
                     addNewConversation(appState)
@@ -110,6 +112,13 @@ fun resources(): Resources {
     return LocalResources.current
 }
 
+private fun NavGraphBuilder.addLogin(appState: AppState){
+    composable(NavRoutes.Login) {
+        LoginScreen(
+            openAndPopUp = {route, popUp -> appState.navigateAndPopUp(route, popUp)}
+        )
+    }
+}
 
 private fun NavGraphBuilder.addSettings(appState: AppState){
     composable(NavRoutes.Settings) {

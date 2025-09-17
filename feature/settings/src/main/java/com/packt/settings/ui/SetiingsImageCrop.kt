@@ -70,7 +70,7 @@ fun SettingsScreen0(
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
-            BasicToolbar(R.string.settings)
+            BasicToolbar(R.string.settings_1)
         },
         content = { innerPadding ->
             SettingsScreenContent0(

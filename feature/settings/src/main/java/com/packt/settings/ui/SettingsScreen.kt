@@ -20,12 +20,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -69,7 +67,7 @@ fun SettingsScreen(
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
-            BasicToolbar(R.string.settings)
+            BasicToolbar(R.string.settings_2)
         },
         bottomBar = {
             BasicBottomBar(R.string.made_by)
@@ -80,7 +78,6 @@ fun SettingsScreen(
                 uiState = uiState,
                 updatePhotoUri = viewModel::updatePhotoUri,
                 updateName = viewModel::updateName,
-                updateNumber = viewModel::updateNumber,
                 onSettingClick = {viewModel.onSettingClick(openAndPopUp)}
             )
         }
@@ -93,7 +90,6 @@ fun SettingsScreenContent(
     uiState: SetUserData,
     updatePhotoUri: (String) -> Unit,
     updateName: (String) -> Unit,
-    updateNumber: (String) -> Unit,
     onSettingClick: () -> Unit
 ){
     var showWarningDialog by remember { mutableStateOf(false) }
@@ -206,19 +202,6 @@ fun SettingsScreenContent(
             )
         )
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
-            value = uiState.number,
-            onValueChange = {updateNumber(it)},
-            label = {Text(stringResource(R.string.user_number))},
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                focusedBorderColor = Color.Green,
-                unfocusedLabelColor = Color.Green
-            )
-        )
-        Spacer(modifier = Modifier.height(8.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -264,7 +247,6 @@ fun SettingsScreenPreview(){
             uiState = SetUserData(),
             updatePhotoUri = {},
             updateName = {},
-            updateNumber = {},
             onSettingClick = {}
         )
     }

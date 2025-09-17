@@ -74,6 +74,8 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.appcheck.playintegrity)
+    implementation(libs.firebase.appcheck.debug)
     implementation(libs.coil)
     implementation(libs.android.image.cropper)
     implementation(libs.ucrop)
