@@ -28,6 +28,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 import androidx.compose.runtime.State
 import com.google.firebase.FirebaseException
+import com.packt.settings.domain.usecases.GetUser
+import com.packt.settings.domain.usecases.SaveUser
+import com.packt.settings.ui.model.toUserData
 import com.packt.ui.ext.numberFirebaseEcu
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,7 +46,9 @@ class SettingsViewModel @Inject constructor(
     private val deleteAccountUseCase: DeleteAccount,
     private val signOutUseCase: SignOut,
     private val uploadPhoto: UploadPhoto,
-    private val downloadPhoto: DownloadUrlPhoto
+    private val downloadPhoto: DownloadUrlPhoto,
+    private val saveUser: SaveUser,
+    private val getUser: GetUser,
 ) : BaseViewModel() {
 
     var uiState = mutableStateOf(SetUserData())
@@ -66,8 +71,6 @@ class SettingsViewModel @Inject constructor(
     // Guarda el verificationId y el token para reenvío o inicio de sesión
     private var currentVerificationId: String? = null
     private var currentResendToken: PhoneAuthProvider.ForceResendingToken? = null
-
-    private var successSettings: Boolean = false
 
     fun updateNumber(newNumber: String) {
         uiState.value = uiState.value.copy(number = newNumber)
@@ -189,9 +192,10 @@ class SettingsViewModel @Inject constructor(
 
     fun alreadyLoggedIn(openAndPopUp: (String, String) -> Unit) {
         launchCatching {
-            if (successSettings && hasUser) {
+            val user = getUser(currentUserId)
+            if (hasUser && user?.name != null) {
                 openAndPopUp(NavRoutes.ConversationsList, NavRoutes.Login)
-            } else if (!successSettings && hasUser){
+            } else if (hasUser && user?.name == null){
                 openAndPopUp(NavRoutes.Settings, NavRoutes.Login)
             } else {return@launchCatching}
         }
@@ -233,9 +237,12 @@ class SettingsViewModel @Inject constructor(
             // Update user data with the download URL
             uiState.value = uiState.value.copy(photoUri = finalPhotoUrl)
 
+            // prepare to upload user data to fire store
+            val userData = uiState.value.toUserData(currentUserId)
+            saveUser(userData)
+
             // Navigate to ConversationsList screen
             openAndPopUp(NavRoutes.ConversationsList, NavRoutes.Settings)
-            successSettings = true
         }
     }
 }
