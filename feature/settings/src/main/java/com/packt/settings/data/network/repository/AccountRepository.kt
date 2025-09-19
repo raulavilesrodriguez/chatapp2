@@ -43,4 +43,6 @@ class AccountRepository @Inject constructor(
         data.signOut()
     }
 
+    override fun getPhoneNumber() : String? = data.getPhoneNumber()
+
 }

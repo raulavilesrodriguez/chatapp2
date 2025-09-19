@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 import androidx.compose.runtime.State
 import com.google.firebase.FirebaseException
+import com.packt.settings.domain.usecases.GetPhoneNumber
 import com.packt.settings.domain.usecases.GetUser
 import com.packt.settings.domain.usecases.SaveUser
 import com.packt.settings.ui.model.toUserData
@@ -45,6 +46,7 @@ class SettingsViewModel @Inject constructor(
     private val resendVerificationCode: ResendVerificationCode,
     private val deleteAccountUseCase: DeleteAccount,
     private val signOutUseCase: SignOut,
+    private val getPhoneNumber: GetPhoneNumber,
     private val uploadPhoto: UploadPhoto,
     private val downloadPhoto: DownloadUrlPhoto,
     private val saveUser: SaveUser,
@@ -236,6 +238,10 @@ class SettingsViewModel @Inject constructor(
 
             // Update user data with the download URL
             uiState.value = uiState.value.copy(photoUri = finalPhotoUrl)
+
+            // Update phone number
+            val phoneNumber = getPhoneNumber()
+            uiState.value = uiState.value.copy(number = phoneNumber ?: "")
 
             // prepare to upload user data to fire store
             val userData = uiState.value.toUserData(currentUserId)

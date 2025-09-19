@@ -173,5 +173,7 @@ class AccountDataSource @Inject constructor(
         firebaseAuth.signOut()
     }
 
+    fun getPhoneNumber() : String? = firebaseAuth.currentUser?.phoneNumber
+
 }
 

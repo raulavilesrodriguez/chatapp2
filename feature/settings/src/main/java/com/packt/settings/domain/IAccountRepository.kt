@@ -15,5 +15,5 @@ interface IAccountRepository {
     fun resendVerificationCode(number: String, activity: Activity, token: PhoneAuthProvider.ForceResendingToken) : Flow<PhoneVerificationResult>
     suspend fun deleteAccount()
     fun signOut()
-
+    fun getPhoneNumber() : String?
 }
