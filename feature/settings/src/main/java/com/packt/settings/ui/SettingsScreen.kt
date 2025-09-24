@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -78,7 +79,8 @@ fun SettingsScreen(
                 uiState = uiState,
                 updatePhotoUri = viewModel::updatePhotoUri,
                 updateName = viewModel::updateName,
-                onSettingClick = {viewModel.onSettingClick(openAndPopUp)}
+                onSettingClick = {viewModel.onSettingClick(openAndPopUp)},
+                isSavingProfile = viewModel.isSavingProfile.value
             )
         }
     )
@@ -90,7 +92,8 @@ fun SettingsScreenContent(
     uiState: SetUserData,
     updatePhotoUri: (String) -> Unit,
     updateName: (String) -> Unit,
-    onSettingClick: () -> Unit
+    onSettingClick: () -> Unit,
+    isSavingProfile: Boolean = false
 ){
     var showWarningDialog by remember { mutableStateOf(false) }
 
@@ -209,9 +212,18 @@ fun SettingsScreenContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(
-                onClick = {onSettingClick()}
+                onClick = {onSettingClick()},
+                enabled = !isSavingProfile
             ) {
-                Text(stringResource(R.string.send))
+                if(isSavingProfile){
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(stringResource(R.string.send))
+                }
             }
             OutlinedButton(
                 onClick = {showWarningDialog = true},

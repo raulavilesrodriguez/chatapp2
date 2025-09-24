@@ -12,7 +12,7 @@ class FirestoreUserDataSource @Inject constructor(
 ) {
     suspend fun save(user: UserData) {
         firestore.collection(USERS_COLLECTION)
-            .add(user).await()
+            .document(user.uid).set(user).await()
     }
 
     suspend fun getUser(uid: String): UserData? =

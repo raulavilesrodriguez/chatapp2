@@ -21,14 +21,13 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.packt.conversations.ui.model.Conversation
 import com.packt.ui.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun ConversationsListScreen(
@@ -51,7 +50,6 @@ fun ConversationsListScreenContent(
     openScreen: (String) -> Unit
 ){
     val tabs = generateTabs()
-    val selectedIndex = remember { mutableIntStateOf(1) }
     val pagerState = rememberPagerState(1){tabs.size}
 
     Scaffold(
@@ -69,16 +67,20 @@ fun ConversationsListScreenContent(
             )
         },
         bottomBar = {
+            val coroutineScope = rememberCoroutineScope()
+
             TabRow(
-                selectedTabIndex = selectedIndex.value,
+                selectedTabIndex = pagerState.currentPage,
                 modifier = Modifier.navigationBarsPadding()  //para que no se ponga encima de la parte inferior del movil
             ) {
                 tabs.forEachIndexed { index, _ ->
                     Tab(
                         text = {Text(stringResource(tabs[index].title))},
-                        selected = index == selectedIndex.value,
+                        selected = index == pagerState.currentPage,
                         onClick = {
-                            selectedIndex.value = index
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
                         }
                     )
                 }
@@ -114,9 +116,6 @@ fun ConversationsListScreenContent(
                         //Status
                     }
                 }
-            }
-            LaunchedEffect(selectedIndex.value) {
-                pagerState.animateScrollToPage(selectedIndex.value)
             }
         },
     )

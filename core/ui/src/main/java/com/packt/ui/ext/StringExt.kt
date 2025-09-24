@@ -1,5 +1,6 @@
 package com.packt.ui.ext
 
+import java.text.Normalizer
 import java.util.regex.Pattern
 
 private const val MIN_PASS_LENGTH = 10
@@ -21,4 +22,16 @@ fun String.numberFirebaseEcu(): String {
     val numberClean = this.replace("\\s+".toRegex(), "").replace("-", "")
 
     return "+593" + numberClean.substring(1)
+}
+
+fun String.normalizeName(): String {
+    // 1. Pasar a minúsculas
+    var result = this.lowercase()
+    // 2. Eliminar tildes/acentos
+    result = Normalizer.normalize(result, Normalizer.Form.NFD)
+        .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
+    // 3. Reemplazar múltiples espacios por uno solo
+    result = result.replace("\\s+".toRegex(), " ")
+    // 4. Eliminar espacios al inicio y fin
+    return result.trim()
 }

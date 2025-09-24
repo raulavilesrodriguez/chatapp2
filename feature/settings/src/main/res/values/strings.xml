@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="welcome">Bienvenido a Chatapp</string>
+    <string name="welcome_name">Bienvenido %s</string>
     <string name="settings_1">Registro (1/2)</string>
     <string name="register_number">Ingresa tu número de teléfono</string>
     <string name="error_register">Error en el registro con el número de teléfono %s</string>
@@ -7,6 +9,7 @@
     <string name="send_sms_text">Ingresa el código SMS enviado a %s</string>
     <string name="resend_option">No se pudo verificar o el tiempo de espera ha terminado.</string>
     <string name="resend_sms">Reenviar Código SMS</string>
+    <string name="error_phone">Error, número móvil incorrecto</string>
 
     <string name="settings_2">Registro (2/2)</string>
     <string name="app_name">Chatapp</string>

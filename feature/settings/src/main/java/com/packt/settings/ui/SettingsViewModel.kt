@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 import androidx.compose.runtime.State
 import com.google.firebase.FirebaseException
+import com.packt.domain.user.UserData
 import com.packt.settings.domain.usecases.GetPhoneNumber
 import com.packt.settings.domain.usecases.GetUser
 import com.packt.settings.domain.usecases.SaveUser
@@ -50,7 +51,7 @@ class SettingsViewModel @Inject constructor(
     private val uploadPhoto: UploadPhoto,
     private val downloadPhoto: DownloadUrlPhoto,
     private val saveUser: SaveUser,
-    private val getUser: GetUser,
+    val getUser: GetUser,
 ) : BaseViewModel() {
 
     var uiState = mutableStateOf(SetUserData())
@@ -73,6 +74,12 @@ class SettingsViewModel @Inject constructor(
     // Guarda el verificationId y el token para reenvío o inicio de sesión
     private var currentVerificationId: String? = null
     private var currentResendToken: PhoneAuthProvider.ForceResendingToken? = null
+
+    private val _isSavingProfile = mutableStateOf(false)
+    val isSavingProfile: State<Boolean> = _isSavingProfile
+
+    private val _userDataStore = MutableStateFlow<UserData?>(UserData())
+    val userDataStore: StateFlow<UserData?> = _userDataStore
 
     fun updateNumber(newNumber: String) {
         uiState.value = uiState.value.copy(number = newNumber)
@@ -170,10 +177,10 @@ class SettingsViewModel @Inject constructor(
     }
 
     val currentUserId
-        get() = currentUserIdUseCase.invoke()
+        get() = currentUserIdUseCase()
 
     val hasUser
-        get() = hasUserUseCase.invoke()
+        get() = hasUserUseCase()
 
     fun deleteAccount() {
         launchCatching {
@@ -194,12 +201,24 @@ class SettingsViewModel @Inject constructor(
 
     fun alreadyLoggedIn(openAndPopUp: (String, String) -> Unit) {
         launchCatching {
-            val user = getUser(currentUserId)
-            if (hasUser && user?.name != null) {
-                openAndPopUp(NavRoutes.ConversationsList, NavRoutes.Login)
-            } else if (hasUser && user?.name == null){
-                openAndPopUp(NavRoutes.Settings, NavRoutes.Login)
-            } else {return@launchCatching}
+            if (hasUser) {
+                val user = getUser(currentUserId)
+                if (user?.name != null) {
+                    openAndPopUp(NavRoutes.ConversationsList, NavRoutes.Splash)
+                } else {
+                    openAndPopUp(NavRoutes.Settings, NavRoutes.Splash)
+                }
+            } else {
+                openAndPopUp(NavRoutes.Login, NavRoutes.Splash)
+            }
+        }
+    }
+
+    fun getUserData() {
+        launchCatching {
+            if(hasUser) {
+                _userDataStore.value = getUser(currentUserId)
+            }
         }
     }
 
@@ -216,6 +235,8 @@ class SettingsViewModel @Inject constructor(
             SnackbarManager.showMessage(R.string.empty_fields)
             return
         }
+
+        _isSavingProfile.value = true
 
         launchCatching {
 
@@ -249,6 +270,6 @@ class SettingsViewModel @Inject constructor(
 
             // Navigate to ConversationsList screen
             openAndPopUp(NavRoutes.ConversationsList, NavRoutes.Settings)
-        }
+        }.invokeOnCompletion { _isSavingProfile.value = false }
     }
 }

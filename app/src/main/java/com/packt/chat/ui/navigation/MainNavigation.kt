@@ -39,6 +39,7 @@ import com.packt.conversations.ui.ConversationsListScreen
 import com.packt.create_chat.ui.CreateConversationScreen
 import com.packt.settings.ui.LoginScreen
 import com.packt.settings.ui.SettingsScreen
+import com.packt.settings.ui.SplashScreen
 import com.packt.ui.navigation.NavRoutes
 
 @Composable
@@ -64,9 +65,10 @@ fun MainNavigation(){
             ) { innerPadding ->
                 NavHost(
                     navController = appState.navController,
-                    startDestination = NavRoutes.Login,
+                    startDestination = NavRoutes.Splash,
                     modifier = Modifier.padding(innerPadding)
                 ) {
+                    addSplash(appState)
                     addLogin(appState)
                     addSettings(appState)
                     addConversationsList(appState)
@@ -112,6 +114,14 @@ fun resources(): Resources {
     return LocalResources.current
 }
 
+private fun NavGraphBuilder.addSplash(appState: AppState){
+    composable(NavRoutes.Splash) {
+        SplashScreen(
+            openAndPopUp = {route, popUp -> appState.navigateAndPopUp(route, popUp)}
+        )
+    }
+}
+
 private fun NavGraphBuilder.addLogin(appState: AppState){
     composable(NavRoutes.Login) {
         LoginScreen(
@@ -139,7 +149,12 @@ private fun NavGraphBuilder.addConversationsList(appState: AppState){
 private fun NavGraphBuilder.addNewConversation(appState: AppState){
     composable(NavRoutes.NewConversation) {
         CreateConversationScreen(
-            openScreen = {route -> appState.navigate(route) }
+            openScreen = {route -> appState.navigate(route) },
+            popUp = { appState.popUp() }
         )
     }
+}
+
+private fun NavGraphBuilder.addChat(appState: AppState){
+
 }

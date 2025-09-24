@@ -49,6 +49,7 @@ import com.packt.ui.composables.BasicToolbar
 import com.packt.ui.composables.DialogCancelButton
 import com.packt.ui.composables.DialogConfirmButton
 import com.packt.ui.ext.isValidNumber
+import com.packt.ui.snackbar.SnackbarManager
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 
@@ -62,12 +63,6 @@ fun LoginScreen(
 
     val context = LocalContext.current
     val activity = context as Activity
-
-    LaunchedEffect(viewModel.hasUser) {
-        if (viewModel.hasUser){
-            viewModel.alreadyLoggedIn(openAndPopUp)
-        }
-    }
 
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
@@ -198,13 +193,13 @@ fun LoginScreenContent(
             }
             showResendOption -> {
                 ReSendSmsCode(
-                    context = context,
                     showResenOption = {showResendOption = it},
                     showCircularProgress = {showCircularProgress = it},
                     showDialogSMS = {showDialogSMS = it},
                     resendVerificationCode = resendVerificationCode,
                     updateNumber = updateNumber,
-                    resetSignInState = resetSignInState
+                    resetSignInState = resetSignInState,
+                    updateSmsCode = updateSmsCode
                 )
             }
             showDialogSMS -> {
@@ -287,12 +282,7 @@ fun RegisterNumber(
                     else {
                         showDialogSMS(false)
                         updateNumber("")
-                        /**
-                        Toast.makeText(
-                            context,
-                            "Error, número móvil incorrecto",
-                            Toast.LENGTH_SHORT
-                        ).show() */
+                        SnackbarManager.showMessage(R.string.error_phone)
                     }
                 }
             ) {
@@ -363,13 +353,13 @@ fun SendSmsCode(
 
 @Composable
 fun ReSendSmsCode(
-    context: Context,
     showResenOption: (Boolean) -> Unit,
     showCircularProgress: (Boolean) -> Unit,
     showDialogSMS: (Boolean) -> Unit,
     resendVerificationCode: () -> Unit,
     updateNumber: (String) -> Unit,
-    resetSignInState: () -> Unit
+    resetSignInState: () -> Unit,
+    updateSmsCode: (String) -> Unit,
 ){
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -403,6 +393,7 @@ fun ReSendSmsCode(
                     showResenOption(false)
                     showDialogSMS(false)
                     updateNumber("")
+                    updateSmsCode("")
                     resetSignInState()
                           },
                 modifier = Modifier.padding(8.dp)
