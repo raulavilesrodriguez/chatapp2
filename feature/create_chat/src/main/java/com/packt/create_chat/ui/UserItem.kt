@@ -12,13 +12,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.packt.create_chat.R
 import com.packt.domain.user.UserData
 import com.packt.ui.avatar.Avatar
 
 @Composable
-fun UserItem(user: UserData){
+fun UserItem(user: UserData, currentUserUid: String){
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -33,8 +35,11 @@ fun UserItem(user: UserData){
         )
         Spacer(modifier = Modifier.width(16.dp))
         Column {
+            val displayName = if (currentUserUid == user.uid) {
+                "${user.name ?: ""} (${stringResource(R.string.you)})"
+            } else {user.name ?: ""}
             Text(
-                text = user.name ?: "",
+                text = displayName,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -48,8 +53,10 @@ fun UserItemPreview(){
         UserItem(
             user = UserData(
                 name = "Carla Becerra ❤\uFE0F\u200D\uD83E\uDE79",
-                photoUrl = "https://i.pravatar.cc/150?u=1"
-            )
+                photoUrl = "https://i.pravatar.cc/150?u=1",
+                uid = "1y"
+            ),
+            currentUserUid = "1y"
         )
     }
 }

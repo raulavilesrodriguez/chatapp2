@@ -13,7 +13,8 @@ import com.packt.domain.user.UserData
 fun UserList(
     modifier: Modifier = Modifier,
     users: List<UserData>,
-    onUserClick: (uid: String) -> Unit
+    onUserClick: (uid: String) -> Unit,
+    currentUserUid: String
 ){
     LazyColumn(modifier = modifier) {
         items(users) { user ->
@@ -21,7 +22,7 @@ fun UserList(
                 modifier = Modifier.fillMaxWidth()
                     .clickable { onUserClick(user.uid)}
             ) {
-                UserItem(user = user)
+                UserItem(user = user, currentUserUid = currentUserUid)
             }
         }
     }

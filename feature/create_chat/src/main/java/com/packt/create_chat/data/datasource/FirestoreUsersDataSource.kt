@@ -1,5 +1,7 @@
 package com.packt.create_chat.data.datasource
 
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
@@ -13,7 +15,11 @@ import kotlinx.coroutines.tasks.await
 
 class FirestoreUsersDataSource @Inject constructor(
     private val firestore: FirebaseFirestore,
+    private val firebaseAuth: FirebaseAuth
 ) {
+    val currentUserId: String
+        get() = firebaseAuth.currentUser?.uid.orEmpty()
+
     fun getUsers(): Flow<List<UserData>> = callbackFlow {
         val query = firestore.collection(USERS_COLLECTION)
             .orderBy(ORDER_BY_FIELD, Query.Direction.ASCENDING) // ASCENDING para orden alfabético A-Z
@@ -57,10 +63,16 @@ class FirestoreUsersDataSource @Inject constructor(
     suspend fun createChat(participants: List<String>): String {
         val chatRef = firestore.collection(CHATS_COLLECTION).document()
         val chatId = chatRef.id
+
         val chatData = hashMapOf(
             "chatId" to chatId,
             "participants" to participants,
-            "createdAt" to System.currentTimeMillis()
+            "lastMessage" to null,
+            "updatedAt" to FieldValue.serverTimestamp(),
+            "lastMessageSenderId" to null,
+            "lastMessageType" to null,
+            "unreadCount" to emptyMap<String, Int>(),
+            "createdAt" to FieldValue.serverTimestamp()
         )
         chatRef.set(chatData).await()
         return chatId

@@ -1,8 +1,11 @@
 package com.packt.create_chat.ui
 
+import com.packt.create_chat.domain.usecases.CreateChat
+import com.packt.create_chat.domain.usecases.GetCurrentUserId
 import com.packt.create_chat.domain.usecases.GetUsers
 import com.packt.create_chat.domain.usecases.SearchUsers
 import com.packt.domain.user.UserData
+import com.packt.ui.navigation.NavRoutes
 import com.packt.ui.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
@@ -19,7 +22,9 @@ import kotlin.coroutines.cancellation.CancellationException
 @HiltViewModel
 class CreateConversationViewModel @Inject constructor(
     private val getUsers: GetUsers,
-    private val searchUsers: SearchUsers
+    private val searchUsers: SearchUsers,
+    private val createChat: CreateChat,
+    private val currentUserIdUseCase: GetCurrentUserId,
 ): BaseViewModel() {
 
     private val _searchText = MutableStateFlow("")
@@ -32,6 +37,9 @@ class CreateConversationViewModel @Inject constructor(
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private var searchJob: Job? = null
+
+    val currentUserId
+        get() = currentUserIdUseCase()
 
     init {
         launchCatching {
@@ -78,6 +86,11 @@ class CreateConversationViewModel @Inject constructor(
     }
 
     fun createChatRoom(uid: String, openScreen: (String) -> Unit){
+        val participants = setOf(currentUserId, uid).toList()
+        launchCatching {
+            val chatId = createChat(participants)
+            openScreen(NavRoutes.Chat.replace("{chatId}", chatId))
+        }
 
     }
 

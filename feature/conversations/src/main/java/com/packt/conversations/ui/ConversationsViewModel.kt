@@ -11,7 +11,7 @@ class ConversationsViewModel @Inject constructor() : BaseViewModel() {
     fun onNewConversationClick(openScreen: (String) -> Unit) = openScreen(NavRoutes.NewConversation)
 
     fun onConversationClick(openScreen: (String) -> Unit, chatId: String){
-        openScreen(NavRoutes.Chat.replace("{chatId}", chatId))
+        //openScreen(NavRoutes.Chat.replace("{chatId}", chatId))
     }
 
 }

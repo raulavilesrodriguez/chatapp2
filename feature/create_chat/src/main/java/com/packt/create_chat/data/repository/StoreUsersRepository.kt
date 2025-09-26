@@ -10,9 +10,16 @@ class StoreUsersRepository @Inject constructor(
     private val dataSource: FirestoreUsersDataSource
 ) : IStoreUsersRepository {
 
+    override val currentUserId: String
+        get() = dataSource.currentUserId
+
     override suspend fun getUsers() = dataSource.getUsers()
 
     override suspend fun searchUsers(namePrefix: String): Flow<List<UserData>> {
         return dataSource.searchUsers(namePrefix)
+    }
+
+    override suspend fun createChat(participants: List<String>): String {
+        return dataSource.createChat(participants)
     }
 }

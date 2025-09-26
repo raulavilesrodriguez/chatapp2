@@ -32,8 +32,11 @@ import kotlinx.coroutines.CoroutineScope
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import com.packt.chat.ui.ChatScreen
 import com.packt.chat.ui.theme.ChatTheme
 import com.packt.conversations.ui.ConversationsListScreen
 import com.packt.create_chat.ui.CreateConversationScreen
@@ -156,5 +159,11 @@ private fun NavGraphBuilder.addNewConversation(appState: AppState){
 }
 
 private fun NavGraphBuilder.addChat(appState: AppState){
-
+    composable(
+        route = NavRoutes.Chat,
+        arguments = listOf(navArgument(NavRoutes.ChatArgs.ChatId) { type = NavType.StringType }),
+    ) { backStackEntry ->
+        val chatId = backStackEntry.arguments?.getString(NavRoutes.ChatArgs.ChatId)
+        ChatScreen(chatId = chatId, onBackClick = { appState.popUp() })
+    }
 }

@@ -4,13 +4,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hiltAndroid)
 }
 
 android {
-    namespace = "com.packt.settings"
+    namespace = "com.packt.data"
     compileSdk = 36
 
     defaultConfig {
@@ -34,18 +31,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 
-    buildFeatures {
-        compose = true
-    }
-
 }
-
 
 dependencies {
 
-    implementation(project(":core:ui"))
     implementation(project(":core:domain"))
-    implementation(project(":core:data"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -54,35 +44,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-
-    ksp(libs.hilt.compiler)
-    implementation(libs.hilt.android)
-    implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.accompanist.permissions)
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
-    implementation(libs.firebase.storage)
-    implementation(libs.firebase.appcheck.playintegrity)
-    implementation(libs.firebase.appcheck.debug)
-    implementation(libs.coil)
-    implementation(libs.android.image.cropper)
-    implementation(libs.imagecropview)
-    implementation(libs.ucrop)
-
 }
 
 // Este bloque reemplaza al `kotlinOptions` de antes:

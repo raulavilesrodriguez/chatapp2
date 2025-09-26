@@ -25,12 +25,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.packt.chat.R
 import com.packt.chat.ui.model.Message
 
 @Composable
 fun ChatScreen(
-    chatId: String,
+    chatId: String?,
     onBackClick: () -> Unit,
 ){
 
@@ -69,7 +71,7 @@ fun SendMessageBox(enable: Boolean, sendMessage: (String)->Unit) {
             }
         ) {
             Icon(
-                imageVector = Icons.Default.Send,
+                painter = painterResource(id = R.drawable.send),
                 tint = MaterialTheme.colorScheme.primary,
                 contentDescription = "Send message"
             )

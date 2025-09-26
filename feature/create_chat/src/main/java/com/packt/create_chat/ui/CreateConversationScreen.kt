@@ -45,6 +45,7 @@ fun CreateConversationScreen(
     val searchText by viewModel.searchText.collectAsState()
     val searchResults by viewModel.searchResults.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val currentUserId = viewModel.currentUserId
 
     CreateConversationScreenContent(
         searchText = searchText,
@@ -52,7 +53,8 @@ fun CreateConversationScreen(
         searchResults = searchResults,
         isLoading = isLoading,
         onUserClick = { uid -> viewModel.createChatRoom(uid, openScreen) },
-        backClick = popUp
+        backClick = popUp,
+        currentUserUid = currentUserId
     )
 }
 
@@ -63,7 +65,8 @@ fun CreateConversationScreenContent(
     searchResults: List<UserData>,
     isLoading: Boolean,
     onUserClick: (uid: String) -> Unit,
-    backClick: () -> Unit
+    backClick: () -> Unit,
+    currentUserUid: String
 ){
     var showSearchField by remember { mutableStateOf(false) }
     var showToolBar by remember { mutableStateOf(false) }
@@ -105,7 +108,8 @@ fun CreateConversationScreenContent(
                         .padding(innerPadding)
                         .navigationBarsPadding(), // evita superponerse con la parte inferior
                     users = searchResults,
-                    onUserClick = onUserClick
+                    onUserClick = onUserClick,
+                    currentUserUid = currentUserUid
                 )
             } else {
                 CircularProgressIndicator(

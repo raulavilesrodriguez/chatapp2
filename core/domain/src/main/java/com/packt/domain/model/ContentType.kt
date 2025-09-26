@@ -1,5 +1,5 @@
 package com.packt.domain.model
 
 enum class ContentType {
-    TEXT, IMAGE
+    TEXT, IMAGE, VIDEO
 }
