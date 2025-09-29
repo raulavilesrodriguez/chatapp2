@@ -76,6 +76,7 @@ fun MainNavigation(){
                     addSettings(appState)
                     addConversationsList(appState)
                     addNewConversation(appState)
+                    addChat(appState)
                 }
             }
 

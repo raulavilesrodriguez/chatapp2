@@ -69,7 +69,7 @@ fun CreateConversationScreenContent(
     currentUserUid: String
 ){
     var showSearchField by remember { mutableStateOf(false) }
-    var showToolBar by remember { mutableStateOf(false) }
+    var showToolBar by remember { mutableStateOf(true) }
 
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing, // para que no se ponga encima de la parte superior del movil
@@ -240,3 +240,51 @@ fun SearchFieldPreview(){
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun CreateConversationScreenContentPreview(){
+    MaterialTheme {
+        CreateConversationScreenContent(
+            searchText = "",
+            updateSearchText = {},
+            searchResults = generateFakeUsers(),
+            isLoading = false,
+            onUserClick = {},
+            backClick = {},
+            currentUserUid = ""
+        )
+    }
+}
+
+
+fun generateFakeUsers(): List<UserData> = listOf(
+    UserData(
+        uid = "1",
+        name = "Linda Pechugas",
+        nameLowercase = "linda pechugas",
+        number = "0962390120",
+        photoUrl = "https://i.pravatar.cc/150?u=1"
+    ),
+    UserData(
+        uid = "2",
+        name = "John Muelas",
+        nameLowercase = "john muelas",
+        number = "0982390121",
+        photoUrl = "https://i.pravatar.cc/150?u=2"
+    ),
+    UserData(
+        uid = "3",
+        name = "Patricia Alomoto",
+        nameLowercase = "patricia alomoto",
+        number = "0972390122",
+        photoUrl = "https://i.pravatar.cc/150?u=3"
+    ),
+    UserData(
+        uid = "4",
+        name = "Josefa Mendoza",
+        nameLowercase = "josefa mendoza",
+        number = "0952390123",
+        photoUrl = "https://i.pravatar.cc/150?u=4"
+    )
+)

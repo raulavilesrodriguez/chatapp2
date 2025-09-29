@@ -1,4 +1,4 @@
-package com.packt.settings.module
+package com.packt.data.module
 
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth

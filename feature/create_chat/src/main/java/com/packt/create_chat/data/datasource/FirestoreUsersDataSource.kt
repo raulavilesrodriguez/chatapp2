@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.packt.domain.user.UserData
 import com.packt.ui.ext.normalizeName
 import jakarta.inject.Inject
@@ -61,20 +62,24 @@ class FirestoreUsersDataSource @Inject constructor(
     }
 
     suspend fun createChat(participants: List<String>): String {
-        val chatRef = firestore.collection(CHATS_COLLECTION).document()
-        val chatId = chatRef.id
+        val chatId = participants.sorted().joinToString(separator = "_")
+        val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
 
-        val chatData = hashMapOf(
-            "chatId" to chatId,
-            "participants" to participants,
-            "lastMessage" to null,
-            "updatedAt" to FieldValue.serverTimestamp(),
-            "lastMessageSenderId" to null,
-            "lastMessageType" to null,
-            "unreadCount" to emptyMap<String, Int>(),
-            "createdAt" to FieldValue.serverTimestamp()
-        )
-        chatRef.set(chatData).await()
+        val snapshot = chatRef.get().await()
+
+        if(!snapshot.exists()){
+            val chatData = hashMapOf(
+                "chatId" to chatId,
+                "participants" to participants,
+                "lastMessage" to null,
+                "updatedAt" to null,
+                "lastMessageSenderId" to null,
+                "lastMessageType" to null,
+                "unreadCount" to emptyMap<String, Int>(),
+                "createdAt" to FieldValue.serverTimestamp()
+            )
+            chatRef.set(chatData).await()
+        }
         return chatId
     }
 

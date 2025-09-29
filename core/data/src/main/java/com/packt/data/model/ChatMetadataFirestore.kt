@@ -28,7 +28,7 @@ data class ChatMetadataFirestore(
             chatId = chatId,
             participants = participants ?: emptyList(),
             lastMessage = lastMessage,
-            updatedAt = updatedAt?.toDate()?.time ?: System.currentTimeMillis(),
+            updatedAt = updatedAt?.toDate()?.time,
             lastMessageSenderId = lastMessageSenderId,
             lastMessageType = domainLastMessageType,
             unreadCount = unreadCount ?: emptyMap(),
