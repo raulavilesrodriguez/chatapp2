@@ -112,6 +112,14 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onSendMessage(){
+        val currentMessageText = _sendText.value
+        if(currentMessageText.isBlank()){
+            return
+        }
+        if(!this::chatMetadata.isInitialized){
+            Log.e("DEBUG SEND MESSAGE", "Chat metadata not initialized")
+            return
+        }
         launchCatching {
             val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
             val formattedTimestampForUI = sdf.format(java.util.Date(System.currentTimeMillis()))
@@ -124,10 +132,11 @@ class ChatViewModel @Inject constructor(
                 timestamp = formattedTimestampForUI,
                 isMine = true,
                 contentType = ContentType.TEXT,
-                content = _sendText.toString(),
-                contentDescription = _sendText.toString()
+                content = currentMessageText,
+                contentDescription = currentMessageText
             )
             sendMessage(chatMetadata.chatId, message)
+            _sendText.value = ""
         }
     }
 }
