@@ -31,16 +31,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import coil.request.ImageRequest
 import com.packt.chat.R
-import com.packt.chat.ui.model.Chat
 import com.packt.chat.ui.model.Message
 import com.packt.chat.ui.model.MessageContent
+import com.packt.domain.user.UserData
 import com.packt.ui.avatar.Avatar
 
 
@@ -52,6 +50,7 @@ fun ChatScreen(
 ){
     val uiState by viewModel.uiState.collectAsState()
     val sendText by viewModel.sendText.collectAsState()
+    val messages by viewModel.messages.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.loadChatInformation(chatId.orEmpty())
@@ -62,7 +61,8 @@ fun ChatScreen(
         participant = uiState,
         sendText = sendText,
         updateSendText = viewModel::updateSendText,
-        onSendMessage = viewModel::onSendMessage
+        onSendMessage = viewModel::onSendMessage,
+        messages = messages
     )
 }
 
@@ -70,10 +70,11 @@ fun ChatScreen(
 @Composable
 fun ChatScreenContent(
     onBackClick: () -> Unit,
-    participant: Chat,
+    participant: UserData,
     sendText: String,
     updateSendText: (String) -> Unit,
     onSendMessage: ()->Unit,
+    messages: List<Message>
 ){
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing, // para que no se ponga encima de la parte superior del movil
@@ -93,7 +94,7 @@ fun ChatScreenContent(
         }
     ) { paddingValues ->
         ListOfMessages(
-            messages = getFakeMessages(),
+            messages = messages,
             paddingValues = paddingValues
         )
     }
@@ -104,10 +105,8 @@ fun ChatScreenContent(
 fun ChatToolbar(
     @DrawableRes iconBack: Int,
     onBackClick: () -> Unit,
-    participant: Chat
+    participant: UserData
 ){
-    val context = LocalContext.current
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -121,9 +120,7 @@ fun ChatToolbar(
             )
         }
         Spacer(modifier = Modifier.width(8.dp))
-        val photoSource: Any = participant.avatar ?: ImageRequest.Builder(context)
-            .data(R.drawable.profile0)
-            .build()
+        val photoSource: Any = participant.photoUrl
         Avatar(
             photoUri = photoSource,
             size = 40.dp,
@@ -210,10 +207,10 @@ fun ListOfMessages(messages: List<Message>, paddingValues: PaddingValues) {
 @Composable
 fun ChatToolbarPreview(){
     MaterialTheme {
-        val participant = Chat(
-            id = "1we2",
+        val participant = UserData(
+            uid = "1we2",
             name = "Mayra",
-            avatar = "https://i.pravatar.cc/300?img=10"
+            photoUrl = "https://i.pravatar.cc/300?img=10"
         )
         ChatToolbar(
             iconBack = R.drawable.arrow_back,

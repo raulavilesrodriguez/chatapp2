@@ -17,7 +17,6 @@ import com.packt.settings.domain.usecases.SignOut
 import com.packt.settings.domain.usecases.StartPhoneNumberVerification
 import com.packt.settings.domain.usecases.UploadPhoto
 import com.packt.settings.ui.model.SetUserData
-import com.packt.ui.ext.isValidNumber
 import com.packt.ui.navigation.NavRoutes
 import com.packt.ui.snackbar.SnackbarManager
 import com.packt.ui.viewmodel.BaseViewModel

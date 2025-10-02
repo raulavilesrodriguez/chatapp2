@@ -12,4 +12,5 @@ data class Message(
 sealed class MessageContent {
     data class TextMessage(val message: String) : MessageContent()
     data class ImageMessage(val imageUrl: String, val contentDescription: String) : MessageContent()
+    data class VideoMessage(val videoUrl: String, val contentDescription: String) : MessageContent()
 }

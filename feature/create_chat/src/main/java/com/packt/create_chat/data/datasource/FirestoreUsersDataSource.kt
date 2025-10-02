@@ -62,7 +62,12 @@ class FirestoreUsersDataSource @Inject constructor(
     }
 
     suspend fun createChat(participants: List<String>): String {
-        val chatId = participants.sorted().joinToString(separator = "_")
+        val chatId = if (participants.size == 1) {
+            "${participants[0]}_self"
+        } else {
+            participants.sorted().joinToString("_")
+        }
+
         val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
 
         val snapshot = chatRef.get().await()
@@ -88,6 +93,5 @@ class FirestoreUsersDataSource @Inject constructor(
         private const val ORDER_BY_FIELD = "name"
         private const val ORDER_BY_FIELD_LOWER = "nameLowercase"
         private const val CHATS_COLLECTION = "chats"
-        private const val MESSAGES_COLLECTION = "messages"
     }
 }
