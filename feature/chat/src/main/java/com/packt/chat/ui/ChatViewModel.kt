@@ -84,10 +84,10 @@ class ChatViewModel @Inject constructor(
     fun updateMessages(chatId: String){
         messageCollectionJob = launchCatching {
             getMessages(chatId, currentUserId)
-                .map { it.toUI() }
                 .flowOn(Dispatchers.IO)
-                .collect { message ->
-                    _messages.value += message
+                .map { list -> list.map { it.toUI() }}
+                .collect { messagesList ->
+                    _messages.value = messagesList
                 }
         }
     }
@@ -135,8 +135,8 @@ class ChatViewModel @Inject constructor(
                 content = currentMessageText,
                 contentDescription = currentMessageText
             )
-            sendMessage(chatMetadata.chatId, message)
             _sendText.value = ""
+            sendMessage(chatMetadata.chatId, message)
         }
     }
 }

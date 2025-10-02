@@ -28,7 +28,7 @@ class FirestoreChatsDataSource @Inject constructor(
             .document(uid)
             .get().await().toObject()
 
-    fun getMessages(chatId: String, userId: String): Flow<Message> = callbackFlow {
+    fun getMessages(chatId: String, userId: String): Flow<List<Message>> = callbackFlow {
 
         val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
             .collection(MESSAGES_COLLECTION)
@@ -55,9 +55,7 @@ class FirestoreChatsDataSource @Inject constructor(
             val domainMessages = messages.map { it.toDomain(userId, chatId) }
 
             // Emit the list of messages to the Flow
-            domainMessages.forEach {
-                trySend(it).isSuccess
-            }
+            trySend(domainMessages).isSuccess
         }
 
         // When the Flow is no longer needed, remove the snapshot listener

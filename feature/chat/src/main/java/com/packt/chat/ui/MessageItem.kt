@@ -74,6 +74,10 @@ fun MessageItem(message: Message){
                         contentScale = ContentScale.Crop
                     )
                 }
+                is MessageContent.VideoMessage -> {
+                    // implement video message content
+
+                }
             }
             Text(
                 text = message.timestamp,

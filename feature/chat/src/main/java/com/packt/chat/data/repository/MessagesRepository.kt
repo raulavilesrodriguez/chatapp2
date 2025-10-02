@@ -10,7 +10,7 @@ class MessagesRepository @Inject constructor(
     private val dataSource: FirestoreChatsDataSource
 ) : IMessagesRepository {
 
-    override suspend fun getMessages(chatId: String, userId: String): Flow<Message> {
+    override suspend fun getMessages(chatId: String, userId: String): Flow<List<Message>> {
         return dataSource.getMessages(chatId, userId)
     }
 
