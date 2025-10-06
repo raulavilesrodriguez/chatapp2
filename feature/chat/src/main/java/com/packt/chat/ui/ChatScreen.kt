@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +30,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -39,6 +42,8 @@ import com.packt.chat.R
 import com.packt.chat.ui.model.Message
 import com.packt.domain.user.UserData
 import com.packt.ui.avatar.Avatar
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -61,7 +66,8 @@ fun ChatScreen(
         sendText = sendText,
         updateSendText = viewModel::updateSendText,
         onSendMessage = viewModel::onSendMessage,
-        messages = messages
+        messages = messages,
+        onLoadMoreMessages = { viewModel.loadMoreMessages(chatId.orEmpty())}
     )
 }
 
@@ -73,7 +79,8 @@ fun ChatScreenContent(
     sendText: String,
     updateSendText: (String) -> Unit,
     onSendMessage: ()->Unit,
-    messages: List<Message>
+    messages: List<Message>,
+    onLoadMoreMessages: () -> Unit
 ){
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing, // para que no se ponga encima de la parte superior del movil
@@ -94,7 +101,8 @@ fun ChatScreenContent(
     ) { paddingValues ->
         ListOfMessages(
             messages = messages,
-            paddingValues = paddingValues
+            paddingValues = paddingValues,
+            onLoadMoreMessages = onLoadMoreMessages
         )
     }
 }
@@ -181,22 +189,66 @@ fun SendMessageBox(
 }
 
 @Composable
-fun ListOfMessages(messages: List<Message>, paddingValues: PaddingValues) {
+fun ListOfMessages(
+    messages: List<Message>,
+    paddingValues: PaddingValues,
+    onLoadMoreMessages: () -> Unit
+) {
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    // detecta cuando llega al tope de la lista
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo } // observe changes in the layout
+            .distinctUntilChanged { old, new ->
+                old.visibleItemsInfo.lastOrNull()?.index == new.visibleItemsInfo.lastOrNull()?.index
+            }
+            .collect { layoutInfo ->
+                // Obtenemos el índice del último item visible en la pantalla
+                // que en reverseLayout=true es el que está MÁS ARRIBA.
+                val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                // Si no hay items o no hay índice, no hacemos nada.
+                if (lastVisibleItemIndex == null) return@collect
+                // El número total de items que tenemos cargados actualmente.
+                val totalItemsCount = layoutInfo.totalItemsCount
+                // Condición: Si el índice del último item visible (el de arriba)
+                // está cerca del final de nuestra lista de datos, es hora de cargar más.
+                if (lastVisibleItemIndex >= totalItemsCount - 5) {
+                    onLoadMoreMessages()
+                }
+            }
+    }
+
+    // Se dispara cada vez que la lista de mensajes cambia.
+    LaunchedEffect(messages.firstOrNull()?.id) {
+        // Si el primer item de la lista (el más nuevo) no está completamente visible,
+        // o si hemos añadido un nuevo mensaje y el scroll no está en la posición 0,
+        // hacemos scroll al principio.
+        if (messages.isNotEmpty()) {
+            coroutineScope.launch {
+                // AnimateScrollToItem es más suave que scrollToItem
+                listState.animateScrollToItem(index = 0)
+            }
+        }
+    }
+
     Box(modifier = Modifier
         .fillMaxSize()
-        .padding(paddingValues)) {
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+        .padding(paddingValues)
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp),
+            //verticalArrangement = Arrangement.spacedBy(8.dp),
+            state = listState,
+            reverseLayout = true // ojo
         ) {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                items(messages) { message ->
-                    MessageItem(message = message)
-                }
+            items(
+                messages,
+                key = {message -> message.id}
+            ) { message ->
+                MessageItem(message = message)
             }
         }
     }

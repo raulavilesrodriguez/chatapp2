@@ -1,6 +1,8 @@
 package com.packt.chat.data.datasource
 
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -28,7 +30,7 @@ class FirestoreChatsDataSource @Inject constructor(
             .document(uid)
             .get().await().toObject()
 
-    fun getMessages(chatId: String, userId: String): Flow<List<Message>> = callbackFlow {
+    fun getMessages(chatId: String, userId: String, since:Timestamp): Flow<List<Message>> = callbackFlow {
 
         val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
             .collection(MESSAGES_COLLECTION)
@@ -37,6 +39,7 @@ class FirestoreChatsDataSource @Inject constructor(
         val query = chatRef
             //.whereNotEqualTo(FILTER_BY_FIELD, null)
             .orderBy(ORDER_BY_FIELD, Query.Direction.ASCENDING)
+            .whereGreaterThan(ORDER_BY_FIELD, since)
 
         // Add a snapshot listener to the query to listen for real-time updates
         val listenerRegistration = query.addSnapshotListener { snapshot, exception ->
@@ -52,7 +55,9 @@ class FirestoreChatsDataSource @Inject constructor(
                 message?.copy(doc.id)
             } ?: emptyList()
 
-            val domainMessages = messages.map { it.toDomain(userId, chatId) }
+            val domainMessages = messages.map {
+                it.toDomain(userId, chatId).copy(firestoreTimestamp = it.timestamp)
+            }
 
             // Emit the list of messages to the Flow
             trySend(domainMessages).isSuccess
@@ -60,6 +65,41 @@ class FirestoreChatsDataSource @Inject constructor(
 
         // When the Flow is no longer needed, remove the snapshot listener
         awaitClose { listenerRegistration.remove() }
+    }
+
+    suspend fun getMessagesPaged(
+        chatId: String,
+        userId: String,
+        pageSize: Long,
+        lastDocument: DocumentSnapshot? = null
+    ) : Pair<List<Message>, DocumentSnapshot?>  {
+
+        val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
+            .collection(MESSAGES_COLLECTION)
+
+        var query = chatRef
+            .orderBy(ORDER_BY_FIELD, Query.Direction.DESCENDING) // más viejos final
+            .limit(pageSize)
+
+        // continue the consult from the last document
+        if (lastDocument != null) {
+            query = query.startAfter(lastDocument)
+        }
+
+        val snapshot = query.get().await()
+
+        // Convert the snapshot to a list of Message objects
+        val messages = snapshot.documents.mapNotNull { doc ->
+            val message = doc.toObject(FirestoreMessageModel::class.java)
+            message?.copy(doc.id)
+        }
+
+        val domainMessages = messages.map {
+            it.toDomain(userId, chatId).copy(firestoreTimestamp = it.timestamp)
+        }
+        val lastVisible = snapshot?.documents?.lastOrNull()
+
+        return domainMessages to lastVisible
     }
 
     suspend fun sendMessage(chatId: String, message: Message){

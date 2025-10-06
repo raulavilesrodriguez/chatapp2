@@ -1,9 +1,12 @@
 package com.packt.chat.ui
 
 import android.util.Log
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentSnapshot
 import com.packt.chat.domain.usecases.GetCurrentUserId
 import com.packt.chat.domain.usecases.GetInitialChatRoomInfo
 import com.packt.chat.domain.usecases.GetMessages
+import com.packt.chat.domain.usecases.GetMessagesPaged
 import com.packt.chat.domain.usecases.GetUser
 import com.packt.chat.domain.usecases.SendMessage
 import com.packt.chat.ui.model.Message
@@ -29,6 +32,7 @@ import com.packt.chat.domain.models.Message as DomainMessage
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val getMessages: GetMessages,
+    private val getMessagesPaged: GetMessagesPaged,
     private val sendMessage: SendMessage,
     private val currentUserIdUseCase: GetCurrentUserId,
     private val getInitialChatRoomInfo: GetInitialChatRoomInfo,
@@ -48,6 +52,11 @@ class ChatViewModel @Inject constructor(
 
     private lateinit var chatMetadata: ChatMetadata
 
+    private var lastDocument: DocumentSnapshot? = null  // referencia al último doc para paginación
+    private var allMessagesLoaded = false
+    private var paginationJob: Job? = null
+    private var realTimeJob: Job? = null
+
     val currentUserId
         get() = currentUserIdUseCase()
 
@@ -62,6 +71,9 @@ class ChatViewModel @Inject constructor(
     }
 
     fun loadChatInformation(chatId: String){
+        paginationJob?.cancel()
+        realTimeJob?.cancel()
+
         messageCollectionJob = launchCatching {
             try {
                 withContext(Dispatchers.IO){
@@ -74,21 +86,65 @@ class ChatViewModel @Inject constructor(
                     }
                     _uiState.value = getUser(otherId?: currentUserId)?: UserData()
                 }
-                updateMessages(chatId)
+                loadInitialMessages(chatId)
             } catch (ie: Throwable){
                 Log.e("DEBUG LOAD MESSAGES", "Error in charge chat: ${ie.message}", ie)
             }
         }
     }
 
-    fun updateMessages(chatId: String){
+    private fun updateMessages(chatId: String, since: Timestamp){
         messageCollectionJob = launchCatching {
-            getMessages(chatId, currentUserId)
+            getMessages(chatId, currentUserId, since)
                 .flowOn(Dispatchers.IO)
                 .map { list -> list.map { it.toUI() }}
                 .collect { messagesList ->
                     _messages.value = messagesList
                 }
+        }
+    }
+
+    private fun loadInitialMessages(chatId: String, pageSize: Long=10){
+        paginationJob = launchCatching {
+            val (messages, lastDoc)= getMessagesPaged(chatId, currentUserId, pageSize, null)
+            _messages.value = messages.map { it.toUI() }
+            lastDocument = lastDoc
+            allMessagesLoaded = messages.size < pageSize
+
+            val mostRecentTimestamp = messages.firstOrNull()?.firestoreTimestamp ?: Timestamp.now()
+            listenForNewMessages(chatId, mostRecentTimestamp)
+        }
+    }
+
+    private fun listenForNewMessages(chatId: String, since: Timestamp) {
+        realTimeJob = launchCatching {
+            getMessages(chatId, currentUserId, since) // este es un Flow con snapshotListener
+                .flowOn(Dispatchers.IO)
+                .map { list -> list.map { it.toUI() } }
+                .collect { newMessages ->
+                    if(newMessages.isNotEmpty()){
+                        // Mezclar historial + mensajes nuevos
+                        val currentMessages = _messages.value
+                        _messages.value = (newMessages.reversed() + currentMessages).distinctBy { it.id }
+                    }
+                }
+        }
+    }
+
+    fun loadMoreMessages(chatId: String, pageSize: Long=2){
+        if(allMessagesLoaded || paginationJob?.isActive == true) return  // there are no more messages
+        paginationJob = launchCatching {
+            if (lastDocument == null) {
+                allMessagesLoaded = true
+                return@launchCatching
+            }
+             val (olderMessages, lastDoc)= getMessagesPaged(chatId, currentUserId, pageSize, lastDocument)
+            if(olderMessages.isNotEmpty()){
+                val currentMessages = _messages.value
+                _messages.value = (currentMessages + olderMessages.map { it.toUI() }).distinctBy { it.id }
+            }
+             lastDocument = lastDoc
+            allMessagesLoaded = olderMessages.size < pageSize
         }
     }
 

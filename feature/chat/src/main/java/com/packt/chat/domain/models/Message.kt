@@ -1,5 +1,6 @@
 package com.packt.chat.domain.models
 
+import com.google.firebase.Timestamp
 import com.packt.domain.model.ContentType
 
 data class Message(
@@ -12,5 +13,6 @@ data class Message(
     val isMine: Boolean = false,
     val contentType: ContentType = ContentType.TEXT,
     val content: String = "",
-    val contentDescription: String = ""
+    val contentDescription: String = "",
+    val firestoreTimestamp: Timestamp? = null
 )
