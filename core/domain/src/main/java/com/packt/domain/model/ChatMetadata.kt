@@ -8,5 +8,8 @@ data class ChatMetadata(
     var lastMessageSenderId: String? = null,
     var lastMessageType: ContentType? = ContentType.TEXT,
     var unreadCount: Map<String, Int> = emptyMap(),
-    val createdAt: Long = System.currentTimeMillis() //time to create chat
+    val createdAt: Long = System.currentTimeMillis(), //time to create chat
+    // to groups
+    val groupName: String? = null,
+    val groupPhotoUrl: String? = null
 )

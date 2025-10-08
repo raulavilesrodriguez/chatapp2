@@ -37,7 +37,6 @@ class FirestoreChatsDataSource @Inject constructor(
 
         // Create a query to get the messages ordered by timestamp (ascending)
         val query = chatRef
-            //.whereNotEqualTo(FILTER_BY_FIELD, null)
             .orderBy(ORDER_BY_FIELD, Query.Direction.ASCENDING)
             .whereGreaterThan(ORDER_BY_FIELD, since)
 
@@ -134,7 +133,6 @@ class FirestoreChatsDataSource @Inject constructor(
         private const val CHATS_COLLECTION = "chats"
         private const val MESSAGES_COLLECTION = "messages"
         private const val ORDER_BY_FIELD = "timestamp"
-        private const val FILTER_BY_FIELD = "lastMessage"
         private const val USERS_COLLECTION = "users"
     }
 }

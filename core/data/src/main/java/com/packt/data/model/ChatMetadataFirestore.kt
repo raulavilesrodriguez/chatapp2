@@ -12,7 +12,10 @@ data class ChatMetadataFirestore(
     val lastMessageSenderId: String? = null,
     val lastMessageType: String? = null,
     val unreadCount: Map<String, Int>? = null,
-    val createdAt: Timestamp? = null //time to create chat
+    val createdAt: Timestamp? = null,//time to create chat
+    // to groups
+    val groupName: String? = null,
+    val groupPhotoUrl: String? = null
 ) {
     fun toChatMetadata(): ChatMetadata {
         if (chatId == null) return ChatMetadata()
@@ -32,7 +35,9 @@ data class ChatMetadataFirestore(
             lastMessageSenderId = lastMessageSenderId,
             lastMessageType = domainLastMessageType,
             unreadCount = unreadCount ?: emptyMap(),
-            createdAt = createdAt?.toDate()?.time ?: System.currentTimeMillis()
+            createdAt = createdAt?.toDate()?.time ?: System.currentTimeMillis(),
+            groupName = groupName,
+            groupPhotoUrl = groupPhotoUrl
         )
     }
 }
