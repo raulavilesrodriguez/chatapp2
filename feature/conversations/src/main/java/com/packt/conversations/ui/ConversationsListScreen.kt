@@ -37,13 +37,11 @@ fun ConversationsListScreen(
     viewModel: ConversationsViewModel = hiltViewModel()
 ){
     val conversations by viewModel.conversations.collectAsState()
-    val currentUserId = viewModel.currentUserId
 
     ConversationsListScreenContent(
         onNewConversationClick = { viewModel.onNewConversationClick(openScreen)},
         onConversationClick = { chatId -> viewModel.onConversationClick(openScreen, chatId)},
-        conversations = conversations,
-        currentUserId = currentUserId
+        conversations = conversations
     )
 }
 
@@ -53,8 +51,7 @@ fun ConversationsListScreen(
 fun ConversationsListScreenContent(
     onNewConversationClick: () -> Unit,
     onConversationClick: (chatId: String) -> Unit,
-    conversations: List<Conversation>,
-    currentUserId: String
+    conversations: List<Conversation>
 ){
     val tabs = generateTabs()
     val pagerState = rememberPagerState(1){tabs.size}
@@ -116,8 +113,7 @@ fun ConversationsListScreenContent(
                     1 -> {
                         ConversationList(
                             conversations = conversations,
-                            onConversationClick = onConversationClick,
-                            currentUserId = currentUserId
+                            onConversationClick = onConversationClick
                         )
                     }
                     2 -> {

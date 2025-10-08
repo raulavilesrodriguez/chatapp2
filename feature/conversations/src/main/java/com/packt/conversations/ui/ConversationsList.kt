@@ -12,8 +12,7 @@ import com.packt.conversations.ui.model.Conversation
 @Composable
 fun ConversationList(
     conversations: List<Conversation>,
-    onConversationClick: (chatId: String) -> Unit,
-    currentUserId: String
+    onConversationClick: (chatId: String) -> Unit
 ){
     LazyColumn {
         items(conversations) { conversation ->
@@ -22,8 +21,7 @@ fun ConversationList(
                     .clickable { onConversationClick(conversation.chatId)}
             ) {
                 ConversationItem(
-                    conversation = conversation,
-                    currentUserId = currentUserId
+                    conversation = conversation
                 )
             }
         }

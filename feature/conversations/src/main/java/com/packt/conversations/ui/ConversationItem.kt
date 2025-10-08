@@ -30,8 +30,7 @@ import com.packt.ui.avatar.Avatar
 
 @Composable
 fun ConversationItem(
-    conversation: Conversation,
-    currentUserId: String
+    conversation: Conversation
 ){
     Row(
         modifier = Modifier
@@ -154,8 +153,7 @@ fun ConversationItemPreview(){
             participants = listOf()
         )
         ConversationItem(
-            conversation = conversation,
-            currentUserId = "1"
+            conversation = conversation
         )
 
     }

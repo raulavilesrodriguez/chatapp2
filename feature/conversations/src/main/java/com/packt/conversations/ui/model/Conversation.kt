@@ -26,9 +26,9 @@ fun ChatMetadata.toConversation(participants: List<UserData>, currentUserId: Str
     val unread = this.unreadCount[currentUserId] ?: 0
     val isGroup = participants.size > 2
 
-    var displayName = ""
-    var displayPhotoUrl = ""
-    var isMine: Boolean = false
+    val displayName: String
+    val displayPhotoUrl: String
+    var isMine = false
 
     if(isGroup){
         displayName = this.groupName ?: participants.mapNotNull { it.name }.joinToString(" ")
