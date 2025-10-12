@@ -15,4 +15,7 @@ object NavRoutes {
     object ChatArgs {
         const val ChatId = "chatId"
     }
+
+    const val GroupChat = "group_chat"
+    const val EditUser = "edit_user"
 }

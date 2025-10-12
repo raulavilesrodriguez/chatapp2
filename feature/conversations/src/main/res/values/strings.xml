@@ -3,4 +3,6 @@
     <string name="you">Tú</string>
     <string name="photo">Foto</string>
     <string name="video">Video</string>
+    <string name="group">Crear Grupo</string>
+    <string name="settings">Ajustes</string>
 </resources>

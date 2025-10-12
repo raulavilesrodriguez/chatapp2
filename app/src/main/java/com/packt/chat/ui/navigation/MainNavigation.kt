@@ -40,9 +40,11 @@ import com.packt.chat.ui.ChatScreen
 import com.packt.chat.ui.theme.ChatTheme
 import com.packt.conversations.ui.ConversationsListScreen
 import com.packt.create_chat.ui.CreateConversationScreen
+import com.packt.create_chat.ui.CreateGroup
 import com.packt.settings.ui.LoginScreen
 import com.packt.settings.ui.SettingsScreen
 import com.packt.settings.ui.SplashScreen
+import com.packt.settings.ui.edit.EditScreen
 import com.packt.ui.navigation.NavRoutes
 
 @Composable
@@ -77,6 +79,8 @@ fun MainNavigation(){
                     addConversationsList(appState)
                     addNewConversation(appState)
                     addChat(appState)
+                    groupChat(appState)
+                    editUser(appState)
                 }
             }
 
@@ -166,5 +170,23 @@ private fun NavGraphBuilder.addChat(appState: AppState){
     ) { backStackEntry ->
         val chatId = backStackEntry.arguments?.getString(NavRoutes.ChatArgs.ChatId)
         ChatScreen(chatId = chatId, onBackClick = { appState.popUp() })
+    }
+}
+
+private fun NavGraphBuilder.groupChat(appState: AppState){
+    composable(NavRoutes.GroupChat) {
+        CreateGroup(
+            openScreen = {route -> appState.navigate(route) },
+            popUp = { appState.popUp() }
+        )
+    }
+}
+
+private fun NavGraphBuilder.editUser(appState: AppState){
+    composable(NavRoutes.EditUser) {
+        EditScreen(
+            openScreen = {route -> appState.navigate(route) },
+            popUp = { appState.popUp() }
+        )
     }
 }

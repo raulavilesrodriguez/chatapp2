@@ -84,4 +84,12 @@ class ConversationsViewModel @Inject constructor(
     fun onConversationClick(openScreen: (String) -> Unit, chatId: String){
         openScreen(NavRoutes.Chat.replace("{chatId}", chatId))
     }
+
+    fun onActionClick(openScreen: (String) -> Unit, action: Int){
+        when(ActionOptions.getById(action)){
+            ActionOptions.GROUP -> openScreen(NavRoutes.GroupChat)
+            ActionOptions.SETTINGS -> openScreen(NavRoutes.EditUser)
+        }
+    }
+
 }

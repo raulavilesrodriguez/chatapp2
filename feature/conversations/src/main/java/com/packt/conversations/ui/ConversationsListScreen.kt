@@ -29,7 +29,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.packt.conversations.ui.model.Conversation
 import com.packt.ui.R
+import com.packt.ui.composables.DropdownContextMenu
 import kotlinx.coroutines.launch
+import kotlin.Int
 
 @Composable
 fun ConversationsListScreen(
@@ -37,11 +39,14 @@ fun ConversationsListScreen(
     viewModel: ConversationsViewModel = hiltViewModel()
 ){
     val conversations by viewModel.conversations.collectAsState()
+    val options = ActionOptions.getOptions()
 
     ConversationsListScreenContent(
         onNewConversationClick = { viewModel.onNewConversationClick(openScreen)},
         onConversationClick = { chatId -> viewModel.onConversationClick(openScreen, chatId)},
-        conversations = conversations
+        conversations = conversations,
+        options = options,
+        onActionClick = { action -> viewModel.onActionClick(openScreen, action)}
     )
 }
 
@@ -51,7 +56,9 @@ fun ConversationsListScreen(
 fun ConversationsListScreenContent(
     onNewConversationClick: () -> Unit,
     onConversationClick: (chatId: String) -> Unit,
-    conversations: List<Conversation>
+    conversations: List<Conversation>,
+    options: List<Int>,
+    onActionClick: (Int) -> Unit
 ){
     val tabs = generateTabs()
     val pagerState = rememberPagerState(1){tabs.size}
@@ -64,9 +71,11 @@ fun ConversationsListScreenContent(
                     Text(stringResource(R.string.conversations_list_title))
                 },
                 actions = {
-                    IconButton(onClick = {}) {
-                        Icon(Icons.Rounded.Menu, contentDescription = "Menu")
-                    }
+                    DropdownContextMenu(
+                        options = options,
+                        modifier = Modifier,
+                        onActionClick = onActionClick
+                    )
                 }
             )
         },
