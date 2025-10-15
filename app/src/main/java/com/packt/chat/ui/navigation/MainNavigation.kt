@@ -36,6 +36,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.packt.chat.ui.ChatScreen
 import com.packt.chat.ui.theme.ChatTheme
 import com.packt.conversations.ui.ConversationsListScreen
@@ -45,6 +46,7 @@ import com.packt.settings.ui.LoginScreen
 import com.packt.settings.ui.SettingsScreen
 import com.packt.settings.ui.SplashScreen
 import com.packt.settings.ui.edit.EditScreen
+import com.packt.ui.navigation.DeepLinks
 import com.packt.ui.navigation.NavRoutes
 
 @Composable
@@ -167,6 +169,7 @@ private fun NavGraphBuilder.addChat(appState: AppState){
     composable(
         route = NavRoutes.Chat,
         arguments = listOf(navArgument(NavRoutes.ChatArgs.ChatId) { type = NavType.StringType }),
+        deepLinks = listOf(navDeepLink { uriPattern = DeepLinks.chatRoute })
     ) { backStackEntry ->
         val chatId = backStackEntry.arguments?.getString(NavRoutes.ChatArgs.ChatId)
         ChatScreen(chatId = chatId, onBackClick = { appState.popUp() })

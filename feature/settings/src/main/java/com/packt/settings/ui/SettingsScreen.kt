@@ -3,7 +3,6 @@ package com.packt.settings.ui
 import android.app.Activity
 import android.graphics.Bitmap
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -55,6 +54,7 @@ import com.packt.ui.avatar.Avatar
 import com.packt.ui.composables.BasicBottomBar
 import com.packt.ui.composables.DialogCancelButton
 import com.packt.ui.composables.DialogConfirmButton
+import com.packt.ui.snackbar.SnackbarManager
 import com.yalantis.ucrop.UCrop
 import java.io.File
 
@@ -107,11 +107,15 @@ fun SettingsScreenContent(
             if (resultUri != null) {
                 updatePhotoUri(resultUri.toString())
             } else {
-                Toast.makeText(context, "Error al recortar", Toast.LENGTH_SHORT).show()
+                SnackbarManager.showMessage(R.string.error_cropping)
+                //Toast.makeText(context, "Error al recortar", Toast.LENGTH_SHORT).show()
             }
         } else if (result.resultCode == UCrop.RESULT_ERROR) {
             val cropError = UCrop.getError(result.data!!)
-            Toast.makeText(context, "Error: ${cropError?.message}", Toast.LENGTH_SHORT).show()
+            val errorMessage = context.getString(
+                R.string.error_saving, cropError?.message ?: "")
+            SnackbarManager.showMessage(errorMessage)
+            //Toast.makeText(context, "Error: ${cropError?.message}", Toast.LENGTH_SHORT).show()
         }
     }
 

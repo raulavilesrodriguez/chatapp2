@@ -61,6 +61,8 @@ dependencies {
     implementation(libs.android.image.cropper)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.accompanist.permissions)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.material.icons.core)
 }
 
 // Este bloque reemplaza al `kotlinOptions` de antes:

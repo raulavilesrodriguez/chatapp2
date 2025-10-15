@@ -2,7 +2,6 @@ package com.packt.settings.ui
 
 import android.app.Activity
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -120,10 +119,8 @@ fun LoginScreenContent(
                     showCircularProgress = false
                     if (signInState != true){
                         showResendOption = true
-                        Toast.makeText(
-                            context,
-                            "Error de verificación. Intenta de nuevo",
-                            Toast.LENGTH_SHORT).show()
+                        SnackbarManager.showMessage(R.string.error_verification)
+                        //Toast.makeText(context,"Error de verificación. Intenta de nuevo", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -134,10 +131,8 @@ fun LoginScreenContent(
                 } else if(showDialogSMS){
                     showDialogSMS = false
                 }
-                Toast.makeText(
-                    context,
-                    "Error de verificación. Intenta de nuevo, verifica tu número",
-                    Toast.LENGTH_SHORT).show()
+                SnackbarManager.showMessage(R.string.error_verification_number)
+                //Toast.makeText(context, "Error de verificación. Intenta de nuevo, verifica tu número", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -153,7 +148,8 @@ fun LoginScreenContent(
             if(showCircularProgress && timerSeconds == 0){
                 showCircularProgress = false
                 showResendOption = true
-                Toast.makeText(context, "Tiempo de espera agotado", Toast.LENGTH_SHORT).show()
+                SnackbarManager.showMessage(R.string.timeout)
+                //Toast.makeText(context, "Tiempo de espera agotado", Toast.LENGTH_SHORT).show()
             }
         }
     }

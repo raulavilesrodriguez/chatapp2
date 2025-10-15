@@ -1,6 +1,8 @@
 package com.packt.settings.module
 
 import com.packt.settings.data.network.repository.AccountRepository
+import com.packt.settings.data.network.repository.FCMTokenRepository
+import com.packt.settings.data.network.repository.InternalTokenRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -8,6 +10,8 @@ import dagger.hilt.components.SingletonComponent
 import com.packt.settings.data.network.repository.StorageRepository
 import com.packt.settings.data.network.repository.StoreRepository
 import com.packt.settings.domain.IAccountRepository
+import com.packt.settings.domain.IFCMTokenRepository
+import com.packt.settings.domain.IInternalTokenRepository
 import com.packt.settings.domain.IStorageRepository
 import com.packt.settings.domain.IStoreRepository
 
@@ -24,4 +28,9 @@ abstract class SettingsModule {
     @Binds
     abstract fun provideStoreRepository(impl: StoreRepository): IStoreRepository
 
+    @Binds
+    abstract fun provideIFCMTokenRepository(impl: FCMTokenRepository): IFCMTokenRepository
+
+    @Binds
+    abstract fun provideIInternalTokenRepository(impl: InternalTokenRepository): IInternalTokenRepository
 }

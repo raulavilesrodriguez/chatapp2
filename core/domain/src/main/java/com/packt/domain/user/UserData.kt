@@ -6,4 +6,5 @@ data class UserData(
     val nameLowercase: String? = null,
     val number: String = "",
     val photoUrl: String = "",
+    val fcmToken: String? = null
 )

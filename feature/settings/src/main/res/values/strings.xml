@@ -10,6 +10,9 @@
     <string name="resend_option">No se pudo verificar o el tiempo de espera ha terminado.</string>
     <string name="resend_sms">Reenviar Código SMS</string>
     <string name="error_phone">Error, número móvil incorrecto</string>
+    <string name="error_verification">Error de verificación. Intenta de nuevo</string>
+    <string name="error_verification_number">Error de verificación. Intenta de nuevo, verifica tu número</string>
+    <string name="timeout">Tiempo de espera agotado</string>
 
     <string name="settings_2">Registro (2/2)</string>
     <string name="app_name">Chatapp</string>
@@ -26,4 +29,6 @@
     <string name="select_photo">Seleccionar Foto</string>
     <string name="number_error">Número no válido</string>
     <string name="empty_fields">Campo vacío</string>
+    <string name="error_cropping">Error al recortar</string>
+    <string name="error_saving">Error: %s</string>
 </resources>

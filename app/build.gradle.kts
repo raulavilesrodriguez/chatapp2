@@ -78,9 +78,12 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.appcheck.playintegrity)
     implementation(libs.firebase.appcheck.debug)
+    implementation(libs.firebase.messaging)
     implementation(libs.coil)
     implementation(libs.android.image.cropper)
     implementation(libs.ucrop)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.material.icons.core)
 
 }
 

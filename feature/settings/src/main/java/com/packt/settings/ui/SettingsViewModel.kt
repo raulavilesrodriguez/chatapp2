@@ -28,6 +28,7 @@ import javax.inject.Inject
 import androidx.compose.runtime.State
 import com.google.firebase.FirebaseException
 import com.packt.domain.user.UserData
+import com.packt.settings.domain.usecases.GetAndStoreFCMToken
 import com.packt.settings.domain.usecases.GetPhoneNumber
 import com.packt.settings.domain.usecases.GetUser
 import com.packt.settings.domain.usecases.SaveUser
@@ -51,6 +52,7 @@ class SettingsViewModel @Inject constructor(
     private val downloadPhoto: DownloadUrlPhoto,
     private val saveUser: SaveUser,
     val getUser: GetUser,
+    private val getAndStoreFCMToken: GetAndStoreFCMToken
 ) : BaseViewModel() {
 
     var uiState = mutableStateOf(SetUserData())
@@ -266,6 +268,11 @@ class SettingsViewModel @Inject constructor(
             // prepare to upload user data to fire store
             val userData = uiState.value.toUserData(currentUserId)
             saveUser(userData)
+
+            // FCM
+            launchCatching(snackbar = false) { 
+                getAndStoreFCMToken(currentUserId)
+            }
 
             // Navigate to ConversationsList screen
             openAndPopUp(NavRoutes.ConversationsList, NavRoutes.Settings)

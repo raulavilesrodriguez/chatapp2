@@ -34,9 +34,16 @@ class FirestoreUserDataSource @Inject constructor(
             .set(user).await()
     }
 
+    suspend fun storeFCMToken(uid: String, token: String){
+        firestore.collection(USERS_COLLECTION)
+            .document(uid)
+            .update(FCM_TOKEN_FIELD, token)
+            .await()
+    }
 
     companion object {
         private const val USERS_COLLECTION = "users"
+        private const val FCM_TOKEN_FIELD = "fcmToken"
     }
 }
 
