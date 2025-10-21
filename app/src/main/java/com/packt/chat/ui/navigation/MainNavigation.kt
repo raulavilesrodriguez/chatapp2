@@ -45,6 +45,7 @@ import com.packt.create_chat.ui.CreateGroup
 import com.packt.settings.ui.LoginScreen
 import com.packt.settings.ui.SettingsScreen
 import com.packt.settings.ui.SplashScreen
+import com.packt.settings.ui.edit.EditNameScreen
 import com.packt.settings.ui.edit.EditScreen
 import com.packt.ui.navigation.DeepLinks
 import com.packt.ui.navigation.NavRoutes
@@ -83,6 +84,7 @@ fun MainNavigation(){
                     addChat(appState)
                     groupChat(appState)
                     editUser(appState)
+                    editNameUser(appState)
                 }
             }
 
@@ -189,6 +191,15 @@ private fun NavGraphBuilder.editUser(appState: AppState){
     composable(NavRoutes.EditUser) {
         EditScreen(
             openScreen = {route -> appState.navigate(route) },
+            popUp = { appState.popUp() }
+        )
+    }
+}
+
+private fun NavGraphBuilder.editNameUser(appState: AppState){
+    composable(NavRoutes.EditName) {
+        EditNameScreen(
+            openScreen = {route, popUp -> appState.navigateAndPopUp(route, popUp) },
             popUp = { appState.popUp() }
         )
     }

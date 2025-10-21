@@ -57,6 +57,10 @@ fun ChatScreen(
     val messages by viewModel.messages.collectAsState()
 
     LaunchedEffect(Unit) {
+        viewModel.reloadCurrentUser()
+    }
+
+    LaunchedEffect(Unit) {
         viewModel.loadChatInformation(chatId.orEmpty())
     }
 
@@ -102,7 +106,8 @@ fun ChatScreenContent(
         ListOfMessages(
             messages = messages,
             paddingValues = paddingValues,
-            onLoadMoreMessages = onLoadMoreMessages
+            onLoadMoreMessages = onLoadMoreMessages,
+            participant = participant
         )
     }
 }
@@ -192,7 +197,8 @@ fun SendMessageBox(
 fun ListOfMessages(
     messages: List<Message>,
     paddingValues: PaddingValues,
-    onLoadMoreMessages: () -> Unit
+    onLoadMoreMessages: () -> Unit,
+    participant: UserData
 ) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -248,7 +254,7 @@ fun ListOfMessages(
                 messages,
                 key = {message -> message.id}
             ) { message ->
-                MessageItem(message = message)
+                MessageItem(message = message, participant = participant)
             }
         }
     }

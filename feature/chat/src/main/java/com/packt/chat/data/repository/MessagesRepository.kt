@@ -5,6 +5,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.packt.chat.data.datasource.FirestoreChatsDataSource
 import com.packt.chat.domain.IMessagesRepository
 import com.packt.chat.domain.models.Message
+import com.packt.domain.user.UserData
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -33,5 +34,9 @@ class MessagesRepository @Inject constructor(
 
     override suspend fun disconnect() {
         //do nothing, Firestore data source is disconnected as soon as the flow has no subscribers
+    }
+
+    override suspend fun observeUser(uid: String): Flow<UserData?> {
+        return dataSource.observeUser(uid)
     }
 }

@@ -129,6 +129,25 @@ class FirestoreChatsDataSource @Inject constructor(
         }
     }
 
+    fun observeUser(uid: String): Flow<UserData?> = callbackFlow {
+        val userDocRef = firestore.collection(USERS_COLLECTION).document(uid)
+
+        val listener = userDocRef.addSnapshotListener { snapshot, exception ->
+            if (exception != null) {
+                close(exception) // Cierra el Flow con error
+                return@addSnapshotListener
+            }
+            if (snapshot != null && snapshot.exists()) {
+                // Emite el nuevo objeto UserData cada vez que cambia
+                trySend(snapshot.toObject(UserData::class.java)).isSuccess
+            } else {
+                trySend(null).isSuccess // Emite null si el usuario no existe
+            }
+        }
+        // Cuando el Flow se cancela, se elimina el listener
+        awaitClose { listener.remove() }
+    }
+
     companion object {
         private const val CHATS_COLLECTION = "chats"
         private const val MESSAGES_COLLECTION = "messages"

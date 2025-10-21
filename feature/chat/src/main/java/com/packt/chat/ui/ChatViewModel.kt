@@ -8,6 +8,7 @@ import com.packt.chat.domain.usecases.GetInitialChatRoomInfo
 import com.packt.chat.domain.usecases.GetMessages
 import com.packt.chat.domain.usecases.GetMessagesPaged
 import com.packt.chat.domain.usecases.GetUser
+import com.packt.chat.domain.usecases.ObserveUser
 import com.packt.chat.domain.usecases.SendMessage
 import com.packt.chat.ui.model.Message
 import com.packt.chat.ui.model.MessageContent
@@ -23,7 +24,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Locale
 import javax.inject.Inject
@@ -37,6 +37,7 @@ class ChatViewModel @Inject constructor(
     private val currentUserIdUseCase: GetCurrentUserId,
     private val getInitialChatRoomInfo: GetInitialChatRoomInfo,
     val getUser: GetUser,
+    private val observeUser: ObserveUser
 ) : BaseViewModel() {
 
     private val _sendText = MutableStateFlow("")
@@ -48,7 +49,7 @@ class ChatViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(UserData())
     val uiState: StateFlow<UserData> = _uiState
 
-    private var messageCollectionJob: Job? = null
+    private var chatInfoJob: Job? = null
 
     private lateinit var chatMetadata: ChatMetadata
 
@@ -67,42 +68,61 @@ class ChatViewModel @Inject constructor(
     private var user: UserData? = null
 
     init {
-        launchCatching { user = getUser(currentUserId) }
+        reloadCurrentUser()
+    }
+
+    // para que siempre este actualizado los datos del usuario
+    fun reloadCurrentUser() {
+        launchCatching {
+            user = getUser(currentUserId)
+        }
     }
 
     fun loadChatInformation(chatId: String){
+        chatInfoJob?.cancel()
         paginationJob?.cancel()
         realTimeJob?.cancel()
 
-        messageCollectionJob = launchCatching {
+        chatInfoJob = launchCatching {
             try {
-                withContext(Dispatchers.IO){
-                    chatMetadata = getInitialChatRoomInfo(chatId)!!
-                    val participants: List<String> = chatMetadata.participants
-                    val otherId: String? = if(participants.size == 1){
-                        currentUserId
-                    } else {
-                        participants.find { it != currentUserId }
-                    }
-                    _uiState.value = getUser(otherId?: currentUserId)?: UserData()
+                chatMetadata = getInitialChatRoomInfo(chatId) ?: return@launchCatching
+                // inicia la carga de mensajes en una corrutina hija, para que sea mas rapido
+                launchCatching {
+                    loadInitialMessages(chatId)
                 }
-                loadInitialMessages(chatId)
+                val participants: List<String> = chatMetadata.participants
+                val otherId: String? = if(participants.size == 1){
+                    currentUserId
+                } else {
+                    participants.find { it != currentUserId }
+                }
+                if(otherId != null){
+                    observeUser(otherId)
+                        .flowOn(Dispatchers.IO) //la escucha de firestore ocurre en hilo de fondo observeUser()
+                        .collect { updatedParticipant ->  //se ejecuta en el contexto del viewModelScope (Main)
+                            _uiState.value = updatedParticipant ?: UserData()
+                        }
+                }
             } catch (ie: Throwable){
                 Log.e("DEBUG LOAD MESSAGES", "Error in charge chat: ${ie.message}", ie)
             }
         }
     }
 
-    private fun updateMessages(chatId: String, since: Timestamp){
-        messageCollectionJob = launchCatching {
-            getMessages(chatId, currentUserId, since)
-                .flowOn(Dispatchers.IO)
-                .map { list -> list.map { it.toUI() }}
-                .collect { messagesList ->
-                    _messages.value = messagesList
-                }
-        }
-    }
+    /**
+     * private fun updateMessages(chatId: String, since: Timestamp){
+     *         realTimeJob?.cancel()
+     *         realTimeJob = launchCatching {
+     *             getMessages(chatId, currentUserId, since)
+     *                 .flowOn(Dispatchers.IO)
+     *                 .map { list -> list.map { it.toUI() }}
+     *                 .collect { messagesList ->
+     *                     _messages.value = messagesList
+     *                 }
+     *         }
+     *     }
+     *
+     */
 
     private fun loadInitialMessages(chatId: String, pageSize: Long=10){
         paginationJob = launchCatching {

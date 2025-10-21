@@ -31,4 +31,18 @@
     <string name="empty_fields">Campo vacío</string>
     <string name="error_cropping">Error al recortar</string>
     <string name="error_saving">Error: %s</string>
+
+    <string name="settings_edit">Ajustes</string>
+    <string name="settings_edit_photo">Editar</string>
+    <string name="phone">Teléfono</string>
+    <string name="info">Info.</string>
+    <string name="links">Enlaces</string>
+    <string name="error_choose">Error al elegir</string>
+    <string name="profile_photo">Foto de Perfil</string>
+    <string name="gallery">Galería</string>
+    <string name="save">Guardar</string>
+    <string name="label_name">Tu nombre</string>
+    <string name="placeholder_name">Escribe tu nombre aquí</string>
+    <string name="comment_save">Las personas verán este nombre
+    si interactúas con ellas y no te tienen en sus contactos</string>
 </resources>

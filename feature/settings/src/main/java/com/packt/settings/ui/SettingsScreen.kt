@@ -57,6 +57,8 @@ import com.packt.ui.composables.DialogConfirmButton
 import com.packt.ui.snackbar.SnackbarManager
 import com.yalantis.ucrop.UCrop
 import java.io.File
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 
 @Composable
 fun SettingsScreen(
@@ -120,7 +122,7 @@ fun SettingsScreenContent(
     }
 
     val pickImageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = PickVisualMedia()
     ) { uri: Uri? ->
         uri?.let { selectedUri ->
             // Archivo de salida temporal
@@ -183,7 +185,9 @@ fun SettingsScreenContent(
                         .clip(CircleShape)
                         .background(Color.LightGray)
                         .clickable {
-                            pickImageLauncher.launch("image/*")
+                            pickImageLauncher.launch(
+                                PickVisualMediaRequest(PickVisualMedia.ImageOnly)
+                            )
                         }
                 ) {
                     Avatar(

@@ -15,6 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -33,26 +34,38 @@ class ConversationsViewModel @Inject constructor(
     // La clave es el ID del usuario, el valor son sus datos.
     private val usersCache = mutableMapOf<String, UserData>()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val conversations: StateFlow<List<Conversation>> = flow {
-        // 1. Llama a la suspend function DENTRO de un constructor de Flow.
-        //    Este bloque es un CoroutineScope.
-        emit(getConversations())
+    //    El valor (Long) es el tiempo actual, para asegurar que siempre sea un valor nuevo.
+    private val reloadTrigger = MutableStateFlow(System.currentTimeMillis())
+
+    // 2. Función pública para invalidar el caché y activar el trigger.
+    fun clearCacheAndReload() {
+        usersCache.clear()
+        reloadTrigger.value = System.currentTimeMillis()
     }
-        .flatMapLatest { conversationsFlow ->
-            // nos da el Flow<List<ChatMetadata>>, ahora lo aplanamos
-            conversationsFlow
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val conversations: StateFlow<List<Conversation>> =
+        reloadTrigger.flatMapLatest { _ ->
+            flow {
+                // 1. Llama a la suspend function DENTRO de un constructor de Flow.
+                //    Este bloque es un CoroutineScope.
+                emit(getConversations())
+            }
+                .flatMapLatest { conversationsFlow ->
+                    // nos da el Flow<List<ChatMetadata>>, ahora lo aplanamos
+                    conversationsFlow
+                }
+                .flatMapLatest { metadataList ->
+                    // Ahora que tenemos la List<ChatMetadata>, la enriquecemos
+                    enrichConversations(metadataList)
+                }
         }
-        .flatMapLatest { metadataList ->
-            // Ahora que tenemos la List<ChatMetadata>, la enriquecemos
-            enrichConversations(metadataList)
-        }
-        .flowOn(Dispatchers.IO) // ejecuta toda la cadena de arriba
-        .stateIn(
-            scope = viewModelScope,
-            SharingStarted.WhileSubscribed(5000),
-            emptyList()
-        )
+            .flowOn(Dispatchers.IO) // ejecuta toda la cadena de arriba
+            .stateIn(
+                scope = viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                emptyList()
+            )
 
     val currentUserId
         get() = currentUserIdUseCase()

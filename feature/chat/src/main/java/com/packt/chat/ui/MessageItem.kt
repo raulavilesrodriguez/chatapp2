@@ -25,17 +25,18 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.packt.chat.ui.model.Message
 import com.packt.chat.ui.model.MessageContent
+import com.packt.domain.user.UserData
 import com.packt.ui.avatar.Avatar
 
 @Composable
-fun MessageItem(message: Message){
+fun MessageItem(message: Message, participant: UserData){
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if(message.isMine) Arrangement.End else Arrangement.Start
     ) {
         if (!message.isMine) {
             Avatar(
-                photoUri = message.senderAvatar,
+                photoUri = participant.photoUrl,
                 size = 40.dp,
                 contentDescription = "${message.senderName}'s avatar"
             )
@@ -47,7 +48,7 @@ fun MessageItem(message: Message){
                 Spacer(modifier = Modifier.height(8.dp))
             } else {
                 Text(
-                    text = message.senderName,
+                    text = participant.name?:"",
                     fontWeight = FontWeight.Bold
                 )
             }

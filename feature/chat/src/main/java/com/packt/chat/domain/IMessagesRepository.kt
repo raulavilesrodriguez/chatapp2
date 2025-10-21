@@ -3,6 +3,7 @@ package com.packt.chat.domain
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.packt.chat.domain.models.Message
+import com.packt.domain.user.UserData
 import kotlinx.coroutines.flow.Flow
 
 interface IMessagesRepository {
@@ -12,4 +13,5 @@ interface IMessagesRepository {
     : Pair<List<Message>, DocumentSnapshot?>
     suspend fun sendMessage(chatId: String, message: Message)
     suspend fun disconnect()
+    suspend fun observeUser(uid: String): Flow<UserData?>
 }
