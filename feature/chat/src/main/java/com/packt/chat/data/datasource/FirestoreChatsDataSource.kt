@@ -1,5 +1,6 @@
 package com.packt.chat.data.datasource
 
+import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
@@ -101,20 +102,33 @@ class FirestoreChatsDataSource @Inject constructor(
         return domainMessages to lastVisible
     }
 
-    suspend fun sendMessage(chatId: String, message: Message){
+    suspend fun sendMessage(chatId: String, message: Message, participants: List<String>){
         val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
         val messagesRef = chatRef.collection(MESSAGES_COLLECTION)
         val messageModel = FirestoreMessageModel.fromDomain(message)
-        messagesRef.add(messageModel).await()
+        //messagesRef.add(messageModel).await()
 
-        // update metadata of the chat
-        val updates = mapOf(
-            "lastMessage" to message.content,
-            "lastMessageSenderId" to message.senderId,
-            "lastMessageType" to message.contentType.name,
-            "updatedAt" to FieldValue.serverTimestamp()
-        )
-        chatRef.update(updates).await()
+        // para asegurar que todo se haga a la vez
+        firestore.runBatch { batch ->
+            // add new message
+            batch.set(messagesRef.document(), messageModel)
+
+            // update ChatMetadataFirestore
+            val updates = mutableMapOf(
+                "lastMessage" to message.content,
+                "lastMessageSenderId" to message.senderId,
+                "lastMessageType" to message.contentType.name,
+                "updatedAt" to FieldValue.serverTimestamp()
+            )
+
+            participants.forEach { participantId ->
+                if (participantId != currentUserId){
+                    // notacion de punto (dot) para actualizar un campo anidado en un mapa
+                    updates["unreadCount.$participantId"] = FieldValue.increment(1)
+                }
+            }
+            batch.update(chatRef, updates)
+        }.await()
     }
 
     suspend fun getInitialChatRoomInfo(chatId:String): ChatMetadata? {
@@ -146,6 +160,19 @@ class FirestoreChatsDataSource @Inject constructor(
         }
         // Cuando el Flow se cancela, se elimina el listener
         awaitClose { listener.remove() }
+    }
+
+    suspend fun resetUnreadCount(chatId: String) {
+        if (currentUserId.isEmpty()) return
+
+        val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
+        val update = mapOf("unreadCount.$currentUserId" to 0)
+
+        try {
+            chatRef.update(update).await()
+        } catch (e: Exception) {
+            Log.e("FirestoreChatsDS", "Error resetting unread count for chat $chatId", e)
+        }
     }
 
     companion object {

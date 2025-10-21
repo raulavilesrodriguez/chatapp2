@@ -11,7 +11,8 @@ interface IMessagesRepository {
     suspend fun getMessagesPaged(
         chatId: String, userId: String, pageSize:Long, lastDocument: DocumentSnapshot?)
     : Pair<List<Message>, DocumentSnapshot?>
-    suspend fun sendMessage(chatId: String, message: Message)
+    suspend fun sendMessage(chatId: String, message: Message, participants: List<String>)
     suspend fun disconnect()
     suspend fun observeUser(uid: String): Flow<UserData?>
+    suspend fun resetUnreadCount(chatId: String)
 }

@@ -91,7 +91,6 @@ class CreateConversationViewModel @Inject constructor(
             val chatId = createChat(participants)
             openScreen(NavRoutes.Chat.replace("{chatId}", chatId))
         }
-
     }
 
 }

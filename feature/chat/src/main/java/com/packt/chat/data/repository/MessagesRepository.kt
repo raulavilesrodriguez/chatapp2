@@ -28,8 +28,8 @@ class MessagesRepository @Inject constructor(
         return dataSource.getMessagesPaged(chatId, userId, pageSize, lastDocument)
     }
 
-    override suspend fun sendMessage(chatId: String, message: Message) {
-        dataSource.sendMessage(chatId, message)
+    override suspend fun sendMessage(chatId: String, message: Message, participants: List<String>) {
+        dataSource.sendMessage(chatId, message, participants)
     }
 
     override suspend fun disconnect() {
@@ -38,5 +38,9 @@ class MessagesRepository @Inject constructor(
 
     override suspend fun observeUser(uid: String): Flow<UserData?> {
         return dataSource.observeUser(uid)
+    }
+
+    override suspend fun resetUnreadCount(chatId: String) {
+       dataSource.resetUnreadCount(chatId)
     }
 }

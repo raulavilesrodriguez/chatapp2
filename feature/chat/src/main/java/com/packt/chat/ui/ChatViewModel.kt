@@ -9,6 +9,7 @@ import com.packt.chat.domain.usecases.GetMessages
 import com.packt.chat.domain.usecases.GetMessagesPaged
 import com.packt.chat.domain.usecases.GetUser
 import com.packt.chat.domain.usecases.ObserveUser
+import com.packt.chat.domain.usecases.ResetUnreadCount
 import com.packt.chat.domain.usecases.SendMessage
 import com.packt.chat.ui.model.Message
 import com.packt.chat.ui.model.MessageContent
@@ -37,7 +38,8 @@ class ChatViewModel @Inject constructor(
     private val currentUserIdUseCase: GetCurrentUserId,
     private val getInitialChatRoomInfo: GetInitialChatRoomInfo,
     val getUser: GetUser,
-    private val observeUser: ObserveUser
+    private val observeUser: ObserveUser,
+    private val resetUnreadCount: ResetUnreadCount
 ) : BaseViewModel() {
 
     private val _sendText = MutableStateFlow("")
@@ -85,6 +87,7 @@ class ChatViewModel @Inject constructor(
 
         chatInfoJob = launchCatching {
             try {
+                resetUnreadCount(chatId)
                 chatMetadata = getInitialChatRoomInfo(chatId) ?: return@launchCatching
                 // inicia la carga de mensajes en una corrutina hija, para que sea mas rapido
                 launchCatching {
@@ -212,7 +215,7 @@ class ChatViewModel @Inject constructor(
                 contentDescription = currentMessageText
             )
             _sendText.value = ""
-            sendMessage(chatMetadata.chatId, message)
+            sendMessage(chatMetadata.chatId, message, chatMetadata.participants)
         }
     }
 }
