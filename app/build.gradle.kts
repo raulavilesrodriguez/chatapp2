@@ -14,6 +14,23 @@ android {
     namespace = "com.packt.chat"
     compileSdk = 36
 
+    signingConfigs {
+        create("release") {
+            // Lee las propiedades desde el archivo gradle.properties
+            val storeFile = System.getenv("MYAPP_RELEASE_STORE_FILE") ?: project.property("MYAPP_RELEASE_STORE_FILE") as String?
+            val storePassword = System.getenv("MYAPP_RELEASE_STORE_PASSWORD") ?: project.property("MYAPP_RELEASE_STORE_PASSWORD") as String?
+            val keyAlias = System.getenv("MYAPP_RELEASE_KEY_ALIAS") ?: project.property("MYAPP_RELEASE_KEY_ALIAS") as String?
+            val keyPassword = System.getenv("MYAPP_RELEASE_KEY_PASSWORD") ?: project.property("MYAPP_RELEASE_KEY_PASSWORD") as String?
+
+            if (storeFile != null) {
+                this.storeFile = file(storeFile)
+                this.storePassword = storePassword
+                this.keyAlias = keyAlias
+                this.keyPassword = keyPassword
+            }
+        }
+    }
+
     defaultConfig {
         applicationId = "com.packt.chat"
         minSdk = 29
@@ -26,7 +43,9 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true // para produccion
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
