@@ -64,8 +64,8 @@ fun MainNavigation(){
                         snackbar = { snackbarData ->
                             Snackbar(
                                 snackbarData,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer, //text color
-                                containerColor = Color(0xFFE0F7FA) //background color
+                                contentColor = MaterialTheme.colorScheme.onSurface, //text color
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh //background color
                             )
                         }
                     )

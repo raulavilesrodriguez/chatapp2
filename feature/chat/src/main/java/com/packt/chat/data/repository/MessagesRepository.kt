@@ -43,4 +43,12 @@ class MessagesRepository @Inject constructor(
     override suspend fun resetUnreadCount(chatId: String) {
        dataSource.resetUnreadCount(chatId)
     }
+
+    override suspend fun setUserActiveInChat(chatId: String) {
+        dataSource.setUserActiveInChat(chatId)
+    }
+
+    override suspend fun clearUserActiveStatus(chatId: String) {
+        dataSource.clearUserActiveStatus(chatId)
+    }
 }

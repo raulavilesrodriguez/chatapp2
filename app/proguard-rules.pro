@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+#-keep class com.packt.data.model.* {*; }
+#-keep class com.packt.domain.user.* {*; }
+#-keep class com.packt.chat.data.model.* {*; }
+
+# Eliminar logs de depuración.
+#-assumenosideeffects class android.util.Log {
+#    public static *** d(...);
+#    public static *** v(...);
+#    public static *** i(...);
+#}

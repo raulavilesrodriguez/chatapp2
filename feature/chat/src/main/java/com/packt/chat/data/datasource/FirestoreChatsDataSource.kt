@@ -108,10 +108,16 @@ class FirestoreChatsDataSource @Inject constructor(
         val messageModel = FirestoreMessageModel.fromDomain(message)
         //messagesRef.add(messageModel).await()
 
-        // para asegurar que todo se haga a la vez
-        firestore.runBatch { batch ->
-            // add new message
-            batch.set(messagesRef.document(), messageModel)
+        // para asegurar que todo acurra de manera atomica
+        firestore.runTransaction { transaction ->
+            val otherParticipantsIds = participants.filter { it != currentUserId }
+            val recipientDocs = otherParticipantsIds.map {
+                val userRef = firestore.collection(USERS_COLLECTION).document(it)
+                transaction.get(userRef)
+            }
+
+            // Add the new message to the messages collection
+            transaction.set(messagesRef.document(), messageModel)
 
             // update ChatMetadataFirestore
             val updates = mutableMapOf(
@@ -121,13 +127,17 @@ class FirestoreChatsDataSource @Inject constructor(
                 "updatedAt" to FieldValue.serverTimestamp()
             )
 
-            participants.forEach { participantId ->
-                if (participantId != currentUserId){
+            recipientDocs.forEach { userDoc ->
+                val recipient = userDoc.toObject(UserData::class.java)
+                val recipientId = userDoc.id
+                //  Si el destinatario NO está en este chat, incrementa su contador.
+                if(recipient?.activeInChatId != chatId){
                     // notacion de punto (dot) para actualizar un campo anidado en un mapa
-                    updates["unreadCount.$participantId"] = FieldValue.increment(1)
+                    // unreadCount es un mapa por eso se usa el punto
+                    updates["unreadCount.$recipientId"] = FieldValue.increment(1)
                 }
             }
-            batch.update(chatRef, updates)
+            transaction.update(chatRef, updates)
         }.await()
     }
 
@@ -175,10 +185,34 @@ class FirestoreChatsDataSource @Inject constructor(
         }
     }
 
+    suspend fun setUserActiveInChat(chatId: String){
+        if(currentUserId.isEmpty()) return
+
+        firestore.collection(USERS_COLLECTION).document(currentUserId)
+            .update(UPDATE_FIELD, chatId).await()
+    }
+
+    suspend fun clearUserActiveStatus(chatId: String){
+        if(currentUserId.isEmpty() || chatId.isEmpty()) return
+
+        val userRef = firestore.collection(USERS_COLLECTION)
+            .document(currentUserId)
+
+        firestore.runTransaction { transaction ->
+            val userSnapshot = transaction.get(userRef)
+            val currentUserData = userSnapshot.toObject(UserData::class.java)
+
+            if(currentUserData?.activeInChatId == chatId){
+                transaction.update(userRef, UPDATE_FIELD, null)
+            }
+        }.await()
+    }
+
     companion object {
         private const val CHATS_COLLECTION = "chats"
         private const val MESSAGES_COLLECTION = "messages"
         private const val ORDER_BY_FIELD = "timestamp"
         private const val USERS_COLLECTION = "users"
+        private const val UPDATE_FIELD = "activeInChatId"
     }
 }

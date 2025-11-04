@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hiltAndroid)
+    alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.google.services)
 }
 
@@ -35,8 +36,8 @@ android {
         applicationId = "com.packt.chat"
         minSdk = 29
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 9
+        versionName = "1.0.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -44,14 +45,21 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = true // para produccion
-            isShrinkResources = true
+            isMinifyEnabled = false // para produccion
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
         }
     }
+
+    firebaseCrashlytics {
+        nativeSymbolUploadEnabled = false
+        mappingFileUploadEnabled = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -98,6 +106,8 @@ dependencies {
     implementation(libs.firebase.appcheck.playintegrity)
     implementation(libs.firebase.appcheck.debug)
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
     implementation(libs.coil)
     implementation(libs.android.image.cropper)
     implementation(libs.ucrop)
@@ -106,7 +116,7 @@ dependencies {
 
 }
 
-// Este bloque reemplaza al `kotlinOptions` de antes:
+
 tasks.withType<KotlinJvmCompile>().configureEach {
     compilerOptions {
         // Aquí defines tu target de bytecode JVM

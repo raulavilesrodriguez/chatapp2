@@ -2,6 +2,7 @@ package com.packt.settings.data.network.datasource
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.toObject
 import com.packt.domain.user.UserData
 import jakarta.inject.Inject
@@ -11,8 +12,17 @@ class FirestoreUserDataSource @Inject constructor(
     private val firestore: FirebaseFirestore,
 ) {
     suspend fun save(user: UserData) {
+        val userMap = hashMapOf(
+            "uid" to user.uid,
+            "name" to user.name,
+            "nameLowercase" to user.nameLowercase,
+            "number" to user.number,
+            "photoUrl" to user.photoUrl,
+            "fcmToken" to user.fcmToken
+        )
         firestore.collection(USERS_COLLECTION)
-            .document(user.uid).set(user).await()
+            .document(user.uid)
+            .set(userMap, SetOptions.merge()).await()
     }
 
     suspend fun getUser(uid: String): UserData? =
@@ -29,9 +39,17 @@ class FirestoreUserDataSource @Inject constructor(
     }
 
     suspend fun update(user: UserData) {
+        val userMap = hashMapOf(
+            "uid" to user.uid,
+            "name" to user.name,
+            "nameLowercase" to user.nameLowercase,
+            "number" to user.number,
+            "photoUrl" to user.photoUrl,
+            "fcmToken" to user.fcmToken
+        )
         firestore.collection(USERS_COLLECTION)
             .document(user.uid)
-            .set(user).await()
+            .set(userMap, SetOptions.merge()).await()
     }
 
     suspend fun storeFCMToken(uid: String, token: String){

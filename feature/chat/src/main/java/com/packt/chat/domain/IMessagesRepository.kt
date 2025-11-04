@@ -15,4 +15,6 @@ interface IMessagesRepository {
     suspend fun disconnect()
     suspend fun observeUser(uid: String): Flow<UserData?>
     suspend fun resetUnreadCount(chatId: String)
+    suspend fun setUserActiveInChat(chatId: String)
+    suspend fun clearUserActiveStatus(chatId: String)
 }

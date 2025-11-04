@@ -1,0 +1,372 @@
+[debug] [2025-11-04T03:10:43.493Z] ----------------------------------------------------------------------
+[debug] [2025-11-04T03:10:43.512Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\bravi\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions
+[debug] [2025-11-04T03:10:43.513Z] CLI Version:   14.23.0
+[debug] [2025-11-04T03:10:43.513Z] Platform:      win32
+[debug] [2025-11-04T03:10:43.514Z] Node Version:  v20.18.0
+[debug] [2025-11-04T03:10:43.515Z] Time:          Mon Nov 03 2025 22:10:43 GMT-0500 (hora de Ecuador)
+[debug] [2025-11-04T03:10:43.515Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-11-04T03:10:43.969Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-11-04T03:10:43.970Z] > authorizing via signed-in user (finbravilesr@gmail.com)
+[debug] [2025-11-04T03:10:43.971Z] [iam] checking project chatapp-3c587 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2025-11-04T03:10:43.974Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:10:43.974Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:10:43.977Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587:testIamPermissions [none]
+[debug] [2025-11-04T03:10:43.977Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587:testIamPermissions x-goog-quota-user=projects/chatapp-3c587
+[debug] [2025-11-04T03:10:43.977Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-11-04T03:10:44.857Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587:testIamPermissions 200
+[debug] [2025-11-04T03:10:44.858Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2025-11-04T03:10:44.859Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:10:44.859Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:10:44.859Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/chatapp-3c587/serviceAccounts/chatapp-3c587@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2025-11-04T03:10:44.859Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/chatapp-3c587/serviceAccounts/chatapp-3c587@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2025-11-04T03:10:45.545Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/chatapp-3c587/serviceAccounts/chatapp-3c587@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2025-11-04T03:10:45.545Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/chatapp-3c587/serviceAccounts/chatapp-3c587@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'chatapp-3c587'...
+[info] 
+[info] i  deploying functions 
+[info] Running command: npm --prefix "$RESOURCE_DIR" run lint
+[info] Running command: npm --prefix "$RESOURCE_DIR" run build
+[info] +  functions: Finished running predeploy script. 
+[debug] [2025-11-04T03:11:25.389Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:25.390Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:25.390Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/cloudresourcemanager.googleapis.com [none]
+[debug] [2025-11-04T03:11:25.390Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/cloudresourcemanager.googleapis.com x-goog-quota-user=projects/chatapp-3c587
+[debug] [2025-11-04T03:11:26.364Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/cloudresourcemanager.googleapis.com 200
+[debug] [2025-11-04T03:11:26.364Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/cloudresourcemanager.googleapis.com [omitted]
+[debug] [2025-11-04T03:11:26.372Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:26.372Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:26.372Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587 [none]
+[debug] [2025-11-04T03:11:26.888Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587 200
+[debug] [2025-11-04T03:11:26.888Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587 {"projectNumber":"693602146827","projectId":"chatapp-3c587","lifecycleState":"ACTIVE","name":"chatapp","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-09-03T18:04:08.948129Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[debug] [2025-11-04T03:11:26.895Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:26.895Z] Checked if tokens are valid: true, expires at: 1762228735468
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2025-11-04T03:11:26.897Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:26.897Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:26.897Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/cloudbuild.googleapis.com [none]
+[debug] [2025-11-04T03:11:26.897Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/cloudbuild.googleapis.com x-goog-quota-user=projects/chatapp-3c587
+[debug] [2025-11-04T03:11:26.898Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/artifactregistry.googleapis.com [none]
+[debug] [2025-11-04T03:11:26.898Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/artifactregistry.googleapis.com x-goog-quota-user=projects/chatapp-3c587
+[debug] [2025-11-04T03:11:27.603Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/artifactregistry.googleapis.com 200
+[debug] [2025-11-04T03:11:27.603Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/artifactregistry.googleapis.com [omitted]
+[warn] !  artifactregistry: missing required API artifactregistry.googleapis.com. Enabling now... 
+[debug] [2025-11-04T03:11:27.605Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:27.605Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:27.605Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/artifactregistry.googleapis.com:enable [none]
+[debug] [2025-11-04T03:11:27.605Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/artifactregistry.googleapis.com:enable x-goog-quota-user=projects/chatapp-3c587
+[debug] [2025-11-04T03:11:27.613Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/cloudbuild.googleapis.com 200
+[debug] [2025-11-04T03:11:27.613Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/cloudbuild.googleapis.com [omitted]
+[warn] !  functions: missing required API cloudbuild.googleapis.com. Enabling now... 
+[debug] [2025-11-04T03:11:27.614Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:27.614Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:27.614Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/cloudbuild.googleapis.com:enable [none]
+[debug] [2025-11-04T03:11:27.614Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/cloudbuild.googleapis.com:enable x-goog-quota-user=projects/chatapp-3c587
+[debug] [2025-11-04T03:11:28.506Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/artifactregistry.googleapis.com:enable 200
+[debug] [2025-11-04T03:11:28.506Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/artifactregistry.googleapis.com:enable [omitted]
+[debug] [2025-11-04T03:11:28.519Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/cloudbuild.googleapis.com:enable 200
+[debug] [2025-11-04T03:11:28.520Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/cloudbuild.googleapis.com:enable [omitted]
+[debug] [2025-11-04T03:11:38.535Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:38.535Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:38.536Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/chatapp-3c587/adminSdkConfig [none]
+[debug] [2025-11-04T03:11:39.233Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/chatapp-3c587/adminSdkConfig 200
+[debug] [2025-11-04T03:11:39.233Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/chatapp-3c587/adminSdkConfig {"projectId":"chatapp-3c587","storageBucket":"chatapp-3c587.firebasestorage.app"}
+[debug] [2025-11-04T03:11:39.236Z] Validating nodejs source
+[debug] [2025-11-04T03:11:45.779Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint --ext .js,.ts .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.0.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
+    "typescript": "^5.7.3"
+  },
+  "private": true
+}
+[debug] [2025-11-04T03:11:45.779Z] Building nodejs source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2025-11-04T03:11:45.783Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-11-04T03:11:45.809Z] Found firebase-functions binary at 'C:\Users\bravi\AndroidStudioProjects\chat\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8768
+
+[debug] [2025-11-04T03:11:48.999Z] Got response from /__/functions.yaml {"endpoints":{"sendChatNotification":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"chats/{chatId}/messages/{messageId}"},"retry":false},"entryPoint":"sendChatNotification"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] i  extensions: ensuring required API firebaseextensions.googleapis.com is enabled... 
+[debug] [2025-11-04T03:11:53.070Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:53.070Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:53.071Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/firebaseextensions.googleapis.com [none]
+[debug] [2025-11-04T03:11:53.071Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/firebaseextensions.googleapis.com x-goog-quota-user=projects/chatapp-3c587
+[debug] [2025-11-04T03:11:53.703Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/firebaseextensions.googleapis.com 200
+[debug] [2025-11-04T03:11:53.704Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/firebaseextensions.googleapis.com [omitted]
+[warn] !  extensions: missing required API firebaseextensions.googleapis.com. Enabling now... 
+[debug] [2025-11-04T03:11:53.704Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:53.704Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:11:53.705Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/firebaseextensions.googleapis.com:enable [none]
+[debug] [2025-11-04T03:11:53.705Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/firebaseextensions.googleapis.com:enable x-goog-quota-user=projects/chatapp-3c587
+[debug] [2025-11-04T03:11:54.284Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/firebaseextensions.googleapis.com:enable 200
+[debug] [2025-11-04T03:11:54.284Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/chatapp-3c587/services/firebaseextensions.googleapis.com:enable [omitted]
+[debug] [2025-11-04T03:12:04.300Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-11-04T03:12:04.300Z] > authorizing via signed-in user (finbravilesr@gmail.com)
+[debug] [2025-11-04T03:12:04.300Z] [iam] checking project chatapp-3c587 for permissions ["firebase.projects.get","firebaseextensions.instances.list"]
+[debug] [2025-11-04T03:12:04.301Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:04.301Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:04.301Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587:testIamPermissions [none]
+[debug] [2025-11-04T03:12:04.301Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587:testIamPermissions x-goog-quota-user=projects/chatapp-3c587
+[debug] [2025-11-04T03:12:04.301Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2025-11-04T03:12:04.822Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587:testIamPermissions 200
+[debug] [2025-11-04T03:12:04.823Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587:testIamPermissions {"permissions":["firebase.projects.get","firebaseextensions.instances.list"]}
+[debug] [2025-11-04T03:12:04.824Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:04.824Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:04.825Z] >>> [apiv2][query] GET https://firebaseextensions.googleapis.com/v1beta/projects/chatapp-3c587/instances pageSize=100&pageToken=
+[debug] [2025-11-04T03:12:06.870Z] <<< [apiv2][status] GET https://firebaseextensions.googleapis.com/v1beta/projects/chatapp-3c587/instances 200
+[debug] [2025-11-04T03:12:06.870Z] <<< [apiv2][body] GET https://firebaseextensions.googleapis.com/v1beta/projects/chatapp-3c587/instances {}
+[info] i  functions: preparing functions directory for uploading... 
+[info] i  functions: packaged C:\Users\bravi\AndroidStudioProjects\chat\functions (97.45 KB) for uploading 
+[debug] [2025-11-04T03:12:07.000Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:07.000Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:07.000Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/chatapp-3c587/locations/-/functions [none]
+[debug] [2025-11-04T03:12:07.916Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/chatapp-3c587/locations/-/functions 200
+[debug] [2025-11-04T03:12:07.916Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/chatapp-3c587/locations/-/functions {}
+[debug] [2025-11-04T03:12:07.917Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:07.917Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:07.918Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v2/projects/chatapp-3c587/locations/-/functions filter=environment%3D%22GEN_2%22
+[debug] [2025-11-04T03:12:08.436Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v2/projects/chatapp-3c587/locations/-/functions 200
+[debug] [2025-11-04T03:12:08.436Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v2/projects/chatapp-3c587/locations/-/functions {}
+[debug] [2025-11-04T03:12:08.437Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:08.438Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:08.438Z] >>> [apiv2][query] GET https://firestore.googleapis.com/v1/projects/chatapp-3c587/databases/(default) [none]
+[debug] [2025-11-04T03:12:09.337Z] <<< [apiv2][status] GET https://firestore.googleapis.com/v1/projects/chatapp-3c587/databases/(default) 200
+[debug] [2025-11-04T03:12:09.337Z] <<< [apiv2][body] GET https://firestore.googleapis.com/v1/projects/chatapp-3c587/databases/(default) {"name":"projects/chatapp-3c587/databases/(default)","uid":"8e91b533-ab6e-4531-b416-8e6dc1fbd4b7","createTime":"2025-09-17T21:56:56.762550Z","updateTime":"2025-09-17T21:56:56.762550Z","locationId":"nam5","type":"FIRESTORE_NATIVE","concurrencyMode":"PESSIMISTIC","versionRetentionPeriod":"3600s","earliestVersionTime":"2025-11-04T02:12:02.763248Z","appEngineIntegrationMode":"DISABLED","keyPrefix":"s","pointInTimeRecoveryEnablement":"POINT_IN_TIME_RECOVERY_DISABLED","deleteProtectionState":"DELETE_PROTECTION_DISABLED","databaseEdition":"STANDARD","freeTier":true,"realtimeUpdatesMode":"REALTIME_UPDATES_MODE_ENABLED","etag":"INjPj5HD15ADMPPWq5H24o8D"}
+[info] i  functions: ensuring required API run.googleapis.com is enabled... 
+[debug] [2025-11-04T03:12:09.342Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:09.342Z] Checked if tokens are valid: true, expires at: 1762228735468
+[info] i  functions: ensuring required API eventarc.googleapis.com is enabled... 
+[debug] [2025-11-04T03:12:09.344Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:09.344Z] Checked if tokens are valid: true, expires at: 1762228735468
+[info] i  functions: ensuring required API pubsub.googleapis.com is enabled... 
+[debug] [2025-11-04T03:12:09.345Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:09.346Z] Checked if tokens are valid: true, expires at: 1762228735468
+[info] i  functions: ensuring required API storage.googleapis.com is enabled... 
+[debug] [2025-11-04T03:12:09.348Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:09.348Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:09.348Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/run.googleapis.com [none]
+[debug] [2025-11-04T03:12:09.348Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/run.googleapis.com x-goog-quota-user=projects/693602146827
+[debug] [2025-11-04T03:12:09.351Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/eventarc.googleapis.com [none]
+[debug] [2025-11-04T03:12:09.351Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/eventarc.googleapis.com x-goog-quota-user=projects/693602146827
+[debug] [2025-11-04T03:12:09.354Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/pubsub.googleapis.com [none]
+[debug] [2025-11-04T03:12:09.354Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/pubsub.googleapis.com x-goog-quota-user=projects/693602146827
+[debug] [2025-11-04T03:12:09.356Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/storage.googleapis.com [none]
+[debug] [2025-11-04T03:12:09.356Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/storage.googleapis.com x-goog-quota-user=projects/693602146827
+[debug] [2025-11-04T03:12:10.009Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/eventarc.googleapis.com 200
+[debug] [2025-11-04T03:12:10.009Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/eventarc.googleapis.com [omitted]
+[warn] !  functions: missing required API eventarc.googleapis.com. Enabling now... 
+[debug] [2025-11-04T03:12:10.010Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:10.010Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:10.010Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/693602146827/services/eventarc.googleapis.com:enable [none]
+[debug] [2025-11-04T03:12:10.011Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/693602146827/services/eventarc.googleapis.com:enable x-goog-quota-user=projects/693602146827
+[debug] [2025-11-04T03:12:10.020Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/run.googleapis.com 200
+[debug] [2025-11-04T03:12:10.020Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/run.googleapis.com [omitted]
+[warn] !  functions: missing required API run.googleapis.com. Enabling now... 
+[debug] [2025-11-04T03:12:10.021Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:10.021Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:10.021Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/693602146827/services/run.googleapis.com:enable [none]
+[debug] [2025-11-04T03:12:10.021Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/693602146827/services/run.googleapis.com:enable x-goog-quota-user=projects/693602146827
+[debug] [2025-11-04T03:12:10.031Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/pubsub.googleapis.com 200
+[debug] [2025-11-04T03:12:10.031Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/pubsub.googleapis.com [omitted]
+[info] +  functions: required API pubsub.googleapis.com is enabled 
+[debug] [2025-11-04T03:12:10.056Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/storage.googleapis.com 200
+[debug] [2025-11-04T03:12:10.056Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/693602146827/services/storage.googleapis.com [omitted]
+[info] +  functions: required API storage.googleapis.com is enabled 
+[debug] [2025-11-04T03:12:10.942Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/693602146827/services/eventarc.googleapis.com:enable 200
+[debug] [2025-11-04T03:12:10.942Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/693602146827/services/eventarc.googleapis.com:enable [omitted]
+[debug] [2025-11-04T03:12:11.246Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/693602146827/services/run.googleapis.com:enable 200
+[debug] [2025-11-04T03:12:11.246Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/693602146827/services/run.googleapis.com:enable [omitted]
+[info] i  functions: generating the service identity for pubsub.googleapis.com... 
+[debug] [2025-11-04T03:12:21.262Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:21.262Z] Checked if tokens are valid: true, expires at: 1762228735468
+[info] i  functions: generating the service identity for eventarc.googleapis.com... 
+[debug] [2025-11-04T03:12:21.263Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:21.263Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:21.263Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/693602146827/services/pubsub.googleapis.com:generateServiceIdentity [none]
+[debug] [2025-11-04T03:12:21.263Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/693602146827/services/pubsub.googleapis.com:generateServiceIdentity x-goog-quota-user=projects/693602146827
+[debug] [2025-11-04T03:12:21.264Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/693602146827/services/pubsub.googleapis.com:generateServiceIdentity {}
+[debug] [2025-11-04T03:12:21.267Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1beta1/projects/693602146827/services/eventarc.googleapis.com:generateServiceIdentity [none]
+[debug] [2025-11-04T03:12:21.268Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1beta1/projects/693602146827/services/eventarc.googleapis.com:generateServiceIdentity x-goog-quota-user=projects/693602146827
+[debug] [2025-11-04T03:12:21.268Z] >>> [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/693602146827/services/eventarc.googleapis.com:generateServiceIdentity {}
+[debug] [2025-11-04T03:12:22.182Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/693602146827/services/eventarc.googleapis.com:generateServiceIdentity 200
+[debug] [2025-11-04T03:12:22.182Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/693602146827/services/eventarc.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-693602146827@gcp-sa-eventarc.iam.gserviceaccount.com","uniqueId":"111633559626246679671"}}
+[debug] [2025-11-04T03:12:22.258Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1beta1/projects/693602146827/services/pubsub.googleapis.com:generateServiceIdentity 200
+[debug] [2025-11-04T03:12:22.258Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1beta1/projects/693602146827/services/pubsub.googleapis.com:generateServiceIdentity {"name":"operations/finished.DONE_OPERATION","done":true,"response":{"@type":"type.googleapis.com/google.api.serviceusage.v1beta1.ServiceIdentity","email":"service-693602146827@gcp-sa-pubsub.iam.gserviceaccount.com","uniqueId":"105123280059826730149"}}
+[debug] [2025-11-04T03:12:22.261Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:22.261Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:22.261Z] >>> [apiv2][query] GET https://compute.googleapis.com/compute/v1/projects/693602146827 [none]
+[debug] [2025-11-04T03:12:22.667Z] <<< [apiv2][status] GET https://compute.googleapis.com/compute/v1/projects/693602146827 403
+[debug] [2025-11-04T03:12:22.667Z] <<< [apiv2][body] GET https://compute.googleapis.com/compute/v1/projects/693602146827 {"error":{"code":403,"message":"Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"containerInfo":"693602146827","consumer":"projects/693602146827","activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827","service":"compute.googleapis.com","serviceTitle":"Compute Engine API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827"}]}]}}
+[debug] [2025-11-04T03:12:22.668Z] unable to look up default compute service account. Falling back to 693602146827-compute@developer.gserviceaccount.com. Error: {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"containerInfo":"693602146827","consumer":"projects/693602146827","activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827","service":"compute.googleapis.com","serviceTitle":"Compute Engine API"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://compute.googleapis.com/compute/v1/projects/693602146827 had HTTP Error: 403, Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403}
+[debug] [2025-11-04T03:12:22.669Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:22.669Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:22.669Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/693602146827:getIamPolicy [none]
+[debug] [2025-11-04T03:12:23.259Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/693602146827:getIamPolicy 200
+[debug] [2025-11-04T03:12:23.259Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/693602146827:getIamPolicy {"version":1,"etag":"BwZCvDJpuMU=","bindings":[{"role":"roles/cloudaicompanion.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-cloudaicompanion.iam.gserviceaccount.com"]},{"role":"roles/cloudbuild.builds.builder","members":["serviceAccount:693602146827@cloudbuild.gserviceaccount.com"]},{"role":"roles/cloudbuild.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-cloudbuild.iam.gserviceaccount.com"]},{"role":"roles/cloudfunctions.serviceAgent","members":["serviceAccount:service-693602146827@gcf-admin-robot.iam.gserviceaccount.com"]},{"role":"roles/containerregistry.ServiceAgent","members":["serviceAccount:service-693602146827@containerregistry.iam.gserviceaccount.com"]},{"role":"roles/editor","members":["serviceAccount:693602146827@cloudservices.gserviceaccount.com","serviceAccount:chatapp-3c587@appspot.gserviceaccount.com","serviceAccount:693602146827-compute@developer.gserviceaccount.com","user:finbravilesr@gmail.com"]},{"role":"roles/firebase.managementServiceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firebase.iam.gserviceaccount.com"]},{"role":"roles/firebase.sdkAdminServiceAgent","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com"]},{"role":"roles/firebaseappcheck.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com"]},{"role":"roles/firebaseappcheck.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firebaseappcheck.iam.gserviceaccount.com"]},{"role":"roles/firebaseauth.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com"]},{"role":"roles/firebasemods.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firebasemods.iam.gserviceaccount.com"]},{"role":"roles/firebaserules.system","members":["serviceAccount:service-693602146827@firebase-rules.iam.gserviceaccount.com"]},{"role":"roles/firebasestorage.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firebasestorage.iam.gserviceaccount.com"]},{"role":"roles/firestore.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firestore.iam.gserviceaccount.com"]},{"role":"roles/iam.serviceAccountTokenCreator","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com"]},{"role":"roles/identitytoolkit.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-identitytoolkit.iam.gserviceaccount.com"]},{"role":"roles/owner","members":["user:finbravilesr@gmail.com"]},{"role":"roles/run.serviceAgent","members":["serviceAccount:service-693602146827@serverless-robot-prod.iam.gserviceaccount.com"]},{"role":"roles/storage.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com"]}]}
+[debug] [2025-11-04T03:12:23.260Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:23.260Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:23.260Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/693602146827:setIamPolicy [none]
+[debug] [2025-11-04T03:12:23.260Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/693602146827:setIamPolicy {"policy":{"version":1,"etag":"BwZCvDJpuMU=","bindings":[{"role":"roles/cloudaicompanion.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-cloudaicompanion.iam.gserviceaccount.com"]},{"role":"roles/cloudbuild.builds.builder","members":["serviceAccount:693602146827@cloudbuild.gserviceaccount.com"]},{"role":"roles/cloudbuild.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-cloudbuild.iam.gserviceaccount.com"]},{"role":"roles/cloudfunctions.serviceAgent","members":["serviceAccount:service-693602146827@gcf-admin-robot.iam.gserviceaccount.com"]},{"role":"roles/containerregistry.ServiceAgent","members":["serviceAccount:service-693602146827@containerregistry.iam.gserviceaccount.com"]},{"role":"roles/editor","members":["serviceAccount:693602146827@cloudservices.gserviceaccount.com","serviceAccount:chatapp-3c587@appspot.gserviceaccount.com","serviceAccount:693602146827-compute@developer.gserviceaccount.com","user:finbravilesr@gmail.com"]},{"role":"roles/firebase.managementServiceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firebase.iam.gserviceaccount.com"]},{"role":"roles/firebase.sdkAdminServiceAgent","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com"]},{"role":"roles/firebaseappcheck.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com"]},{"role":"roles/firebaseappcheck.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firebaseappcheck.iam.gserviceaccount.com"]},{"role":"roles/firebaseauth.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com"]},{"role":"roles/firebasemods.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firebasemods.iam.gserviceaccount.com"]},{"role":"roles/firebaserules.system","members":["serviceAccount:service-693602146827@firebase-rules.iam.gserviceaccount.com"]},{"role":"roles/firebasestorage.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firebasestorage.iam.gserviceaccount.com"]},{"role":"roles/firestore.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firestore.iam.gserviceaccount.com"]},{"role":"roles/iam.serviceAccountTokenCreator","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com","serviceAccount:service-693602146827@gcp-sa-pubsub.iam.gserviceaccount.com"]},{"role":"roles/identitytoolkit.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-identitytoolkit.iam.gserviceaccount.com"]},{"role":"roles/owner","members":["user:finbravilesr@gmail.com"]},{"role":"roles/run.serviceAgent","members":["serviceAccount:service-693602146827@serverless-robot-prod.iam.gserviceaccount.com"]},{"role":"roles/storage.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com"]},{"role":"roles/run.invoker","members":["serviceAccount:693602146827-compute@developer.gserviceaccount.com"]},{"role":"roles/eventarc.eventReceiver","members":["serviceAccount:693602146827-compute@developer.gserviceaccount.com"]}]},"updateMask":"bindings"}
+[debug] [2025-11-04T03:12:24.089Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/693602146827:setIamPolicy 200
+[debug] [2025-11-04T03:12:24.089Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/693602146827:setIamPolicy {"version":1,"etag":"BwZCvDMFKB0=","bindings":[{"role":"roles/cloudaicompanion.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-cloudaicompanion.iam.gserviceaccount.com"]},{"role":"roles/cloudbuild.builds.builder","members":["serviceAccount:693602146827@cloudbuild.gserviceaccount.com"]},{"role":"roles/cloudbuild.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-cloudbuild.iam.gserviceaccount.com"]},{"role":"roles/cloudfunctions.serviceAgent","members":["serviceAccount:service-693602146827@gcf-admin-robot.iam.gserviceaccount.com"]},{"role":"roles/containerregistry.ServiceAgent","members":["serviceAccount:service-693602146827@containerregistry.iam.gserviceaccount.com"]},{"role":"roles/editor","members":["serviceAccount:693602146827-compute@developer.gserviceaccount.com","serviceAccount:693602146827@cloudservices.gserviceaccount.com","serviceAccount:chatapp-3c587@appspot.gserviceaccount.com","user:finbravilesr@gmail.com"]},{"role":"roles/eventarc.eventReceiver","members":["serviceAccount:693602146827-compute@developer.gserviceaccount.com"]},{"role":"roles/firebase.managementServiceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firebase.iam.gserviceaccount.com"]},{"role":"roles/firebase.sdkAdminServiceAgent","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com"]},{"role":"roles/firebaseappcheck.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com"]},{"role":"roles/firebaseappcheck.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firebaseappcheck.iam.gserviceaccount.com"]},{"role":"roles/firebaseauth.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com"]},{"role":"roles/firebasemods.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firebasemods.iam.gserviceaccount.com"]},{"role":"roles/firebaserules.system","members":["serviceAccount:service-693602146827@firebase-rules.iam.gserviceaccount.com"]},{"role":"roles/firebasestorage.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firebasestorage.iam.gserviceaccount.com"]},{"role":"roles/firestore.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-firestore.iam.gserviceaccount.com"]},{"role":"roles/iam.serviceAccountTokenCreator","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com","serviceAccount:service-693602146827@gcp-sa-pubsub.iam.gserviceaccount.com"]},{"role":"roles/identitytoolkit.serviceAgent","members":["serviceAccount:service-693602146827@gcp-sa-identitytoolkit.iam.gserviceaccount.com"]},{"role":"roles/owner","members":["user:finbravilesr@gmail.com"]},{"role":"roles/run.invoker","members":["serviceAccount:693602146827-compute@developer.gserviceaccount.com"]},{"role":"roles/run.serviceAgent","members":["serviceAccount:service-693602146827@serverless-robot-prod.iam.gserviceaccount.com"]},{"role":"roles/storage.admin","members":["serviceAccount:firebase-adminsdk-fbsvc@chatapp-3c587.iam.gserviceaccount.com"]}]}
+[debug] [2025-11-04T03:12:24.091Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:24.091Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:24.091Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587 [none]
+[debug] [2025-11-04T03:12:24.235Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587 200
+[debug] [2025-11-04T03:12:24.235Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/chatapp-3c587 {"projectNumber":"693602146827","projectId":"chatapp-3c587","lifecycleState":"ACTIVE","name":"chatapp","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-09-03T18:04:08.948129Z"}
+[debug] [2025-11-04T03:12:24.235Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:24.235Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:24.235Z] >>> [apiv2][query] GET https://compute.googleapis.com/compute/v1/projects/693602146827 [none]
+[debug] [2025-11-04T03:12:24.376Z] <<< [apiv2][status] GET https://compute.googleapis.com/compute/v1/projects/693602146827 403
+[debug] [2025-11-04T03:12:24.376Z] <<< [apiv2][body] GET https://compute.googleapis.com/compute/v1/projects/693602146827 {"error":{"code":403,"message":"Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827","consumer":"projects/693602146827","containerInfo":"693602146827","serviceTitle":"Compute Engine API","service":"compute.googleapis.com"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827"}]}]}}
+[debug] [2025-11-04T03:12:24.376Z] unable to look up default compute service account. Falling back to 693602146827-compute@developer.gserviceaccount.com. Error: {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","errors":[{"message":"Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","domain":"usageLimits","reason":"accessNotConfigured","extendedHelp":"https://console.developers.google.com"}],"status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"activationUrl":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827","consumer":"projects/693602146827","containerInfo":"693602146827","serviceTitle":"Compute Engine API","service":"compute.googleapis.com"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://compute.googleapis.com/compute/v1/projects/693602146827 had HTTP Error: 403, Compute Engine API has not been used in project 693602146827 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/compute.googleapis.com/overview?project=693602146827 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403}
+[debug] [2025-11-04T03:12:24.378Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:24.378Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:24.379Z] >>> [apiv2][query] GET https://cloudbilling.googleapis.com/v1/projects/chatapp-3c587/billingInfo [none]
+[debug] [2025-11-04T03:12:24.993Z] <<< [apiv2][status] GET https://cloudbilling.googleapis.com/v1/projects/chatapp-3c587/billingInfo 200
+[debug] [2025-11-04T03:12:24.994Z] <<< [apiv2][body] GET https://cloudbilling.googleapis.com/v1/projects/chatapp-3c587/billingInfo {"name":"projects/chatapp-3c587/billingInfo","projectId":"chatapp-3c587","billingAccountName":"billingAccounts/013C87-A5FC18-0027F3","billingEnabled":true}
+[debug] [2025-11-04T03:12:24.997Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:24.997Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:24.997Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v2/projects/chatapp-3c587/locations/us-central1/functions:generateUploadUrl [none]
+[debug] [2025-11-04T03:12:26.614Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v2/projects/chatapp-3c587/locations/us-central1/functions:generateUploadUrl 200
+[debug] [2025-11-04T03:12:26.615Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/chatapp-3c587/locations/us-central1/functions:generateUploadUrl {"uploadUrl":"https://storage.googleapis.com/gcf-v2-uploads-693602146827.us-central1.cloudfunctions.appspot.com/e511528b-c722-4143-b538-164c9a736995.zip?GoogleAccessId=service-693602146827@gcf-admin-robot.iam.gserviceaccount.com&Expires=1762227740&Signature=iOjyMqHGIGzJxB%2FKEwtGF2T69PEXodRE%2BBm69EWo3MK19dua4xAdNcyo0CN0vZo59S4EuZMht0px78QIvlb9Kr3v7rjc8STnB5ALKla%2F41C6N6OE6F5X%2FQjFd0uXRm6FOTQ7u2VMz4XUIWAHjTXOvb4r5Cu1QvqbYLswNTbVPCW8zc0bS%2Bew34pFvwLWMZUXsuymRjRxXaI72HiO1RREbzhp4laL4rjrSmupS5xIbMOVma9UUINEQo4StK68AJM7zDH1eSLkEKqQyqSqdD1sKERg0qx93U0sx3Bp%2FUE1RJZg%2BHwLKi2XnW4uZwKXpWIIt%2FISpEkbKy13AmXQ8RIQQw%3D%3D","storageSource":{"bucket":"gcf-v2-uploads-693602146827.us-central1.cloudfunctions.appspot.com","object":"e511528b-c722-4143-b538-164c9a736995.zip"}}
+[debug] [2025-11-04T03:12:26.618Z] >>> [apiv2][query] PUT https://storage.googleapis.com/gcf-v2-uploads-693602146827.us-central1.cloudfunctions.appspot.com/e511528b-c722-4143-b538-164c9a736995.zip GoogleAccessId=service-693602146827%40gcf-admin-robot.iam.gserviceaccount.com&Expires=1762227740&Signature=iOjyMqHGIGzJxB%2FKEwtGF2T69PEXodRE%2BBm69EWo3MK19dua4xAdNcyo0CN0vZo59S4EuZMht0px78QIvlb9Kr3v7rjc8STnB5ALKla%2F41C6N6OE6F5X%2FQjFd0uXRm6FOTQ7u2VMz4XUIWAHjTXOvb4r5Cu1QvqbYLswNTbVPCW8zc0bS%2Bew34pFvwLWMZUXsuymRjRxXaI72HiO1RREbzhp4laL4rjrSmupS5xIbMOVma9UUINEQo4StK68AJM7zDH1eSLkEKqQyqSqdD1sKERg0qx93U0sx3Bp%2FUE1RJZg%2BHwLKi2XnW4uZwKXpWIIt%2FISpEkbKy13AmXQ8RIQQw%3D%3D
+[debug] [2025-11-04T03:12:26.618Z] >>> [apiv2][body] PUT https://storage.googleapis.com/gcf-v2-uploads-693602146827.us-central1.cloudfunctions.appspot.com/e511528b-c722-4143-b538-164c9a736995.zip [stream]
+[debug] [2025-11-04T03:12:27.278Z] <<< [apiv2][status] PUT https://storage.googleapis.com/gcf-v2-uploads-693602146827.us-central1.cloudfunctions.appspot.com/e511528b-c722-4143-b538-164c9a736995.zip 200
+[debug] [2025-11-04T03:12:27.278Z] <<< [apiv2][body] PUT https://storage.googleapis.com/gcf-v2-uploads-693602146827.us-central1.cloudfunctions.appspot.com/e511528b-c722-4143-b538-164c9a736995.zip [omitted]
+[info] +  functions: functions source uploaded successfully 
+[info] i  functions: creating Node.js 22 (2nd Gen) function sendChatNotification(us-central1)... 
+[debug] [2025-11-04T03:12:27.299Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:27.299Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:27.299Z] >>> [apiv2][query] POST https://cloudfunctions.googleapis.com/v2/projects/chatapp-3c587/locations/us-central1/functions functionId=sendChatNotification
+[debug] [2025-11-04T03:12:27.299Z] >>> [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/chatapp-3c587/locations/us-central1/functions {"name":"projects/chatapp-3c587/locations/us-central1/functions/sendChatNotification","buildConfig":{"runtime":"nodejs22","entryPoint":"sendChatNotification","source":{"storageSource":{"bucket":"gcf-v2-uploads-693602146827.us-central1.cloudfunctions.appspot.com","object":"e511528b-c722-4143-b538-164c9a736995.zip"}},"environmentVariables":{"GOOGLE_NODE_RUN_SCRIPTS":""}},"serviceConfig":{"environmentVariables":{"FIREBASE_CONFIG":"{\"projectId\":\"chatapp-3c587\",\"storageBucket\":\"chatapp-3c587.firebasestorage.app\"}","GCLOUD_PROJECT":"chatapp-3c587","EVENTARC_CLOUD_EVENT_SOURCE":"projects/chatapp-3c587/locations/us-central1/services/sendChatNotification","FUNCTION_SIGNATURE_TYPE":"cloudevent","FUNCTION_TARGET":"sendChatNotification","LOG_EXECUTION_ID":"true"},"ingressSettings":null,"timeoutSeconds":null,"serviceAccountEmail":null,"availableMemory":"256Mi","minInstanceCount":null,"maxInstanceCount":null,"maxInstanceRequestConcurrency":80,"availableCpu":"1","vpcConnector":null,"vpcConnectorEgressSettings":null},"labels":{"deployment-tool":"cli-firebase","firebase-functions-hash":"7eb8207398e0dfe75f8cce6454032b6ecb6ffb2e"},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","retryPolicy":"RETRY_POLICY_DO_NOT_RETRY","eventFilters":[{"attribute":"database","value":"(default)"},{"attribute":"namespace","value":"(default)"},{"attribute":"document","value":"chats/{chatId}/messages/{messageId}","operator":"match-path-pattern"}],"triggerRegion":"nam5"}}
+[debug] [2025-11-04T03:12:43.857Z] <<< [apiv2][status] POST https://cloudfunctions.googleapis.com/v2/projects/chatapp-3c587/locations/us-central1/functions 400
+[debug] [2025-11-04T03:12:43.857Z] <<< [apiv2][body] POST https://cloudfunctions.googleapis.com/v2/projects/chatapp-3c587/locations/us-central1/functions {"error":{"code":400,"message":"Validation failed for trigger projects/chatapp-3c587/locations/nam5/triggers/sendchatnotification-078385: Invalid resource state for \"\": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role.","status":"FAILED_PRECONDITION"}}
+[warn] !  functions: Request to https://cloudfunctions.googleapis.com/v2/projects/chatapp-3c587/locations/us-central1/functions?functionId=sendChatNotification had HTTP Error: 400, Validation failed for trigger projects/chatapp-3c587/locations/nam5/triggers/sendchatnotification-078385: Invalid resource state for "": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role. 
+[warn] !  functions: Since this is your first time using 2nd gen functions, we need a little bit longer to finish setting everything up. Retry the deployment in a few minutes. 
+[warn] !  functions:  failed to create function projects/chatapp-3c587/locations/us-central1/functions/sendChatNotification 
+[error] Failed to create function projects/chatapp-3c587/locations/us-central1/functions/sendChatNotification
+[debug] [2025-11-04T03:12:43.871Z] Total Function Deployment time: 16577
+[debug] [2025-11-04T03:12:43.871Z] 1 Functions Deployed
+[debug] [2025-11-04T03:12:43.871Z] 1 Functions Errored
+[debug] [2025-11-04T03:12:43.871Z] 0 Function Deployments Aborted
+[debug] [2025-11-04T03:12:43.871Z] Average Function Deployment time: 16575
+[info] 
+[info] Functions deploy had errors with the following functions:
+	sendChatNotification(us-central1)
+[debug] [2025-11-04T03:12:44.069Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:44.069Z] Checked if tokens are valid: true, expires at: 1762228735468
+[debug] [2025-11-04T03:12:44.069Z] >>> [apiv2][query] GET https://artifactregistry.googleapis.com/v1/projects/chatapp-3c587/locations/us-central1/repositories/gcf-artifacts [none]
+[debug] [2025-11-04T03:12:44.767Z] <<< [apiv2][status] GET https://artifactregistry.googleapis.com/v1/projects/chatapp-3c587/locations/us-central1/repositories/gcf-artifacts 404
+[debug] [2025-11-04T03:12:44.767Z] <<< [apiv2][body] GET https://artifactregistry.googleapis.com/v1/projects/chatapp-3c587/locations/us-central1/repositories/gcf-artifacts {"error":{"code":404,"message":"Requested entity was not found.","status":"NOT_FOUND"}}
+[debug] [2025-11-04T03:12:44.767Z] Failed to check artifact cleanup policy for region us-central1: Request to https://artifactregistry.googleapis.com/v1/projects/chatapp-3c587/locations/us-central1/repositories/gcf-artifacts had HTTP Error: 404, Requested entity was not found. {"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":404,"message":"Requested entity was not found.","status":"NOT_FOUND"}},"response":{"statusCode":404}},"exit":1,"message":"Request to https://artifactregistry.googleapis.com/v1/projects/chatapp-3c587/locations/us-central1/repositories/gcf-artifacts had HTTP Error: 404, Requested entity was not found.","status":404}
+[debug] [2025-11-04T03:12:44.769Z] Functions deploy failed.
+[debug] [2025-11-04T03:12:44.769Z] {
+  "endpoint": {
+    "id": "sendChatNotification",
+    "project": "chatapp-3c587",
+    "region": "us-central1",
+    "entryPoint": "sendChatNotification",
+    "platform": "gcfv2",
+    "runtime": "nodejs22",
+    "eventTrigger": {
+      "eventType": "google.cloud.firestore.document.v1.created",
+      "retry": false,
+      "eventFilters": {
+        "database": "(default)",
+        "namespace": "(default)"
+      },
+      "eventFilterPathPatterns": {
+        "document": "chats/{chatId}/messages/{messageId}"
+      },
+      "region": "nam5"
+    },
+    "labels": {
+      "deployment-tool": "cli-firebase"
+    },
+    "serviceAccount": null,
+    "ingressSettings": null,
+    "availableMemoryMb": null,
+    "timeoutSeconds": null,
+    "maxInstances": null,
+    "minInstances": null,
+    "concurrency": 80,
+    "vpc": null,
+    "environmentVariables": {
+      "FIREBASE_CONFIG": "{\"projectId\":\"chatapp-3c587\",\"storageBucket\":\"chatapp-3c587.firebasestorage.app\"}",
+      "GCLOUD_PROJECT": "chatapp-3c587",
+      "EVENTARC_CLOUD_EVENT_SOURCE": "projects/chatapp-3c587/locations/us-central1/services/sendChatNotification"
+    },
+    "codebase": "default",
+    "cpu": 1,
+    "targetedByOnly": false,
+    "hash": "7eb8207398e0dfe75f8cce6454032b6ecb6ffb2e"
+  },
+  "op": "create",
+  "original": {
+    "name": "FirebaseError",
+    "children": [],
+    "context": {
+      "function": "projects/chatapp-3c587/locations/us-central1/functions/sendChatNotification"
+    },
+    "exit": 1,
+    "message": "Failed to create function projects/chatapp-3c587/locations/us-central1/functions/sendChatNotification",
+    "original": {
+      "name": "FirebaseError",
+      "children": [],
+      "context": {
+        "body": {
+          "error": {
+            "code": 400,
+            "message": "Validation failed for trigger projects/chatapp-3c587/locations/nam5/triggers/sendchatnotification-078385: Invalid resource state for \"\": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role.",
+            "status": "FAILED_PRECONDITION"
+          }
+        },
+        "response": {
+          "statusCode": 400
+        }
+      },
+      "exit": 1,
+      "message": "Request to https://cloudfunctions.googleapis.com/v2/projects/chatapp-3c587/locations/us-central1/functions?functionId=sendChatNotification had HTTP Error: 400, Validation failed for trigger projects/chatapp-3c587/locations/nam5/triggers/sendchatnotification-078385: Invalid resource state for \"\": Permission denied while using the Eventarc Service Agent. If you recently started to use Eventarc, it may take a few minutes before all necessary permissions are propagated to the Service Agent. Otherwise, verify that it has Eventarc Service Agent role.",
+      "status": 400
+    },
+    "status": 400,
+    "code": 400
+  }
+}
+[debug] [2025-11-04T03:12:44.851Z] Error: Failed to create function sendChatNotification in region us-central1
+    at C:\Users\bravi\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\release\fabricator.js:306:27
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Fabricator.createV2Function (C:\Users\bravi\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\release\fabricator.js:290:30)
+    at async Fabricator.createEndpoint (C:\Users\bravi\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\release\fabricator.js:137:13)
+    at async handle (C:\Users\bravi\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\functions\release\fabricator.js:89:17)
+[error] 
+[error] Error: There was an error deploying functions

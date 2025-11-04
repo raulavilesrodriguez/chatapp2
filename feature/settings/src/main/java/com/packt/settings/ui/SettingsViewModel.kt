@@ -203,6 +203,14 @@ class SettingsViewModel @Inject constructor(
     fun alreadyLoggedIn(openAndPopUp: (String, String) -> Unit) {
         launchCatching {
             if (hasUser) {
+                val userId = currentUserId
+
+                // FCM
+                launchCatching(snackbar = false) {
+                    getAndStoreFCMToken(userId)
+                    Log.d("FCM_TOKEN_UPDATE", "FCM Token update LOCO: $userId")
+                }
+
                 val user = getUser(currentUserId)
                 if (user?.name != null) {
                     openAndPopUp(NavRoutes.ConversationsList, NavRoutes.Splash)

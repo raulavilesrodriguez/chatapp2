@@ -3,6 +3,7 @@ package com.packt.chat.ui
 import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
+import com.packt.chat.domain.usecases.ClearUserActiveStatus
 import com.packt.chat.domain.usecases.GetCurrentUserId
 import com.packt.chat.domain.usecases.GetInitialChatRoomInfo
 import com.packt.chat.domain.usecases.GetMessages
@@ -11,6 +12,7 @@ import com.packt.chat.domain.usecases.GetUser
 import com.packt.chat.domain.usecases.ObserveUser
 import com.packt.chat.domain.usecases.ResetUnreadCount
 import com.packt.chat.domain.usecases.SendMessage
+import com.packt.chat.domain.usecases.SetUserActiveInChat
 import com.packt.chat.ui.model.Message
 import com.packt.chat.ui.model.MessageContent
 import com.packt.domain.model.ChatMetadata
@@ -39,8 +41,10 @@ class ChatViewModel @Inject constructor(
     private val getInitialChatRoomInfo: GetInitialChatRoomInfo,
     val getUser: GetUser,
     private val observeUser: ObserveUser,
-    private val resetUnreadCount: ResetUnreadCount
-) : BaseViewModel() {
+    private val resetUnreadCount: ResetUnreadCount,
+    private val setUserActiveInChat: SetUserActiveInChat,
+    private val clearUserActiveStatus: ClearUserActiveStatus
+    ) : BaseViewModel() {
 
     private val _sendText = MutableStateFlow("")
     val sendText: StateFlow<String> = _sendText.asStateFlow()
@@ -59,6 +63,7 @@ class ChatViewModel @Inject constructor(
     private var allMessagesLoaded = false
     private var paginationJob: Job? = null
     private var realTimeJob: Job? = null
+    private var currentChatId: String? = null
 
     val currentUserId
         get() = currentUserIdUseCase()
@@ -84,8 +89,10 @@ class ChatViewModel @Inject constructor(
         chatInfoJob?.cancel()
         paginationJob?.cancel()
         realTimeJob?.cancel()
+        currentChatId = chatId
 
         chatInfoJob = launchCatching {
+            setUserActiveInChat(chatId)
             try {
                 resetUnreadCount(chatId)
                 chatMetadata = getInitialChatRoomInfo(chatId) ?: return@launchCatching
@@ -108,6 +115,31 @@ class ChatViewModel @Inject constructor(
                 }
             } catch (ie: Throwable){
                 Log.e("DEBUG LOAD MESSAGES", "Error in charge chat: ${ie.message}", ie)
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        currentChatId?.let { chatId ->
+            launchCatching {
+                clearUserActiveStatus(chatId)
+            }
+        }
+    }
+
+    fun setChatActive(){
+        currentChatId?.let { chatId ->
+            launchCatching {
+                setUserActiveInChat(chatId)
+            }
+        }
+    }
+
+    fun setChatInactive(){
+        currentChatId?.let { chatId ->
+            launchCatching {
+                clearUserActiveStatus(chatId)
             }
         }
     }
