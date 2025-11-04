@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     string<string name="chat_title">Chatea con %s</string>
+    string<string name="you">Tú</string>
 </resources>

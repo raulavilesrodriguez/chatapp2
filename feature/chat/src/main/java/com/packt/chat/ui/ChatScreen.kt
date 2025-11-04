@@ -36,6 +36,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -59,6 +60,7 @@ fun ChatScreen(
     val uiState by viewModel.uiState.collectAsState()
     val sendText by viewModel.sendText.collectAsState()
     val messages by viewModel.messages.collectAsState()
+    val currentUserId = viewModel.currentUserId
 
     LaunchedEffect(Unit) {
         viewModel.reloadCurrentUser()
@@ -91,7 +93,8 @@ fun ChatScreen(
         updateSendText = viewModel::updateSendText,
         onSendMessage = viewModel::onSendMessage,
         messages = messages,
-        onLoadMoreMessages = { viewModel.loadMoreMessages(chatId.orEmpty())}
+        onLoadMoreMessages = { viewModel.loadMoreMessages(chatId.orEmpty())},
+        currentUserUid = currentUserId
     )
 }
 
@@ -104,7 +107,8 @@ fun ChatScreenContent(
     updateSendText: (String) -> Unit,
     onSendMessage: ()->Unit,
     messages: List<Message>,
-    onLoadMoreMessages: () -> Unit
+    onLoadMoreMessages: () -> Unit,
+    currentUserUid: String
 ){
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing, // para que no se ponga encima de la parte superior del movil
@@ -112,7 +116,8 @@ fun ChatScreenContent(
             ChatToolbar(
                 iconBack = R.drawable.arrow_back,
                 onBackClick = onBackClick,
-                participant = participant
+                participant = participant,
+                currentUserUid = currentUserUid
             )
         },
         bottomBar = {
@@ -137,7 +142,8 @@ fun ChatScreenContent(
 fun ChatToolbar(
     @DrawableRes iconBack: Int,
     onBackClick: () -> Unit,
-    participant: UserData
+    participant: UserData,
+    currentUserUid: String
 ){
     Row(
         modifier = Modifier
@@ -165,8 +171,13 @@ fun ChatToolbar(
                 .height(40.dp),
             verticalArrangement = Arrangement.Center,
         ) {
+            val displayName = if (currentUserUid == participant.uid) {
+                "${participant.name ?:""} (${stringResource(R.string.you)})"
+            } else {
+                participant.name ?:""
+            }
             Text(
-                text = participant.name?:"",
+                text = displayName,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
@@ -292,7 +303,8 @@ fun ChatToolbarPreview(){
         ChatToolbar(
             iconBack = R.drawable.arrow_back,
             onBackClick = {},
-            participant = participant
+            participant = participant,
+            currentUserUid = "1we2"
         )
     }
 }
