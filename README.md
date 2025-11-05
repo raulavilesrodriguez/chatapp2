@@ -37,7 +37,7 @@ chats/{chatId}                   // A chat between 2 or more users
 - Jetpack Compose
 - Hilt (Dependency Injection)
 - Firebase SDK
-- Coroutines / Flow / LiveData
+- Coroutines / Flow
 
 # My CV here:
 [Raúl Avilés Web Page](https://raulaviles.netlify.app/)
