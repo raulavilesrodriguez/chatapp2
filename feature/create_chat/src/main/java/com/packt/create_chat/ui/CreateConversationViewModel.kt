@@ -93,4 +93,10 @@ class CreateConversationViewModel @Inject constructor(
         }
     }
 
+    fun createGroup(participants: List<String>, openScreen: (String) -> Unit){
+        launchCatching {
+            val chatId = createChat(participants)
+            openScreen(NavRoutes.Chat.replace("{chatId}", chatId))
+        }
+    }
 }

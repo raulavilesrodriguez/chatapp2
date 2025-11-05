@@ -10,13 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +24,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.packt.create_chat.R
 import com.packt.domain.user.UserData
+import com.packt.ui.composables.SearchField
 
 @Composable
 fun CreateConversationScreen(
@@ -120,46 +117,6 @@ fun CreateConversationScreenContent(
 
         }
     )
-}
-
-
-@Composable
-fun SearchField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    @StringRes placeholder: Int,
-    @DrawableRes trailingIcon: Int,
-    onTrailingIconClick: () -> Unit,
-    modifier: Modifier = Modifier
-){
-    Box(modifier = modifier
-        .padding(16.dp)
-        .fillMaxWidth(),
-
-    ) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = { onValueChange(it) },
-            placeholder = { Text(text = stringResource(id = placeholder)) },
-            leadingIcon = {
-                IconButton(onClick = onTrailingIconClick) {
-                    Icon(
-                        painter = painterResource(id = trailingIcon),
-                        contentDescription = null
-                    )
-                }
-            },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                focusedBorderColor = Color.Green,
-                unfocusedLabelColor = Color.Green
-            )
-        )
-    }
 }
 
 @Composable
@@ -258,7 +215,7 @@ fun CreateConversationScreenContentPreview(){
 }
 
 
-fun generateFakeUsers(): List<UserData> = listOf(
+private fun generateFakeUsers(): List<UserData> = listOf(
     UserData(
         uid = "1",
         name = "Linda Pechugas",
