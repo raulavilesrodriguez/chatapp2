@@ -48,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.packt.ui.composables.BasicToolbar
-import com.packt.settings.R
 import com.packt.settings.ui.model.SetUserData
 import com.packt.ui.avatar.Avatar
 import com.packt.ui.composables.BasicBottomBar
@@ -59,6 +58,7 @@ import com.yalantis.ucrop.UCrop
 import java.io.File
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
+import com.packt.chat.feature.settings.R
 
 @Composable
 fun SettingsScreen(

@@ -1,15 +1,26 @@
 package com.packt.create_chat.ui
 
+import android.util.Log
+import com.packt.chat.feature.create_chat.R
+import com.packt.create_chat.domain.usecases.ChatExists
 import com.packt.create_chat.domain.usecases.CreateChat
+import com.packt.create_chat.domain.usecases.DownloadUrlPhoto
 import com.packt.create_chat.domain.usecases.GetCurrentUserId
+import com.packt.create_chat.domain.usecases.GetUser
 import com.packt.create_chat.domain.usecases.GetUsers
 import com.packt.create_chat.domain.usecases.SearchUsers
+import com.packt.create_chat.domain.usecases.UpdateChatInfo
+import com.packt.create_chat.domain.usecases.UploadPhoto
+import com.packt.domain.model.ChatMetadata
 import com.packt.domain.user.UserData
+import com.packt.ui.avatar.DEFAULT_AVATAR_GROUP
 import com.packt.ui.navigation.NavRoutes
+import com.packt.ui.snackbar.SnackbarManager
 import com.packt.ui.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +36,12 @@ class CreateConversationViewModel @Inject constructor(
     private val searchUsers: SearchUsers,
     private val createChat: CreateChat,
     private val currentUserIdUseCase: GetCurrentUserId,
-): BaseViewModel() {
+    private val updateChatInfo: UpdateChatInfo,
+    private val chatExists: ChatExists,
+    private val getUser: GetUser,
+    private val uploadPhoto: UploadPhoto,
+    private val downloadUrlPhoto: DownloadUrlPhoto
+    ): BaseViewModel() {
 
     private val _searchText = MutableStateFlow("")
     val searchText: StateFlow<String> = _searchText.asStateFlow()
@@ -37,6 +53,21 @@ class CreateConversationViewModel @Inject constructor(
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     private var searchJob: Job? = null
+
+    private var participantsGroupIds = mutableListOf<String>()
+    private val _participants = MutableStateFlow<List<UserData>>(emptyList())
+    val participants: StateFlow<List<UserData>> = _participants.asStateFlow()
+
+    private val _isSaving = MutableStateFlow(false)
+    val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
+
+    private val _uiStateChatMetadata = MutableStateFlow(ChatMetadata())
+    val uiStateChatMetadata: StateFlow<ChatMetadata> = _uiStateChatMetadata.asStateFlow()
+
+    private val _selectedParticipants = MutableStateFlow<Set<UserData>>(emptySet())
+    val selectedParticipants: StateFlow<Set<UserData>> = _selectedParticipants.asStateFlow()
+
+    private var user: UserData? = null
 
     val currentUserId
         get() = currentUserIdUseCase()
@@ -88,15 +119,110 @@ class CreateConversationViewModel @Inject constructor(
     fun createChatRoom(uid: String, openScreen: (String) -> Unit){
         val participants = setOf(currentUserId, uid).toList()
         launchCatching {
-            val chatId = createChat(participants)
+            val chatId = createChat(participants, isGroup = false)
             openScreen(NavRoutes.Chat.replace("{chatId}", chatId))
         }
     }
 
-    fun createGroup(participants: List<String>, openScreen: (String) -> Unit){
+    fun updateGroupName(newName: String){
+        _uiStateChatMetadata.value = _uiStateChatMetadata.value.copy(groupName = newName)
+    }
+
+    fun updateGroupPhotoUrl(newPhoto: String){
+        _uiStateChatMetadata.value = _uiStateChatMetadata.value.copy(groupPhotoUrl = newPhoto)
+    }
+
+    fun addParticipant(user: UserData) {
+        _selectedParticipants.value += user
+    }
+
+    fun removeParticipant(user: UserData) {
+        _selectedParticipants.value -= user
+    }
+
+    fun clearParticipants() {
+        _selectedParticipants.value = emptySet()
+    }
+
+    fun participantsGroup(openScreen: (String) -> Unit){
+        Log.d("participantsGroup", "participantsGroup VIEWMODEL: ${_selectedParticipants.value.size}")
+        if(_selectedParticipants.value.isEmpty()){
+            SnackbarManager.showMessage(R.string.warning_participants)
+            return
+        }
         launchCatching {
-            val chatId = createChat(participants)
-            openScreen(NavRoutes.Chat.replace("{chatId}", chatId))
+            _participants.value = emptyList()
+            val selectedUsers = _selectedParticipants.value.toMutableList()
+            val currentUser = getUser(currentUserId)
+            if(currentUser !=null){
+                _participants.value = selectedUsers + currentUser
+            } else {
+                return@launchCatching
+            }
+            participantsGroupIds = (_participants.value.map{it.uid}).toMutableList()
+            Log.d("participantsGroup", "IDs finales a buscar: ${participantsGroupIds.joinToString()}")
+
+            Log.d("participantsGroup", "¡PARTICIPANTS! Usuarios encontrados: ${_participants.value.size}")
+            delay(50)
+            openScreen(NavRoutes.SetGroupChat)
+        }
+    }
+
+    fun createGroup(openAndPopUp: (String, String) -> Unit){
+        launchCatching {
+            val groupNameFromInput = _uiStateChatMetadata.value.groupName
+            val finalGroupName = if(groupNameFromInput.isNullOrBlank()){
+                user = _participants.value.find { it.uid == currentUserId }
+                val firstName = user?.name?.split(" ")?.getOrNull(0)
+                if(!firstName.isNullOrBlank()){
+                    "Chat Grupo $firstName"
+                } else {
+                    val randomNumber = (1..9999).random()
+                    "Grupo $randomNumber"
+                }
+            } else {
+                groupNameFromInput
+            }
+
+            val chatYaExists = chatExists(participantsGroupIds, finalGroupName)
+            if (chatYaExists) {
+                SnackbarManager.showMessage(R.string.chat_already_exists)
+                return@launchCatching
+            }
+            val chatId = createChat(participantsGroupIds, isGroup = true)
+            val finalPhotoUrl = onSavePhoto(chatId)
+            updateChatInfo(chatId, finalGroupName, finalPhotoUrl)
+            _uiStateChatMetadata.value = _uiStateChatMetadata.value.copy(
+                chatId = chatId,
+                participants = participantsGroupIds,
+                isGroup = true,
+                groupName = finalGroupName,
+                groupPhotoUrl = finalPhotoUrl
+            )
+            // clean el estado de los participantes
+            clearParticipants()
+            _participants.value = emptyList()
+            participantsGroupIds = mutableListOf()
+            _uiStateChatMetadata.value = ChatMetadata()
+            //Navigation to chat screen
+            openAndPopUp(NavRoutes.Chat.replace("{chatId}", chatId), NavRoutes.SetGroupChat)
+        }
+    }
+
+    private suspend fun onSavePhoto(chatId: String): String{
+        val localPhotoUri = _uiStateChatMetadata.value.groupPhotoUrl
+        if (localPhotoUri.isNullOrBlank()) {
+            return DEFAULT_AVATAR_GROUP
+        }
+        _isSaving.value = true
+        return try {
+            val remotePath = "profile_images/${chatId}.jpg"
+            // Upload photo to Firebase Storage
+            uploadPhoto(localPhotoUri, remotePath)
+            // Download URL of the uploaded photo
+            downloadUrlPhoto(remotePath)
+        } finally {
+            _isSaving.value = false
         }
     }
 }

@@ -15,11 +15,35 @@ class StoreUsersRepository @Inject constructor(
 
     override suspend fun getUsers() = dataSource.getUsers()
 
+    override suspend fun getUser(userId: String): UserData? {
+        return dataSource.getUser(userId)
+    }
+
     override suspend fun searchUsers(namePrefix: String): Flow<List<UserData>> {
         return dataSource.searchUsers(namePrefix)
     }
 
-    override suspend fun createChat(participants: List<String>): String {
-        return dataSource.createChat(participants)
+    override suspend fun createChat(participants: List<String>, isGroup: Boolean): String {
+        return dataSource.createChat(participants, isGroup)
+    }
+
+    override suspend fun updateChatInfo(
+        chatId: String,
+        groupName: String?,
+        groupPhotoUrl: String?
+    ) {
+        dataSource.updateChatInfo(chatId, groupName, groupPhotoUrl)
+    }
+
+    override suspend fun chatExists(participants: List<String>, groupName: String?): Boolean {
+        return dataSource.chatExists(participants, groupName)
+    }
+
+    override suspend fun uploadPhoto(localPhoto: String, remotePath: String) {
+        dataSource.uploadPhoto(localPhoto, remotePath)
+    }
+
+    override suspend fun downloadUrlPhoto(remotePath: String): String {
+        return dataSource.downloadUrlPhoto(remotePath)
     }
 }

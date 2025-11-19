@@ -1,4 +1,4 @@
-package com.packt.settings.ui.photo
+package com.packt.ui.photo
 
 import android.app.Activity
 import android.content.Context
@@ -11,17 +11,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import com.packt.settings.R
 import com.packt.ui.snackbar.SnackbarManager
 import com.yalantis.ucrop.UCrop
 import java.io.File
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
+import androidx.annotation.StringRes
 
 @Composable
 fun pickImageLauncher(
     context: Context,
     updatePhotoUri: (String) -> Unit,
+    @StringRes errorCropping: Int,
+    @StringRes errorSaving: Int
 ) : ActivityResultLauncher<PickVisualMediaRequest> {
 
     val primaryColor = MaterialTheme.colorScheme.primary.toArgb()
@@ -35,12 +37,12 @@ fun pickImageLauncher(
             if (resultUri != null) {
                 updatePhotoUri(resultUri.toString())
             } else {
-                SnackbarManager.showMessage(R.string.error_cropping)
+                SnackbarManager.showMessage(errorCropping)
             }
         } else if (result.resultCode == UCrop.RESULT_ERROR) {
             val cropError = UCrop.getError(result.data!!)
             val errorMessage = context.getString(
-                R.string.error_saving, cropError?.message ?: "")
+                errorSaving, cropError?.message ?: "")
             SnackbarManager.showMessage(errorMessage)
         }
     }

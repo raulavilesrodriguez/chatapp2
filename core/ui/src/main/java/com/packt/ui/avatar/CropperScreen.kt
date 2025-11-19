@@ -24,8 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import com.canhub.cropper.CropImageView
-import com.packt.ui.R
-
+import com.packt.chat.core.ui.R
 
 @Composable
 fun CropperScreen(

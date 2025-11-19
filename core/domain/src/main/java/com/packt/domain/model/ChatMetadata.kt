@@ -10,6 +10,7 @@ data class ChatMetadata(
     var unreadCount: Map<String, Int> = emptyMap(),
     val createdAt: Long = System.currentTimeMillis(), //time to create chat
     // to groups
+    val isGroup: Boolean = false,
     val groupName: String? = null,
     val groupPhotoUrl: String? = null
 )

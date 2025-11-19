@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.packt.ui.R
+import com.packt.chat.core.ui.R
 import com.packt.ui.ext.alertDialog
 import com.packt.ui.ext.textButton
 

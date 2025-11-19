@@ -54,8 +54,8 @@ import coil.request.ImageRequest
 import com.image.cropview.CropType
 import com.image.cropview.EdgeType
 import com.image.cropview.ImageCrop
+import com.packt.chat.feature.settings.R
 import com.packt.ui.composables.BasicToolbar
-import com.packt.settings.R
 import com.packt.ui.avatar.saveBitmapToCache
 import com.packt.ui.composables.DialogCancelButton
 import com.packt.ui.composables.DialogConfirmButton

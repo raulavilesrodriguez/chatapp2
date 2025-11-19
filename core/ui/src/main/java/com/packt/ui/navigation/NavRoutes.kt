@@ -16,7 +16,10 @@ object NavRoutes {
         const val ChatId = "chatId"
     }
 
+    const val CreateGroupGraph = "create_group_graph"
     const val GroupChat = "group_chat"
+    const val SetGroupChat = "set_group_chat"
+
     const val EditUser = "edit_user"
     const val EditName = "edit_name"
 }

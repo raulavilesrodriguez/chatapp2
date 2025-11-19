@@ -2,7 +2,7 @@ package com.packt.ui.snackbar
 
 import android.content.res.Resources
 import androidx.annotation.StringRes
-import com.packt.ui.R
+import com.packt.chat.core.ui.R
 
 sealed class SnackbarMessage {
     class StringSnackbar(val message: String) : SnackbarMessage()

@@ -26,8 +26,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.packt.chat.core.ui.R
 import com.packt.conversations.ui.model.Conversation
-import com.packt.ui.R
 import com.packt.ui.composables.DropdownContextMenu
 import kotlinx.coroutines.launch
 import kotlin.Int

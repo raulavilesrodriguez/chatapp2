@@ -1,5 +1,6 @@
 package com.packt.chat.ui
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,10 +16,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,10 +46,14 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.packt.chat.R
+import com.packt.chat.feature.chat.R
 import com.packt.chat.ui.model.Message
+import com.packt.domain.model.ChatMetadata
 import com.packt.domain.user.UserData
 import com.packt.ui.avatar.Avatar
+import com.packt.ui.avatar.DEFAULT_AVATAR
+import com.packt.ui.avatar.DEFAULT_AVATAR_GROUP
+import com.packt.ui.composables.DropdownContextMenu
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
@@ -60,7 +67,11 @@ fun ChatScreen(
     val uiState by viewModel.uiState.collectAsState()
     val sendText by viewModel.sendText.collectAsState()
     val messages by viewModel.messages.collectAsState()
-    val currentUserId = viewModel.currentUserId
+    val currentUser = viewModel.user
+    val chatMetadata by viewModel.chatMetadata.collectAsState()
+
+    val optionsChat = ActionsChat.getOptions()
+    val optionsGroup = ActionsGroup.getOptions()
 
     LaunchedEffect(Unit) {
         viewModel.reloadCurrentUser()
@@ -85,30 +96,53 @@ fun ChatScreen(
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
-
-    ChatScreenContent(
-        onBackClick = onBackClick,
-        participant = uiState,
-        sendText = sendText,
-        updateSendText = viewModel::updateSendText,
-        onSendMessage = viewModel::onSendMessage,
-        messages = messages,
-        onLoadMoreMessages = { viewModel.loadMoreMessages(chatId.orEmpty())},
-        currentUserUid = currentUserId
-    )
+    if(chatMetadata != null){
+        ChatScreenContent(
+            onBackClick = onBackClick,
+            otherParticipants = uiState,
+            sendText = sendText,
+            updateSendText = viewModel::updateSendText,
+            onSendMessage = viewModel::onSendMessage,
+            messages = messages,
+            onLoadMoreMessages = { viewModel.loadMoreMessages(chatId.orEmpty())},
+            currentUser = currentUser,
+            chatMetadata = chatMetadata!!,
+            optionsChat = optionsChat,
+            optionsGroup = optionsGroup,
+            onActionChatClick = {action -> viewModel.onActionChatClick(action)},
+            onActionGroupClick = {action -> viewModel.onActionGroupClick(action)}
+        )
+    }else{
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(80.dp),
+                color = MaterialTheme.colorScheme.onPrimary,
+                strokeWidth = 4.dp
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreenContent(
     onBackClick: () -> Unit,
-    participant: UserData,
+    otherParticipants: List<UserData>,
     sendText: String,
     updateSendText: (String) -> Unit,
     onSendMessage: ()->Unit,
     messages: List<Message>,
     onLoadMoreMessages: () -> Unit,
-    currentUserUid: String
+    currentUser: UserData?,
+    chatMetadata: ChatMetadata,
+    optionsChat: List<Int>,
+    optionsGroup: List<Int>,
+    onActionChatClick :(Int) -> Unit,
+    onActionGroupClick :(Int) -> Unit
 ){
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing, // para que no se ponga encima de la parte superior del movil
@@ -116,8 +150,24 @@ fun ChatScreenContent(
             ChatToolbar(
                 iconBack = R.drawable.arrow_back,
                 onBackClick = onBackClick,
-                participant = participant,
-                currentUserUid = currentUserUid
+                otherParticipants = otherParticipants,
+                currentUser = currentUser,
+                chatMetadata = chatMetadata,
+                actions = {
+                    if(chatMetadata.isGroup){
+                        DropdownContextMenu(
+                            options = optionsGroup,
+                            modifier = Modifier,
+                            onActionClick = onActionGroupClick
+                        )
+                    } else{
+                        DropdownContextMenu(
+                            options = optionsChat,
+                            modifier = Modifier,
+                            onActionClick = onActionChatClick
+                        )
+                    }
+                }
             )
         },
         bottomBar = {
@@ -132,7 +182,7 @@ fun ChatScreenContent(
             messages = messages,
             paddingValues = paddingValues,
             onLoadMoreMessages = onLoadMoreMessages,
-            participant = participant
+            otherParticipants = otherParticipants
         )
     }
 }
@@ -142,46 +192,56 @@ fun ChatScreenContent(
 fun ChatToolbar(
     @DrawableRes iconBack: Int,
     onBackClick: () -> Unit,
-    participant: UserData,
-    currentUserUid: String
+    otherParticipants: List<UserData>,
+    currentUser: UserData?,
+    chatMetadata: ChatMetadata,
+    actions: @Composable () -> Unit
 ){
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(4.dp),
+            .padding(horizontal = 4.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = { onBackClick() }){
             Icon(
                 painter = painterResource(id = iconBack),
-                contentDescription = null
+                contentDescription = "back"
             )
         }
         Spacer(modifier = Modifier.width(8.dp))
-        val photoSource: Any = participant.photoUrl
+        Log.d("ChatScreen", "isGroup: $chatMetadata")
+        val photoSource:Any = when(otherParticipants.size){
+            0 -> currentUser?.photoUrl?: DEFAULT_AVATAR
+            1 -> if(chatMetadata.isGroup) chatMetadata.groupPhotoUrl?: DEFAULT_AVATAR_GROUP else otherParticipants[0].photoUrl
+            else -> chatMetadata.groupPhotoUrl?: DEFAULT_AVATAR_GROUP
+        }
         Avatar(
             photoUri = photoSource,
             size = 40.dp,
-            contentDescription = "${participant.name}'s avatar"
+            contentDescription = "avatar"
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp),
+            modifier = Modifier.height(40.dp),
             verticalArrangement = Arrangement.Center,
         ) {
-            val displayName = if (currentUserUid == participant.uid) {
-                "${participant.name ?:""} (${stringResource(R.string.you)})"
-            } else {
-                participant.name ?:""
+            val displayName = when (otherParticipants.size) {
+                0 -> "${currentUser?.name ?: ""} (${stringResource(R.string.you)})"
+                1 -> if (chatMetadata.isGroup) chatMetadata.groupName ?: stringResource(R.string.unknow_group)
+                else otherParticipants[0].name?: stringResource(R.string.unknow_user)
+                else -> chatMetadata.groupName ?: stringResource(R.string.unknow_group)
             }
             Text(
                 text = displayName,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 4.dp)
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(bottom = 4.dp),
+                maxLines = 1
             )
         }
+        // emppuja todo hacia la derecha
+        Spacer(modifier = Modifier.weight(1f))
+        actions()
     }
 }
 
@@ -229,7 +289,7 @@ fun ListOfMessages(
     messages: List<Message>,
     paddingValues: PaddingValues,
     onLoadMoreMessages: () -> Unit,
-    participant: UserData
+    otherParticipants: List<UserData>
 ) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -243,9 +303,9 @@ fun ListOfMessages(
             .collect { layoutInfo ->
                 // Obtenemos el índice del último item visible en la pantalla
                 // que en reverseLayout=true es el que está MÁS ARRIBA.
-                val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                // Si no hay items o no hay índice, no hacemos nada.
-                if (lastVisibleItemIndex == null) return@collect
+                // Si no hay items o no hay índice, no hacemos nada. Para el Elvis
+                val lastVisibleItemIndex =
+                    layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: return@collect
                 // El número total de items que tenemos cargados actualmente.
                 val totalItemsCount = layoutInfo.totalItemsCount
                 // Condición: Si el índice del último item visible (el de arriba)
@@ -285,7 +345,7 @@ fun ListOfMessages(
                 messages,
                 key = {message -> message.id}
             ) { message ->
-                MessageItem(message = message, participant = participant)
+                MessageItem(message = message, otherParticipants = otherParticipants)
             }
         }
     }
@@ -295,16 +355,25 @@ fun ListOfMessages(
 @Composable
 fun ChatToolbarPreview(){
     MaterialTheme {
-        val participant = UserData(
-            uid = "1we2",
-            name = "Mayra",
-            photoUrl = "https://i.pravatar.cc/300?img=10"
+        val participants = listOf(
+            UserData(
+                uid = "1we2",
+                name = "Mayra",
+                photoUrl = "https://i.pravatar.cc/300?img=10"
+            )
+        )
+        val currentUser = UserData(
+            uid = "1we3",
+            name = "Loco",
+            photoUrl = "https://i.pravatar.cc/300?img=11"
         )
         ChatToolbar(
             iconBack = R.drawable.arrow_back,
             onBackClick = {},
-            participant = participant,
-            currentUserUid = "1we2"
+            otherParticipants = participants,
+            currentUser = currentUser,
+            chatMetadata = ChatMetadata(),
+            actions = {}
         )
     }
 }

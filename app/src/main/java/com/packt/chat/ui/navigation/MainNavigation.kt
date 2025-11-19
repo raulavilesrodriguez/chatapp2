@@ -16,7 +16,6 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -31,6 +30,9 @@ import com.packt.ui.snackbar.SnackbarManager
 import kotlinx.coroutines.CoroutineScope
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -42,6 +44,7 @@ import com.packt.chat.ui.theme.ChatTheme
 import com.packt.conversations.ui.ConversationsListScreen
 import com.packt.create_chat.ui.CreateConversationScreen
 import com.packt.create_chat.ui.CreateGroup
+import com.packt.create_chat.ui.SetGroupChatScreen
 import com.packt.settings.ui.LoginScreen
 import com.packt.settings.ui.SettingsScreen
 import com.packt.settings.ui.SplashScreen
@@ -49,6 +52,8 @@ import com.packt.settings.ui.edit.EditNameScreen
 import com.packt.settings.ui.edit.EditScreen
 import com.packt.ui.navigation.DeepLinks
 import com.packt.ui.navigation.NavRoutes
+import androidx.navigation.navigation
+import com.packt.create_chat.ui.CreateConversationViewModel
 
 @Composable
 fun MainNavigation(){
@@ -82,7 +87,7 @@ fun MainNavigation(){
                     addConversationsList(appState)
                     addNewConversation(appState)
                     addChat(appState)
-                    groupChat(appState)
+                    addCreateGroupGraph(appState)
                     editUser(appState)
                     editNameUser(appState)
                 }
@@ -178,15 +183,6 @@ private fun NavGraphBuilder.addChat(appState: AppState){
     }
 }
 
-private fun NavGraphBuilder.groupChat(appState: AppState){
-    composable(NavRoutes.GroupChat) {
-        CreateGroup(
-            openScreen = {route -> appState.navigate(route) },
-            popUp = { appState.popUp() }
-        )
-    }
-}
-
 private fun NavGraphBuilder.editUser(appState: AppState){
     composable(NavRoutes.EditUser) {
         EditScreen(
@@ -203,4 +199,37 @@ private fun NavGraphBuilder.editNameUser(appState: AppState){
             popUp = { appState.popUp() }
         )
     }
+}
+
+private fun NavGraphBuilder.addCreateGroupGraph(appState: AppState){
+    navigation(
+        startDestination = NavRoutes.GroupChat,
+        route = NavRoutes.CreateGroupGraph
+    ){
+        composable(NavRoutes.GroupChat) { backStackEntry ->
+            val viewModel: CreateConversationViewModel = hiltViewModel(
+                backStackEntry.findStartDestination(appState.navController)
+            )
+            CreateGroup(
+                openScreen = { route -> appState.navigate(route) },
+                viewModel = viewModel
+            )
+        }
+        composable(NavRoutes.SetGroupChat) { backStackEntry ->
+            val viewModel: CreateConversationViewModel = hiltViewModel(
+                backStackEntry.findStartDestination(appState.navController)
+            )
+            SetGroupChatScreen(
+                openAndPopUp = {route, popUp -> appState.navigateAndPopUp(route, popUp)},
+                popUp = { appState.popUp() },
+                viewModel = viewModel
+            )
+        }
+    }
+}
+
+private fun NavBackStackEntry.findStartDestination(navController: NavController): NavBackStackEntry {
+    return this.destination.parent?.let { parent ->
+        navController.getBackStackEntry(parent.route!!)
+    } ?: this
 }

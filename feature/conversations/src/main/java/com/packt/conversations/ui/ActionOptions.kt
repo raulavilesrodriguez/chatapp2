@@ -1,7 +1,8 @@
 package com.packt.conversations.ui
 
 import androidx.annotation.StringRes
-import com.packt.conversations.R
+import com.packt.chat.feature.conversations.R
+
 
 enum class ActionOptions(@param:StringRes val id: Int) {
     GROUP(R.string.group),

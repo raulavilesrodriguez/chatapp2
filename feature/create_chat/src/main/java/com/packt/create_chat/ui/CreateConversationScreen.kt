@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.packt.create_chat.R
+import com.packt.chat.feature.create_chat.R
 import com.packt.domain.user.UserData
 import com.packt.ui.composables.SearchField
 

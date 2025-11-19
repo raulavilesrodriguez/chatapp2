@@ -2,6 +2,7 @@ package com.packt.chat.ui.model
 
 data class Message(
     val id: String,
+    val senderId: String? = null,
     val senderName: String,
     val senderAvatar: String,
     var timestamp: String,

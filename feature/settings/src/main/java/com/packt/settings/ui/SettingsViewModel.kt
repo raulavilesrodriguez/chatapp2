@@ -4,7 +4,7 @@ import android.app.Activity
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.auth.PhoneAuthProvider
-import com.packt.settings.R
+
 import com.packt.settings.domain.PhoneVerificationResult
 import com.packt.settings.domain.usecases.DeleteAccount
 import com.packt.settings.domain.usecases.DownloadUrlPhoto
@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 import androidx.compose.runtime.State
 import com.google.firebase.FirebaseException
+import com.packt.chat.feature.settings.R
 import com.packt.domain.user.UserData
 import com.packt.settings.domain.usecases.GetAndStoreFCMToken
 import com.packt.settings.domain.usecases.GetPhoneNumber

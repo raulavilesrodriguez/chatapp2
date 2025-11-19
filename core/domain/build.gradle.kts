@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.packt.domain"
+    namespace = "com.packt.chat.core.domain"
     compileSdk = 36
 
     defaultConfig {

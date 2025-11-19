@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.packt.conversations.R
+import com.packt.chat.feature.conversations.R
 import com.packt.conversations.ui.model.Conversation
 import com.packt.domain.model.ContentType
 import com.packt.ui.avatar.Avatar

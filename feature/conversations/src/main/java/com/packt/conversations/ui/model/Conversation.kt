@@ -3,6 +3,8 @@ package com.packt.conversations.ui.model
 import com.packt.domain.model.ChatMetadata
 import com.packt.domain.model.ContentType
 import com.packt.domain.user.UserData
+import com.packt.ui.avatar.DEFAULT_AVATAR
+import com.packt.ui.avatar.DEFAULT_AVATAR_GROUP
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -24,26 +26,26 @@ data class Conversation(
 
 fun ChatMetadata.toConversation(participants: List<UserData>, currentUserId: String): Conversation {
     val unread = this.unreadCount[currentUserId] ?: 0
-    val isGroup = participants.size > 2
 
     val displayName: String
     val displayPhotoUrl: String
     var isMine = false
 
-    if(isGroup){
-        displayName = this.groupName ?: participants.mapNotNull { it.name }.joinToString(" ")
-        displayPhotoUrl = this.groupPhotoUrl ?: ""
+    if(this.isGroup){
+        displayName = this.groupName ?: "Grupo sin nombre"
+        displayPhotoUrl = this.groupPhotoUrl ?: DEFAULT_AVATAR_GROUP
     } else {
         // chats 1 to 1
         val otherUser = participants.find { it.uid != currentUserId }
         if (otherUser != null){
-            displayName = otherUser.name ?: ""
+            displayName = otherUser.name ?: "Usuario sin nombre"
             displayPhotoUrl = otherUser.photoUrl
+            isMine = false
         } else {
             // chats with me
             val currentUser = participants.find { it.uid == currentUserId }
-            displayName = currentUser?.name ?: ""
-            displayPhotoUrl = currentUser?.photoUrl ?: ""
+            displayName = currentUser?.name ?: "Tú"
+            displayPhotoUrl = currentUser?.photoUrl ?: DEFAULT_AVATAR
             isMine = true
         }
     }

@@ -57,10 +57,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.packt.chat.feature.settings.R
 import com.packt.domain.user.UserData
-import com.packt.settings.R
 import com.packt.settings.ui.model.DEFAULT_AVATAR_URL
-import com.packt.settings.ui.photo.pickImageLauncher
+import com.packt.ui.photo.pickImageLauncher
 import com.packt.ui.avatar.Avatar
 import com.packt.ui.composables.ProfileToolBar
 
@@ -86,7 +86,9 @@ fun EditScreen(
             showBottomSheet = false
             // Cuando la imagen se recorta con éxito, actualizamos el ViewModel
             viewModel.onSavePhotoClick(newUri, openScreen)
-        }
+        },
+        errorCropping = R.string.error_cropping,
+        errorSaving = R.string.error_saving
     )
 
     EditScreenContent(

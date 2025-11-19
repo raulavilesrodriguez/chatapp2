@@ -21,8 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.packt.chat.feature.settings.R
 import com.packt.domain.user.UserData
-import com.packt.settings.R
 
 
 @Composable

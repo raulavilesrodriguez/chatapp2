@@ -27,16 +27,18 @@ import com.packt.chat.ui.model.Message
 import com.packt.chat.ui.model.MessageContent
 import com.packt.domain.user.UserData
 import com.packt.ui.avatar.Avatar
+import com.packt.ui.avatar.DEFAULT_AVATAR
 
 @Composable
-fun MessageItem(message: Message, participant: UserData){
+fun MessageItem(message: Message, otherParticipants: List<UserData>){
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if(message.isMine) Arrangement.End else Arrangement.Start
     ) {
+        val otherParticipant = otherParticipants.find { it.uid == message.senderId }
         if (!message.isMine) {
             Avatar(
-                photoUri = participant.photoUrl,
+                photoUri = otherParticipant?.photoUrl?: DEFAULT_AVATAR,
                 size = 40.dp,
                 contentDescription = "${message.senderName}'s avatar"
             )
@@ -48,7 +50,7 @@ fun MessageItem(message: Message, participant: UserData){
                 Spacer(modifier = Modifier.height(8.dp))
             } else {
                 Text(
-                    text = participant.name?:"",
+                    text = otherParticipant?.name?:"",
                     fontWeight = FontWeight.Bold
                 )
             }

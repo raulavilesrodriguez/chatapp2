@@ -2,4 +2,9 @@
 <resources>
     string<string name="chat_title">Chatea con %s</string>
     string<string name="you">Tú</string>
+    <string name="unknow_user">Usuario sin nombre</string>
+    <string name="unknow_group">Grupo sin nombre</string>
+    <string name="delete_chat">Eliminar chat</string>
+    <string name="get_out_group">Salir del grupo</string>
+    <string name="add_participant">Añadir participante</string>
 </resources>

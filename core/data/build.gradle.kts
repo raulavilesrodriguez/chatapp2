@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.packt.data"
+    namespace = "com.packt.chat.core.data"
     compileSdk = 36
 
     defaultConfig {

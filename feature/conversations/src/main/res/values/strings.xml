@@ -5,4 +5,6 @@
     <string name="video">Video</string>
     <string name="group">Crear Grupo</string>
     <string name="settings">Ajustes</string>
+    <string name="unknow_user">Usuario sin nombre</string>
+    <string name="unknow_group">Grupo sin nombre</string>
 </resources>

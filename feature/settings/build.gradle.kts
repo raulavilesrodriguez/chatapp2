@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.packt.settings"
+    namespace = "com.packt.chat.feature.settings"
     compileSdk = 36
 
     defaultConfig {

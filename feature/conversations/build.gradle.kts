@@ -10,7 +10,7 @@ plugins {
 }
 
 android {
-    namespace = "com.packt.conversations"
+    namespace = "com.packt.chat.feature.conversations"
     compileSdk = 36
 
     defaultConfig {

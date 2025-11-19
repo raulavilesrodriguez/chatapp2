@@ -52,18 +52,20 @@ class ChatViewModel @Inject constructor(
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val messages: StateFlow<List<Message>> = _messages
 
-    private val _uiState = MutableStateFlow(UserData())
-    val uiState: StateFlow<UserData> = _uiState
+    private val _uiState = MutableStateFlow<List<UserData>>(emptyList())
+    val uiState: StateFlow<List<UserData>> = _uiState
 
     private var chatInfoJob: Job? = null
 
-    private lateinit var chatMetadata: ChatMetadata
+    private val _chatMetadata = MutableStateFlow<ChatMetadata?>(null)
+    val chatMetadata: StateFlow<ChatMetadata?> = _chatMetadata.asStateFlow()
 
     private var lastDocument: DocumentSnapshot? = null  // referencia al último doc para paginación
     private var allMessagesLoaded = false
     private var paginationJob: Job? = null
     private var realTimeJob: Job? = null
     private var currentChatId: String? = null
+    private var userObservationJobs = mutableListOf<Job>()
 
     val currentUserId
         get() = currentUserIdUseCase()
@@ -72,7 +74,7 @@ class ChatViewModel @Inject constructor(
         _sendText.value = newText
     }
 
-    private var user: UserData? = null
+    var user: UserData? = null
 
     init {
         reloadCurrentUser()
@@ -89,29 +91,46 @@ class ChatViewModel @Inject constructor(
         chatInfoJob?.cancel()
         paginationJob?.cancel()
         realTimeJob?.cancel()
+        userObservationJobs.forEach { it.cancel() }
+        userObservationJobs.clear()
         currentChatId = chatId
+
+        // clean el estado
+        _uiState.value = emptyList()
 
         chatInfoJob = launchCatching {
             setUserActiveInChat(chatId)
             try {
                 resetUnreadCount(chatId)
-                chatMetadata = getInitialChatRoomInfo(chatId) ?: return@launchCatching
+                _chatMetadata.value = getInitialChatRoomInfo(chatId) ?: return@launchCatching
                 // inicia la carga de mensajes en una corrutina hija, para que sea mas rapido
                 launchCatching {
                     loadInitialMessages(chatId)
                 }
-                val participants: List<String> = chatMetadata.participants
-                val otherId: String? = if(participants.size == 1){
-                    currentUserId
-                } else {
-                    participants.find { it != currentUserId }
-                }
-                if(otherId != null){
-                    observeUser(otherId)
-                        .flowOn(Dispatchers.IO) //la escucha de firestore ocurre en hilo de fondo observeUser()
-                        .collect { updatedParticipant ->  //se ejecuta en el contexto del viewModelScope (Main)
-                            _uiState.value = updatedParticipant ?: UserData()
+                val participants: List<String> = _chatMetadata.value?.participants ?: emptyList()
+                 val otherParticipantsIds = participants.filter { it != currentUserId }
+
+                if(otherParticipantsIds.isNotEmpty()){
+                    // un mapa to have update the user data
+                    val participantMap = mutableMapOf<String, UserData>()
+                    otherParticipantsIds.forEach{ participantId ->
+                        val job = launchCatching {
+                            observeUser(participantId)
+                                .flowOn(Dispatchers.IO) //la escucha de firestore ocurre en hilo de fondo observeUser()
+                                .collect { user ->
+                                    if(user != null){
+                                        // synchronized para evitar condiciones de carrera
+                                        synchronized(participantMap){
+                                            participantMap[participantId] = user
+                                            _uiState.value = participantMap.values.toList()
+                                        }
+                                    }
+                                }
                         }
+                        userObservationJobs.add(job)
+                    }
+                } else {
+                    _uiState.value = emptyList()
                 }
             } catch (ie: Throwable){
                 Log.e("DEBUG LOAD MESSAGES", "Error in charge chat: ${ie.message}", ie)
@@ -206,6 +225,7 @@ class ChatViewModel @Inject constructor(
     private fun DomainMessage.toUI(): Message {
         return Message(
             id = id ?: "",
+            senderId = senderId,
             senderName = senderName,
             senderAvatar = senderAvatar,
             timestamp = timestamp ?: "",
@@ -227,7 +247,7 @@ class ChatViewModel @Inject constructor(
         if(currentMessageText.isBlank()){
             return
         }
-        if(!this::chatMetadata.isInitialized){
+        if(_chatMetadata.value == null){
             Log.e("DEBUG SEND MESSAGE", "Chat metadata not initialized")
             return
         }
@@ -236,7 +256,7 @@ class ChatViewModel @Inject constructor(
             val formattedTimestampForUI = sdf.format(java.util.Date(System.currentTimeMillis()))
             val message = DomainMessage(
                 id = "",
-                chatId = chatMetadata.chatId,
+                chatId = _chatMetadata.value?.chatId ?: return@launchCatching,
                 senderId = user?.uid?:currentUserId,
                 senderName = user?.name?:"Yo",
                 senderAvatar = user?.photoUrl ?: "",
@@ -247,7 +267,20 @@ class ChatViewModel @Inject constructor(
                 contentDescription = currentMessageText
             )
             _sendText.value = ""
-            sendMessage(chatMetadata.chatId, message, chatMetadata.participants)
+            sendMessage(_chatMetadata.value!!.chatId, message, _chatMetadata.value!!.participants)
+        }
+    }
+
+    fun onActionChatClick(action: Int){
+        when(ActionsChat.getById(action)){
+            ActionsChat.DELETE -> {}
+        }
+    }
+
+    fun onActionGroupClick(action: Int){
+        when(ActionsGroup.getById(action)){
+            ActionsGroup.ADD -> {}
+            ActionsGroup.LEFT -> {}
         }
     }
 }

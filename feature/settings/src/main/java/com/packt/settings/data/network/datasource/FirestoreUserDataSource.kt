@@ -1,6 +1,5 @@
 package com.packt.settings.data.network.datasource
 
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.toObject

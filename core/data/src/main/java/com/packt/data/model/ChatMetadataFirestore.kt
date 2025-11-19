@@ -1,6 +1,7 @@
 package com.packt.data.model
 
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.PropertyName
 import com.packt.domain.model.ChatMetadata
 import com.packt.domain.model.ContentType
 
@@ -14,6 +15,8 @@ data class ChatMetadataFirestore(
     val unreadCount: Map<String, Int>? = null,
     val createdAt: Timestamp? = null,//time to create chat
     // to groups
+    @get:PropertyName("isGroup")
+    val isGroup: Boolean? = null,
     val groupName: String? = null,
     val groupPhotoUrl: String? = null
 ) {
@@ -36,6 +39,7 @@ data class ChatMetadataFirestore(
             lastMessageType = domainLastMessageType,
             unreadCount = unreadCount ?: emptyMap(),
             createdAt = createdAt?.toDate()?.time ?: System.currentTimeMillis(),
+            isGroup = isGroup ?: false,
             groupName = groupName,
             groupPhotoUrl = groupPhotoUrl
         )

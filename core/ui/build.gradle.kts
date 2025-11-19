@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.packt.ui"
+    namespace = "com.packt.chat.core.ui"
     compileSdk = 36
 
     defaultConfig {
@@ -59,6 +59,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.coil)
     implementation(libs.android.image.cropper)
+    implementation(libs.imagecropview)
+    implementation(libs.ucrop)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.material.icons.extended)

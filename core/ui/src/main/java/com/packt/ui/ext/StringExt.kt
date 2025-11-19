@@ -35,3 +35,11 @@ fun String.normalizeName(): String {
     // 4. Eliminar espacios al inicio y fin
     return result.trim()
 }
+
+fun String.truncate(maxLength: Int): String {
+    return if (this.length > maxLength) {
+        this.substring(0, maxLength) + "..."
+    } else {
+        this
+    }
+}

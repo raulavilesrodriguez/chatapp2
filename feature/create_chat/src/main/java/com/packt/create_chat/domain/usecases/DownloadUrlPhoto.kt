@@ -3,10 +3,10 @@ package com.packt.create_chat.domain.usecases
 import com.packt.create_chat.domain.IStoreUsersRepository
 import javax.inject.Inject
 
-class CreateChat @Inject constructor(
+class DownloadUrlPhoto @Inject constructor(
     private val repository: IStoreUsersRepository
 ) {
-    suspend operator fun invoke(participants: List<String>, isGroup: Boolean): String {
-        return repository.createChat(participants, isGroup)
+    suspend operator fun invoke(remotePath: String): String {
+        return repository.downloadUrlPhoto(remotePath)
     }
 }

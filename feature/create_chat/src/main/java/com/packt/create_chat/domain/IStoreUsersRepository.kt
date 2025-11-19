@@ -5,7 +5,12 @@ import kotlinx.coroutines.flow.Flow
 
 interface IStoreUsersRepository {
     val currentUserId: String
+    suspend fun getUser(userId: String): UserData?
     suspend fun getUsers(): Flow<List<UserData>>
     suspend fun searchUsers(namePrefix: String): Flow<List<UserData>>
-    suspend fun createChat(participants: List<String>): String
+    suspend fun createChat(participants: List<String>, isGroup: Boolean): String
+    suspend fun updateChatInfo(chatId: String, groupName: String?, groupPhotoUrl: String?)
+    suspend fun chatExists(participants: List<String>, groupName: String?): Boolean
+    suspend fun uploadPhoto(localPhoto: String, remotePath: String)
+    suspend fun downloadUrlPhoto(remotePath: String) : String
 }
