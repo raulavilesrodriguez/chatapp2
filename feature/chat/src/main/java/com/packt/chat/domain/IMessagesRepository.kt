@@ -17,4 +17,9 @@ interface IMessagesRepository {
     suspend fun resetUnreadCount(chatId: String)
     suspend fun setUserActiveInChat(chatId: String)
     suspend fun clearUserActiveStatus(chatId: String)
+    suspend fun deleteChatForCurrentUser(chatId: String)
+    suspend fun leftUserFromGroup(chatId: String)
+    suspend fun addUsersToGroup(chatId: String, usersToAdd: List<String>)
+    suspend fun getUsers(): Flow<List<UserData>>
+    suspend fun searchUsers(namePrefix: String): Flow<List<UserData>>
 }

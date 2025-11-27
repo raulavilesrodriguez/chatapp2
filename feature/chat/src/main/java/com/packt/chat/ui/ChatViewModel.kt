@@ -3,14 +3,19 @@ package com.packt.chat.ui
 import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
+import com.packt.chat.domain.usecases.AddUsersToGroup
 import com.packt.chat.domain.usecases.ClearUserActiveStatus
+import com.packt.chat.domain.usecases.DeleteChatForCurrentUser
 import com.packt.chat.domain.usecases.GetCurrentUserId
 import com.packt.chat.domain.usecases.GetInitialChatRoomInfo
 import com.packt.chat.domain.usecases.GetMessages
 import com.packt.chat.domain.usecases.GetMessagesPaged
 import com.packt.chat.domain.usecases.GetUser
+import com.packt.chat.domain.usecases.GetUsers
+import com.packt.chat.domain.usecases.LeftUserFromGroup
 import com.packt.chat.domain.usecases.ObserveUser
 import com.packt.chat.domain.usecases.ResetUnreadCount
+import com.packt.chat.domain.usecases.SearchUsers
 import com.packt.chat.domain.usecases.SendMessage
 import com.packt.chat.domain.usecases.SetUserActiveInChat
 import com.packt.chat.ui.model.Message
@@ -18,20 +23,26 @@ import com.packt.chat.ui.model.MessageContent
 import com.packt.domain.model.ChatMetadata
 import com.packt.domain.model.ContentType
 import com.packt.domain.user.UserData
+import com.packt.ui.navigation.NavRoutes
 import com.packt.ui.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.text.SimpleDateFormat
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 import com.packt.chat.domain.models.Message as DomainMessage
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val getMessages: GetMessages,
@@ -43,7 +54,12 @@ class ChatViewModel @Inject constructor(
     private val observeUser: ObserveUser,
     private val resetUnreadCount: ResetUnreadCount,
     private val setUserActiveInChat: SetUserActiveInChat,
-    private val clearUserActiveStatus: ClearUserActiveStatus
+    private val clearUserActiveStatus: ClearUserActiveStatus,
+    private val deleteChatForCurrentUser: DeleteChatForCurrentUser,
+    private val leftUserFromGroup: LeftUserFromGroup,
+    private val addUsersToGroup: AddUsersToGroup,
+    private val getUsers: GetUsers,
+    private val searchUsers: SearchUsers,
     ) : BaseViewModel() {
 
     private val _sendText = MutableStateFlow("")
@@ -60,12 +76,62 @@ class ChatViewModel @Inject constructor(
     private val _chatMetadata = MutableStateFlow<ChatMetadata?>(null)
     val chatMetadata: StateFlow<ChatMetadata?> = _chatMetadata.asStateFlow()
 
+    private val _searchText = MutableStateFlow("")
+    val searchText: StateFlow<String> = _searchText.asStateFlow()
+    private val _searchResults = MutableStateFlow<List<UserData>>(emptyList())
+    val searchResults: StateFlow<List<UserData>> = _searchResults.asStateFlow()
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+    private val _selectedParticipants = MutableStateFlow<Set<UserData>>(emptySet())
+    val selectedParticipants: StateFlow<Set<UserData>> = _selectedParticipants.asStateFlow()
+
     private var lastDocument: DocumentSnapshot? = null  // referencia al último doc para paginación
     private var allMessagesLoaded = false
     private var paginationJob: Job? = null
     private var realTimeJob: Job? = null
     private var currentChatId: String? = null
     private var userObservationJobs = mutableListOf<Job>()
+    private var searchJob: Job? = null
+
+    init {
+        launchCatching {
+            _searchText
+                .debounce(300)
+                .distinctUntilChanged()
+                .collect { query ->
+                    searchJob?.cancel() // cancel previous search
+                    if (query.isBlank()) {
+                        fetchAllUsers()
+                    } else {
+                        performSearch(query)
+                    }
+                }
+        }
+    }
+
+    private fun fetchAllUsers() {
+        _isLoading.value = true
+        searchJob = launchCatching {
+            getUsers()
+                .collect { users ->
+                    _searchResults.value = users
+                    _isLoading.value = false
+                }
+        }
+        searchJob?.invokeOnCompletion { if (it is CancellationException) _isLoading.value = false }
+    }
+
+    private fun performSearch(query: String) {
+        _isLoading.value = true
+        searchJob = launchCatching {
+            searchUsers(query)
+                .collect { users ->
+                    _searchResults.value = users
+                    _isLoading.value = false
+                }
+        }
+        searchJob?.invokeOnCompletion { if (it is CancellationException) _isLoading.value = false }
+    }
 
     val currentUserId
         get() = currentUserIdUseCase()
@@ -138,13 +204,22 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    private fun cancelAllListeners(){
+        chatInfoJob?.cancel()
+        paginationJob?.cancel()
+        realTimeJob?.cancel()
+        userObservationJobs.forEach { it.cancel() }
+        userObservationJobs.clear()
+    }
+
     override fun onCleared() {
         super.onCleared()
         currentChatId?.let { chatId ->
-            launchCatching {
+            launchCatching(snackbar = false) {
                 clearUserActiveStatus(chatId)
             }
         }
+        cancelAllListeners()
     }
 
     fun setChatActive(){
@@ -271,16 +346,54 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onActionChatClick(action: Int){
+    fun onActionChatClick(action: Int, chatId: String){
         when(ActionsChat.getById(action)){
-            ActionsChat.DELETE -> {}
+            ActionsChat.DELETE -> {
+                launchCatching {
+                    deleteChatForCurrentUser(chatId)
+                }
+            }
         }
     }
 
-    fun onActionGroupClick(action: Int){
+    fun onActionGroupClick(action: Int, chatId: String, openScreen: (String) -> Unit){
         when(ActionsGroup.getById(action)){
-            ActionsGroup.ADD -> {}
-            ActionsGroup.LEFT -> {}
+            ActionsGroup.ADD -> {
+                openScreen(NavRoutes.NewParticipantsGroup)
+            }
+            ActionsGroup.LEFT -> {
+                launchCatching(snackbar = false) {
+                    cancelAllListeners()
+                    leftUserFromGroup(chatId)
+                    openScreen(NavRoutes.ConversationsList)
+                }
+            }
+        }
+    }
+
+    fun updateSearchText(newText: String) {
+        _searchText.value = newText
+    }
+
+    fun addParticipant(user: UserData) {
+        _selectedParticipants.value += user
+    }
+
+    fun removeParticipant(user: UserData) {
+        _selectedParticipants.value -= user
+    }
+
+    fun clearParticipants() {
+        _selectedParticipants.value = emptySet()
+    }
+
+    fun addNewParticipants(openAndPopUp: (String, String) -> Unit){
+        launchCatching {
+            val uids = _selectedParticipants.value.map { it.uid }
+            val chatIdGroup = _chatMetadata.value?.chatId ?: return@launchCatching
+            addUsersToGroup(chatIdGroup, uids)
+            //Navigation to chat screen
+            openAndPopUp(NavRoutes.Chat.replace("{chatId}", chatIdGroup), NavRoutes.NewParticipantsGroup)
         }
     }
 }

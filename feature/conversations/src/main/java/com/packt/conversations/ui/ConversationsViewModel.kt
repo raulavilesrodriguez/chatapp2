@@ -72,10 +72,10 @@ class ConversationsViewModel @Inject constructor(
 
     private fun enrichConversations(metadataList: List<ChatMetadata>): Flow<List<Conversation>> = flow {
         val enrichedConversations = metadataList.map { metadata ->
-            val otherUsers = metadata.participants
+            val participantsUserData = metadata.participants
                 .mapNotNull { getOrFetchUser(it) }
 
-            metadata.toConversation(otherUsers, currentUserId)
+            metadata.toConversation(participantsUserData, currentUserId)
         }
         emit(enrichedConversations)
     }

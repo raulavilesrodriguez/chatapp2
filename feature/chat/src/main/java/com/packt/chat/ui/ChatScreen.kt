@@ -61,6 +61,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChatScreen(
     chatId: String?,
+    openScreen: (String) -> Unit,
     onBackClick: () -> Unit,
     viewModel: ChatViewModel = hiltViewModel()
 ){
@@ -109,8 +110,12 @@ fun ChatScreen(
             chatMetadata = chatMetadata!!,
             optionsChat = optionsChat,
             optionsGroup = optionsGroup,
-            onActionChatClick = {action -> viewModel.onActionChatClick(action)},
-            onActionGroupClick = {action -> viewModel.onActionGroupClick(action)}
+            onActionChatClick = { action ->
+                if(chatId != null) viewModel.onActionChatClick(action, chatId)
+                onBackClick() },
+            onActionGroupClick = {action ->
+                if(chatId != null) viewModel.onActionGroupClick(action, chatId, openScreen)
+            }
         )
     }else{
         Column(

@@ -51,4 +51,22 @@ class MessagesRepository @Inject constructor(
     override suspend fun clearUserActiveStatus(chatId: String) {
         dataSource.clearUserActiveStatus(chatId)
     }
+
+    override suspend fun deleteChatForCurrentUser(chatId: String) = dataSource.deleteChatForCurrentUser(chatId)
+
+    override suspend fun leftUserFromGroup(chatId: String) {
+        dataSource.leftUserFromGroup(chatId)
+    }
+
+    override suspend fun addUsersToGroup(chatId: String, usersToAdd: List<String>) {
+        dataSource.addUsersToGroup(chatId, usersToAdd)
+    }
+
+    override suspend fun getUsers(): Flow<List<UserData>> {
+        return dataSource.getUsers()
+    }
+
+    override suspend fun searchUsers(namePrefix: String): Flow<List<UserData>> {
+        return dataSource.searchUsers(namePrefix)
+    }
 }

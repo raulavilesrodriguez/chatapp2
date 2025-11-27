@@ -6,17 +6,23 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.toObject
 import com.packt.chat.data.model.FirestoreMessageModel
 import com.packt.chat.domain.models.Message
 import com.packt.data.model.ChatMetadataFirestore
+import com.packt.data.model.UserConversationsFirestore
 import com.packt.domain.model.ChatMetadata
 import com.packt.domain.user.UserData
+import com.packt.ui.ext.normalizeName
+import com.packt.ui.snackbar.SnackbarManager
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import java.util.Date
 import javax.inject.Inject
 
 class FirestoreChatsDataSource @Inject constructor(
@@ -31,15 +37,19 @@ class FirestoreChatsDataSource @Inject constructor(
             .document(uid)
             .get().await().toObject()
 
-    fun getMessages(chatId: String, userId: String, since:Timestamp): Flow<List<Message>> = callbackFlow {
+    fun getMessages(
+        chatId: String,
+        userId: String,
+        since:Timestamp
+    ): Flow<List<Message>> = callbackFlow {
 
         val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
             .collection(MESSAGES_COLLECTION)
 
         // Create a query to get the messages ordered by timestamp (ascending)
         val query = chatRef
-            .orderBy(ORDER_BY_FIELD, Query.Direction.ASCENDING)
-            .whereGreaterThan(ORDER_BY_FIELD, since)
+                .orderBy(ORDER_BY_FIELD, Query.Direction.ASCENDING)
+                .whereGreaterThan(ORDER_BY_FIELD, since)
 
         // Add a snapshot listener to the query to listen for real-time updates
         val listenerRegistration = query.addSnapshotListener { snapshot, exception ->
@@ -51,8 +61,7 @@ class FirestoreChatsDataSource @Inject constructor(
 
             // Convert the snapshot to a list of Message objects
             val messages = snapshot?.documents?.mapNotNull { doc ->
-                val message = doc.toObject(FirestoreMessageModel::class.java)
-                message?.copy(doc.id)
+                doc.toObject(FirestoreMessageModel::class.java)?.copy(id = doc.id)
             } ?: emptyList()
 
             val domainMessages = messages.map {
@@ -81,6 +90,22 @@ class FirestoreChatsDataSource @Inject constructor(
             .orderBy(ORDER_BY_FIELD, Query.Direction.DESCENDING) // más viejos final
             .limit(pageSize)
 
+        val userConversationDoc = firestore
+            .collection(USERS_COLLECTION).document(userId)
+            .collection(USER_CONVERSATIONS_COLLECTION).document(chatId)
+            .get().await()
+
+        val clearedTimestamp = if(userConversationDoc.exists()){
+            userConversationDoc.toObject(UserConversationsFirestore::class.java)?.clearedTimestamp
+        }else{
+            null
+        }
+
+        // to show los mensajes desde clearedTimestamp
+        if (clearedTimestamp != null){
+            query = query.whereGreaterThan(ORDER_BY_FIELD, clearedTimestamp)
+        }
+
         // continue the consult from the last document
         if (lastDocument != null) {
             query = query.startAfter(lastDocument)
@@ -91,7 +116,7 @@ class FirestoreChatsDataSource @Inject constructor(
         // Convert the snapshot to a list of Message objects
         val messages = snapshot.documents.mapNotNull { doc ->
             val message = doc.toObject(FirestoreMessageModel::class.java)
-            message?.copy(doc.id)
+            message?.copy(id = doc.id)
         }
 
         val domainMessages = messages.map {
@@ -108,16 +133,13 @@ class FirestoreChatsDataSource @Inject constructor(
         val messageModel = FirestoreMessageModel.fromDomain(message)
         //messagesRef.add(messageModel).await()
 
-        // para asegurar que todo acurra de manera atomica
+        // para asegurar que todo acurra de manera atomica todo al mismo tiempo
         firestore.runTransaction { transaction ->
             val otherParticipantsIds = participants.filter { it != currentUserId }
             val recipientDocs = otherParticipantsIds.map {
                 val userRef = firestore.collection(USERS_COLLECTION).document(it)
                 transaction.get(userRef)
             }
-
-            // Add the new message to the messages collection
-            transaction.set(messagesRef.document(), messageModel)
 
             // update ChatMetadataFirestore
             val updates = mutableMapOf(
@@ -136,7 +158,31 @@ class FirestoreChatsDataSource @Inject constructor(
                     // unreadCount es un mapa por eso se usa el punto
                     updates["unreadCount.$recipientId"] = FieldValue.increment(1)
                 }
+                val userConversationsRef = firestore.collection(USERS_COLLECTION)
+                    .document(userDoc.id)
+                    .collection(USER_CONVERSATIONS_COLLECTION)
+                    .document(chatId)
+
+                val userConvSnapshot = transaction.get(userConversationsRef)
+                if(!userConvSnapshot.exists()){
+                    // tiempo currentUser
+                    val now = Date()
+                    //    para asegurar que el nuevo mensaje siempre sea 'posterior'.
+                    val clearedTimestampWithOffset = Timestamp(Date(now.time - 100))
+
+                    val userConversationsUpdate = mutableMapOf(
+                        "chatId" to chatId,
+                        "clearedTimestamp" to clearedTimestampWithOffset,
+                        "blocked" to false,
+                        "updatedAt" to FieldValue.serverTimestamp()
+                    )
+                    transaction.set(userConversationsRef, userConversationsUpdate, SetOptions.merge())
+                } else {
+                    transaction.update(userConversationsRef, "updatedAt", FieldValue.serverTimestamp())
+                }
             }
+            // Add the new message to the messages collection
+            transaction.set(messagesRef.document(), messageModel)
             transaction.update(chatRef, updates)
         }.await()
     }
@@ -208,11 +254,124 @@ class FirestoreChatsDataSource @Inject constructor(
         }.await()
     }
 
+    suspend fun deleteChatForCurrentUser(chatId: String){
+        if(currentUserId.isEmpty()) return
+
+        firestore.collection(USERS_COLLECTION).document(currentUserId)
+            .collection(USER_CONVERSATIONS_COLLECTION)
+            .document(chatId).delete().await()
+    }
+
+    suspend fun addUsersToGroup(chatId: String, usersToAdd: List<String>){
+        if(usersToAdd.isEmpty()) return
+        // referencia al chat
+        val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
+
+        firestore.runTransaction { transaction ->
+            val chatSnapshot = transaction.get(chatRef)
+            val chatData = chatSnapshot.toObject(ChatMetadataFirestore::class.java)
+
+            if(chatData == null){
+                SnackbarManager.showMessage("El chat con ID $chatId no existe. No se pueden añadir usuarios.")
+                return@runTransaction
+            }
+            val currentParticipants = chatData.participants.orEmpty().toSet()
+            val newParticipants = usersToAdd.filter { !currentParticipants.contains(it) }
+
+            if(newParticipants.isEmpty()){
+                SnackbarManager.showMessage("No hay usuarios nuevos para añadir.")
+                return@runTransaction
+            }
+            // arrayUnion con una lista de argumentos variables (*newParticipants.toTypedArray())
+            transaction.update(chatRef,
+                "participants", FieldValue.arrayUnion(*newParticipants.toTypedArray()))
+            transaction.update(chatRef, "updatedAt", FieldValue.serverTimestamp())
+
+            newParticipants.forEach { userId ->
+                val userConvRef = firestore.collection(USERS_COLLECTION).document(userId)
+                    .collection(USER_CONVERSATIONS_COLLECTION).document(chatId)
+
+                val userConversationsUpdate = mutableMapOf(
+                    "chatId" to chatId,
+                    "clearedTimestamp" to FieldValue.serverTimestamp(),
+                    "blocked" to false,
+                    "updatedAt" to FieldValue.serverTimestamp()
+                )
+                transaction.set(userConvRef, userConversationsUpdate)
+            }
+        }.await()
+    }
+
+    suspend fun leftUserFromGroup(chatId: String){
+        if(currentUserId.isEmpty()) return
+        val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
+        val userConvRef = firestore.collection(USERS_COLLECTION).document(currentUserId)
+            .collection(USER_CONVERSATIONS_COLLECTION).document(chatId)
+
+        try {
+            chatRef.update(
+                "participants", FieldValue.arrayRemove(currentUserId),
+                "updatedAt", FieldValue.serverTimestamp()
+            ).await()
+            userConvRef.delete().await()
+            // revisar si chat quedo vacio
+            val finalChatSnapshot = chatRef.get().await()
+            val remainingParticipants = finalChatSnapshot.get("participants") as? List<*>
+            if (remainingParticipants.isNullOrEmpty()) {
+                chatRef.delete().await()
+            }
+        } catch (e: Exception){
+            Log.e("FirestoreChatsDS", "Error al salir del grupo $currentUserId", e)
+        }
+    }
+
+    fun getUsers(): Flow<List<UserData>> = callbackFlow {
+        val query = firestore.collection(USERS_COLLECTION)
+            .orderBy(ORDER_BY_FIELD_USERS, Query.Direction.ASCENDING) // ASCENDING para orden alfabético A-Z
+
+        val listenerRegistration: ListenerRegistration = query.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            val users = snapshot?.documents?.mapNotNull { document ->
+                document.toObject(UserData::class.java)
+            } ?: emptyList()
+            trySend(users).isSuccess
+        }
+
+        awaitClose { listenerRegistration.remove() }
+    }
+
+    fun searchUsers(namePrefix: String): Flow<List<UserData>> = callbackFlow {
+
+        val query = firestore.collection(USERS_COLLECTION)
+            .orderBy(ORDER_BY_FIELD_LOWER_USERS, Query.Direction.ASCENDING)
+            .startAt(namePrefix.normalizeName())
+            .endAt(namePrefix.normalizeName() + "\uf8ff")
+
+        val listenerRegistration: ListenerRegistration = query.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+            val users = snapshot?.documents?.mapNotNull { document ->
+                document.toObject(UserData::class.java)
+            } ?: emptyList()
+            trySend(users).isSuccess
+        }
+
+        awaitClose { listenerRegistration.remove() }
+    }
+
     companion object {
         private const val CHATS_COLLECTION = "chats"
         private const val MESSAGES_COLLECTION = "messages"
         private const val ORDER_BY_FIELD = "timestamp"
         private const val USERS_COLLECTION = "users"
         private const val UPDATE_FIELD = "activeInChatId"
+        private const val USER_CONVERSATIONS_COLLECTION = "conversations"
+        private const val ORDER_BY_FIELD_USERS = "name"
+        private const val ORDER_BY_FIELD_LOWER_USERS = "nameLowercase"
     }
 }

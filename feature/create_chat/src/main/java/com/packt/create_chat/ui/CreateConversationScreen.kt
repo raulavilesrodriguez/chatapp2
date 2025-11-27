@@ -35,7 +35,7 @@ import com.packt.ui.composables.SearchField
 
 @Composable
 fun CreateConversationScreen(
-    openScreen: (String) -> Unit,
+    openScreen: (String, String) -> Unit,
     popUp: () -> Unit,
     viewModel: CreateConversationViewModel = hiltViewModel()
 ){

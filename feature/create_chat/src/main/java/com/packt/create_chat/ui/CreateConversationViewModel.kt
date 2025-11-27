@@ -116,11 +116,11 @@ class CreateConversationViewModel @Inject constructor(
         searchJob?.invokeOnCompletion { if (it is CancellationException) _isLoading.value = false }
     }
 
-    fun createChatRoom(uid: String, openScreen: (String) -> Unit){
+    fun createChatRoom(uid: String, openScreen: (String, String) -> Unit){
         val participants = setOf(currentUserId, uid).toList()
         launchCatching {
             val chatId = createChat(participants, isGroup = false)
-            openScreen(NavRoutes.Chat.replace("{chatId}", chatId))
+            openScreen(NavRoutes.Chat.replace("{chatId}", chatId), NavRoutes.NewConversation)
         }
     }
 

@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -63,8 +64,10 @@ fun SplashScreenContent(
                 text = if (userData?.name != null)
                     stringResource(R.string.welcome_name, userData.name!!)
                 else stringResource(R.string.welcome),
-                color = Color(0xFF5F6F65),
-                fontSize = 40.sp,
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier
                     .padding(16.dp)
             )

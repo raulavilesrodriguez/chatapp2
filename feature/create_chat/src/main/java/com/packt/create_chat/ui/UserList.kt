@@ -27,24 +27,3 @@ fun UserList(
         }
     }
 }
-
-@Composable
-fun ParticipantsGroup(
-    modifier: Modifier = Modifier,
-    users: List<UserData>,
-    onUserClick: (user: UserData) -> Unit,
-    selectedParticipants: Set<UserData>
-){
-    LazyColumn(modifier = modifier) {
-        items(users) { user ->
-            val isSelected = selectedParticipants.contains(user)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onUserClick(user)}
-            ) {
-                ParticipantItem(user = user, isSelected = isSelected)
-            }
-        }
-    }
-}

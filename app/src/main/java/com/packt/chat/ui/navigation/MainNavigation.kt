@@ -53,6 +53,8 @@ import com.packt.settings.ui.edit.EditScreen
 import com.packt.ui.navigation.DeepLinks
 import com.packt.ui.navigation.NavRoutes
 import androidx.navigation.navigation
+import com.packt.chat.ui.ChatViewModel
+import com.packt.chat.ui.NewParticipantsGroup
 import com.packt.create_chat.ui.CreateConversationViewModel
 
 @Composable
@@ -166,20 +168,52 @@ private fun NavGraphBuilder.addConversationsList(appState: AppState){
 private fun NavGraphBuilder.addNewConversation(appState: AppState){
     composable(NavRoutes.NewConversation) {
         CreateConversationScreen(
-            openScreen = {route -> appState.navigate(route) },
+            openScreen = {route, popUp -> appState.navigateAndPopUp(route, popUp) },
             popUp = { appState.popUp() }
         )
     }
 }
 
 private fun NavGraphBuilder.addChat(appState: AppState){
-    composable(
-        route = NavRoutes.Chat,
-        arguments = listOf(navArgument(NavRoutes.ChatArgs.ChatId) { type = NavType.StringType }),
-        deepLinks = listOf(navDeepLink { uriPattern = DeepLinks.chatRoute })
-    ) { backStackEntry ->
-        val chatId = backStackEntry.arguments?.getString(NavRoutes.ChatArgs.ChatId)
-        ChatScreen(chatId = chatId, onBackClick = { appState.popUp() })
+    navigation(
+        startDestination = NavRoutes.Chat,
+        route = NavRoutes.CreateChatGroup
+    ){
+        composable(
+            route = NavRoutes.Chat,
+            arguments = listOf(navArgument(NavRoutes.ChatArgs.ChatId) { type = NavType.StringType }),
+            deepLinks = listOf(navDeepLink { uriPattern = DeepLinks.chatRoute })
+        ) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                //Le pedimos explícitamente al NavController que nos dé el NavBackStackEntry que
+                // corresponde a la ruta de nuestro grafo anidado (create_chat_group)
+                appState.navController.getBackStackEntry(NavRoutes.CreateChatGroup)
+            }
+            //Le pasamos esa entrada del grafo padre a hiltViewModel. Esto le dice a Hilt:
+            // "El ciclo de vida de este ViewModel no está atado a la pantalla actual,
+            // sino al grafo de navegación padre"
+            val viewModel: ChatViewModel = hiltViewModel(parentEntry)
+            val chatId = backStackEntry.arguments?.getString(NavRoutes.ChatArgs.ChatId)
+            ChatScreen(
+                chatId = chatId,
+                openScreen = {route -> appState.navigate(route) },
+                onBackClick = { appState.popUp() },
+                viewModel = viewModel
+            )
+        }
+        composable(
+            route = NavRoutes.NewParticipantsGroup
+        ) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                appState.navController.getBackStackEntry(NavRoutes.CreateChatGroup)
+            }
+            val viewModel: ChatViewModel = hiltViewModel(parentEntry)
+            NewParticipantsGroup(
+                openAndPopUp = {route, popUp -> appState.navigateAndPopUp(route, popUp)},
+                onPopUp = { appState.popUp() },
+                viewModel = viewModel
+            )
+        }
     }
 }
 

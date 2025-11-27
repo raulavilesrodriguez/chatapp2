@@ -12,4 +12,7 @@
     <string name="conversations_tab_chats_title">Chats</string>
     <string name="conversations_tab_calls_title">Llamadas</string>
     <string name="chat_title">Chat con %s</string>
+
+    <string name="search">Buscar</string>
+    <string name="contacts">Contactos</string>
 </resources>

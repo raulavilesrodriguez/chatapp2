@@ -178,7 +178,7 @@ fun LoginScreenContent(
     ){
         Text(
             stringResource(R.string.app_name),
-            color = Color.Green,
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 40.sp,
             modifier = Modifier.padding(8.dp)
         )
@@ -244,8 +244,8 @@ fun RegisterNumber(
     ) {
         Text(
             stringResource(R.string.register_number),
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 16.sp,
             modifier = Modifier.padding(8.dp)
         )
 
@@ -255,10 +255,10 @@ fun RegisterNumber(
             label = {Text(stringResource(R.string.user_number))},
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                focusedBorderColor = Color.Green,
-                unfocusedLabelColor = Color.Green
+                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         )
 
@@ -312,8 +312,9 @@ fun SendSmsCode(
     ) {
         Text(
             stringResource(R.string.send_sms_text, uiState.number),
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 12.sp,
+            maxLines = 1,
             modifier = Modifier.padding(8.dp)
         )
 
@@ -323,10 +324,10 @@ fun SendSmsCode(
             label = {Text(stringResource(R.string.send_sms_title))},
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                focusedBorderColor = Color.Green,
-                unfocusedLabelColor = Color.Green
+                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         )
 

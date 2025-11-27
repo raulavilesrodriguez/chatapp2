@@ -31,10 +31,10 @@ fun BasicToolbar(@StringRes title: Int) {
             Text(stringResource(title))
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFF4CAF50),
-            titleContentColor = Color.White,
-            navigationIconContentColor = Color.White,
-            actionIconContentColor = Color.White
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
         )
     )
 }

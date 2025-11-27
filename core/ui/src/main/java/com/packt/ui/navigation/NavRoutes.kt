@@ -15,6 +15,8 @@ object NavRoutes {
     object ChatArgs {
         const val ChatId = "chatId"
     }
+    const val CreateChatGroup = "create_chat_group"
+    const val NewParticipantsGroup = "new_participants_group"
 
     const val CreateGroupGraph = "create_group_graph"
     const val GroupChat = "group_chat"

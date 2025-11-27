@@ -163,7 +163,7 @@ fun SettingsScreenContent(
     ){
         Text(
             stringResource(R.string.app_name),
-            color = Color.Green,
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 40.sp,
             modifier = Modifier.padding(8.dp)
         )
@@ -206,10 +206,10 @@ fun SettingsScreenContent(
             label = {Text(stringResource(R.string.user_name))},
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                focusedBorderColor = Color.Green,
-                unfocusedLabelColor = Color.Green
+                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         )
         Spacer(modifier = Modifier.height(8.dp))

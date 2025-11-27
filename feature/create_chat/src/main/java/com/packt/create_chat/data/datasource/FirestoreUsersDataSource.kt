@@ -66,7 +66,6 @@ class FirestoreUsersDataSource @Inject constructor(
         }
 
         awaitClose { listenerRegistration.remove() }
-
     }
 
     suspend fun createChat(participants: List<String>, isGroup: Boolean = false): String {
@@ -83,22 +82,46 @@ class FirestoreUsersDataSource @Inject constructor(
         }
 
         val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
-        val snapshot = chatRef.get().await()
 
-        if(!snapshot.exists()){
-            val chatData = hashMapOf(
-                "chatId" to chatId,
-                "participants" to participants,
-                "lastMessage" to null,
-                "updatedAt" to null,
-                "lastMessageSenderId" to null,
-                "lastMessageType" to null,
-                "unreadCount" to emptyMap<String, Int>(),
-                "createdAt" to FieldValue.serverTimestamp(),
-                "isGroup" to isGroup
-            )
-            chatRef.set(chatData).await()
-        }
+        // transactions para asegurar atomicidad, se crea el chat o no se crea nada
+        firestore.runTransaction { transaction ->
+            val snapshot = transaction.get(chatRef)
+            val userConvSnapshots = participants.map { userId ->
+                val userConvRef = firestore
+                    .collection(USERS_COLLECTION).document(userId)
+                    .collection(USER_CONVERSATIONS_COLLECTION).document(chatId)
+                userConvRef to transaction.get(userConvRef)
+            }
+            if(!snapshot.exists()){
+                val chatData = hashMapOf(
+                    "chatId" to chatId,
+                    "participants" to participants,
+                    "lastMessage" to null,
+                    "updatedAt" to null,
+                    "lastMessageSenderId" to null,
+                    "lastMessageType" to null,
+                    "unreadCount" to emptyMap<String, Int>(),
+                    "createdAt" to FieldValue.serverTimestamp(),
+                    "isGroup" to isGroup
+                )
+                transaction.set(chatRef, chatData)
+            }
+            // update entradas de CONVERSATION for each user
+            userConvSnapshots.forEach { (userConvRef, userConvSnapshot) ->
+                if (!userConvSnapshot.exists()) {
+                    // Si el usuario no tiene la entrada (porque la borró o es un chat nuevo), la creamos.
+                    transaction.set(userConvRef, mapOf(
+                        "chatId" to chatId,
+                        "clearedTimestamp" to FieldValue.serverTimestamp(),
+                        "blocked" to false,
+                        "updatedAt" to FieldValue.serverTimestamp() // Para ordenar la lista de chats
+                    ))
+                } else {
+                    // para que el chat suba al principio de la lista de conversations
+                    transaction.update(userConvRef, "updatedAt", FieldValue.serverTimestamp())
+                }
+            }
+        }.await()
         return chatId
     }
 
@@ -171,5 +194,6 @@ class FirestoreUsersDataSource @Inject constructor(
         private const val ORDER_BY_FIELD = "name"
         private const val ORDER_BY_FIELD_LOWER = "nameLowercase"
         private const val CHATS_COLLECTION = "chats"
+        private const val USER_CONVERSATIONS_COLLECTION = "conversations"
     }
 }
