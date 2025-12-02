@@ -20,6 +20,18 @@ ChatApp uses **Firebase** for all backend operations, including:
 
 ```plaintext
 users/{uid}                      // Each user's profile
+    ├── uid: "uid123"
+    ├── name: "Raúl Avilés"
+    ├── nameLowercase: "raul aviles"
+    ├── number: "+593 91234 56780"
+    ├── photoUrl: "https://example.com/profile_image.jpg"
+    ├── activeInChatId: [chatId]
+    └── conversations/{chatId}     // Subcollection of conversations
+        ├── chatId: "chatId123"
+        ├── clearedTimestamp: Timestamp
+        ├── blocked: true
+        └── updatedAt: Timestamp
+
 
 chats/{chatId}                   // A chat between 2 or more users
    ├── participants: [uid1, uid2]    // Array of participant user IDs

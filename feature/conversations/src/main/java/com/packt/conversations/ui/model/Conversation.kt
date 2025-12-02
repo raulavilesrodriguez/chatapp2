@@ -5,8 +5,6 @@ import com.packt.domain.model.ContentType
 import com.packt.domain.user.UserData
 import com.packt.ui.avatar.DEFAULT_AVATAR
 import com.packt.ui.avatar.DEFAULT_AVATAR_GROUP
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 data class Conversation(
     val chatId: String = "",
@@ -16,7 +14,7 @@ data class Conversation(
     // information of the last message
     val lastMessage: String = "",
     val messageType: ContentType = ContentType.TEXT,
-    val timestamp: String = "",
+    val timestamp: Long? = null,
     val unreadCount: Int = 0,
     // participants
     val isGroupChat: Boolean = false,
@@ -55,17 +53,11 @@ fun ChatMetadata.toConversation(participants: List<UserData>, currentUserId: Str
         displayName = displayName,
         displayPhotoUrl = displayPhotoUrl,
         lastMessage = this.lastMessage ?: "",
-        timestamp = this.updatedAt?.let{ formatTimestamp(it)} ?: "",
+        timestamp = this.updatedAt,
         messageType = lastMessageType?: ContentType.TEXT,
         unreadCount = unread,
         isGroupChat = isGroup,
         participants = participants,
         isMine = isMine
     )
-}
-
-fun formatTimestamp(millis: Long) : String {
-    // convert millis (Long) to date "10:30 AM"
-    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-    return sdf.format(java.util.Date(millis))
 }

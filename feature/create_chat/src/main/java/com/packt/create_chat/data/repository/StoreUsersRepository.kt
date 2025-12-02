@@ -23,8 +23,17 @@ class StoreUsersRepository @Inject constructor(
         return dataSource.searchUsers(namePrefix)
     }
 
-    override suspend fun createChat(participants: List<String>, isGroup: Boolean): String {
-        return dataSource.createChat(participants, isGroup)
+    override suspend fun createChatId(participants: List<String>, isGroup: Boolean): String {
+        return dataSource.createChatId(participants, isGroup)
+    }
+
+    override suspend fun createChat(
+        participants: List<String>,
+        chatId: String,
+        isGroup: Boolean,
+        groupName: String?,
+        groupPhotoUrl: String?) {
+        return dataSource.createChat(participants, chatId, isGroup, groupName, groupPhotoUrl)
     }
 
     override suspend fun updateChatInfo(

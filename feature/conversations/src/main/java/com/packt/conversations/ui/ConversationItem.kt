@@ -27,6 +27,7 @@ import com.packt.chat.feature.conversations.R
 import com.packt.conversations.ui.model.Conversation
 import com.packt.domain.model.ContentType
 import com.packt.ui.avatar.Avatar
+import com.packt.ui.time.formatTimestamp
 
 @Composable
 fun ConversationItem(
@@ -35,9 +36,9 @@ fun ConversationItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(start = 16.dp, top = 8.dp, end = 16.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.Start
     ){
         Avatar(
             photoUri = conversation.displayPhotoUrl,
@@ -45,7 +46,7 @@ fun ConversationItem(
             contentDescription = "${conversation.displayName}'s avatar"
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             val displayName = if (conversation.isMine) {
                 "${conversation.displayName} (${stringResource(R.string.you)})"
             } else {
@@ -54,7 +55,9 @@ fun ConversationItem(
             Text(
                 text = displayName,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.fillMaxWidth(0.7f)
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                //modifier = Modifier.fillMaxWidth(0.7f)
             )
             when(conversation.messageType){
                 ContentType.TEXT -> {
@@ -64,7 +67,7 @@ fun ConversationItem(
                         softWrap = true,
                         overflow = TextOverflow.Ellipsis,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.fillMaxWidth(0.7f)
+                        //modifier = Modifier.fillMaxWidth(0.7f)
                     )
                 }
                 ContentType.IMAGE -> {
@@ -81,7 +84,7 @@ fun ConversationItem(
                         Text(
                             text = stringResource(R.string.photo),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.fillMaxWidth(0.7f)
+                            //modifier = Modifier.fillMaxWidth(0.7f)
                         )
                     }
                 }
@@ -98,7 +101,7 @@ fun ConversationItem(
                         Text(
                             text = stringResource(R.string.video),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.fillMaxWidth(0.7f)
+                            //modifier = Modifier.fillMaxWidth(0.7f)
                         )
                     }
                 }
@@ -110,9 +113,13 @@ fun ConversationItem(
             modifier = Modifier
                 .padding(start = 8.dp)
         ) {
+            val formattedTimestamp = formatTimestamp(conversation.timestamp)
             Text(
-                text = conversation.timestamp,
-                textAlign = TextAlign.End
+                text = formattedTimestamp,
+                textAlign = TextAlign.End,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             if(conversation.unreadCount > 0){
@@ -147,7 +154,7 @@ fun ConversationItemPreview(){
             lastMessage = "hola que tal, que haces tan de maniana jejeje ji, vamos al cine, " +
                     "que dices, por que no respondes, estas ahi, me estoy poniendo agresiva jeje ",
             messageType = ContentType.VIDEO,
-            timestamp = "05:30 AM",
+            timestamp = 0L,
             unreadCount = 2,
             isGroupChat = false,
             participants = listOf()

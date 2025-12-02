@@ -63,7 +63,7 @@ fun ConversationsListScreenContent(
     onActionClick: (Int) -> Unit
 ){
     val tabs = generateTabs()
-    val pagerState = rememberPagerState(1){tabs.size}
+    val pagerState = rememberPagerState(0){tabs.size}
 
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing, // para que no se ponga encima de la parte superior del movil
@@ -119,17 +119,12 @@ fun ConversationsListScreenContent(
             ) { index ->
                 when (index) {
                     0 -> {
-                        //Status
-                    }
-                    1 -> {
                         ConversationList(
                             conversations = conversations,
                             onConversationClick = onConversationClick
                         )
                     }
-                    2 -> {
-                        //Status
-                    }
+
                 }
             }
         },
@@ -143,14 +138,17 @@ data class ConversationsListTab(
 fun generateTabs(): List<ConversationsListTab> {
     return listOf(
         ConversationsListTab(
-            title = R.string.conversations_tab_status_title,
-        ),
-        ConversationsListTab(
             title = R.string.conversations_tab_chats_title,
+        )
+        /**
+        ConversationsListTab(
+        title = R.string.conversations_tab_status_title,
         ),
         ConversationsListTab(
-            title = R.string.conversations_tab_calls_title,
+        title = R.string.conversations_tab_calls_title,
         ),
+         */
+
     )
 }
 

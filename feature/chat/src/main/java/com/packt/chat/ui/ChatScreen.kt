@@ -62,6 +62,7 @@ import kotlinx.coroutines.launch
 fun ChatScreen(
     chatId: String?,
     openScreen: (String) -> Unit,
+    onNavigatePopup: (String, String) -> Unit,
     onBackClick: () -> Unit,
     viewModel: ChatViewModel = hiltViewModel()
 ){
@@ -114,7 +115,7 @@ fun ChatScreen(
                 if(chatId != null) viewModel.onActionChatClick(action, chatId)
                 onBackClick() },
             onActionGroupClick = {action ->
-                if(chatId != null) viewModel.onActionGroupClick(action, chatId, openScreen)
+                if(chatId != null) viewModel.onActionGroupClick(action, chatId, openScreen, onNavigatePopup)
             }
         )
     }else{
@@ -216,33 +217,44 @@ fun ChatToolbar(
         }
         Spacer(modifier = Modifier.width(8.dp))
         Log.d("ChatScreen", "isGroup: $chatMetadata")
-        val photoSource:Any = when(otherParticipants.size){
-            0 -> currentUser?.photoUrl?: DEFAULT_AVATAR
-            1 -> if(chatMetadata.isGroup) chatMetadata.groupPhotoUrl?: DEFAULT_AVATAR_GROUP else otherParticipants[0].photoUrl
-            else -> chatMetadata.groupPhotoUrl?: DEFAULT_AVATAR_GROUP
+        val displayName: String
+        val displayPhotoUrl: String
+        if(chatMetadata.isGroup){
+            displayName = chatMetadata.groupName ?: stringResource(R.string.unknow_group)
+            displayPhotoUrl = chatMetadata.groupPhotoUrl ?: DEFAULT_AVATAR_GROUP
+        } else {
+            displayName = when(otherParticipants.size){
+                0 -> "${currentUser?.name ?: ""} (${stringResource(R.string.you)})"
+                else -> otherParticipants[0].name?: stringResource(R.string.unknow_user)
+            }
+            displayPhotoUrl = when(otherParticipants.size){
+                0 -> currentUser?.photoUrl?: DEFAULT_AVATAR
+                else -> otherParticipants[0].photoUrl
+            }
         }
         Avatar(
-            photoUri = photoSource,
+            photoUri = displayPhotoUrl,
             size = 40.dp,
             contentDescription = "avatar"
         )
         Spacer(modifier = Modifier.width(8.dp))
         Column(
-            modifier = Modifier.height(40.dp),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.Center
         ) {
-            val displayName = when (otherParticipants.size) {
-                0 -> "${currentUser?.name ?: ""} (${stringResource(R.string.you)})"
-                1 -> if (chatMetadata.isGroup) chatMetadata.groupName ?: stringResource(R.string.unknow_group)
-                else otherParticipants[0].name?: stringResource(R.string.unknow_user)
-                else -> chatMetadata.groupName ?: stringResource(R.string.unknow_group)
-            }
             Text(
                 text = displayName,
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(bottom = 4.dp),
                 maxLines = 1
             )
+            if(chatMetadata.isGroup){
+                Text(
+                    text = stringResource(R.string.size_group, chatMetadata.participants.size),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
+                )
+            }
         }
         // emppuja todo hacia la derecha
         Spacer(modifier = Modifier.weight(1f))

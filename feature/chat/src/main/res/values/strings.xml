@@ -7,4 +7,5 @@
     <string name="delete_chat">Eliminar chat</string>
     <string name="get_out_group">Salir del grupo</string>
     <string name="add_participant">Añadir participante</string>
+    <string name="size_group">Miembros Grupo: %s</string>
 </resources>

@@ -58,6 +58,12 @@ class FirestoreUserDataSource @Inject constructor(
             .await()
     }
 
+    suspend fun clearFCMToken(uid: String){
+        if (uid.isEmpty()) return
+        val userRef = firestore.collection(USERS_COLLECTION).document(uid)
+        userRef.update(FCM_TOKEN_FIELD, null).await()
+    }
+
     companion object {
         private const val USERS_COLLECTION = "users"
         private const val FCM_TOKEN_FIELD = "fcmToken"

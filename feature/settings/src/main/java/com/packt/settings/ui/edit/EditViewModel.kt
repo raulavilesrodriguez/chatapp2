@@ -1,6 +1,7 @@
 package com.packt.settings.ui.edit
 
 import com.packt.domain.user.UserData
+import com.packt.settings.domain.usecases.ClearFCMToken
 import com.packt.settings.domain.usecases.DeleteAccount
 import com.packt.settings.domain.usecases.DownloadUrlPhoto
 import com.packt.settings.domain.usecases.GetCurrentUserId
@@ -26,8 +27,9 @@ class EditViewModel @Inject constructor(
     private val downloadPhoto: DownloadUrlPhoto,
     private val deleteAccountUseCase: DeleteAccount,
     private val signOutUseCase: SignOut,
+    private val clearFCMToken: ClearFCMToken,
     private val saveUser: SaveUser,
-    val getUser: GetUser,
+    val getUser: GetUser
 ): BaseViewModel() {
     private var _uiState = MutableStateFlow(UserData())
     val uiState: StateFlow<UserData> = _uiState
@@ -62,8 +64,12 @@ class EditViewModel @Inject constructor(
         }
     }
 
-    fun signOut() {
+    fun signOut(clearAndNavigate: (String) -> Unit) {
+        launchCatching {
+            clearFCMToken(currentUserId)
+        }
         signOutUseCase()
+        clearAndNavigate(NavRoutes.Login)
     }
 
     fun updateName(newName: String){

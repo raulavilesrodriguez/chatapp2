@@ -218,6 +218,32 @@ class FirestoreChatsDataSource @Inject constructor(
         awaitClose { listener.remove() }
     }
 
+    fun observeChatMetadata(chatId: String): Flow<ChatMetadata?> = callbackFlow {
+        if(chatId.isEmpty()){
+            trySend(null)
+            close()
+            return@callbackFlow
+        }
+
+        val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
+
+        val listener = chatRef.addSnapshotListener { snapshot, exception ->
+            if (exception != null) {
+                Log.w("FirestoreChatsDS", "Listen failed $chatId", exception)
+                close(exception) // Cierra el Flow con error
+                return@addSnapshotListener
+            }
+            if (snapshot != null && snapshot.exists()) {
+                val metadataFirestore = snapshot.toObject(ChatMetadataFirestore::class.java)
+                val metaData = metadataFirestore?.toChatMetadata()
+                trySend(metaData).isSuccess
+            } else {
+                trySend(null).isSuccess // Emite null si el chat no existe
+            }
+        }
+        awaitClose { listener.remove() }
+    }
+
     suspend fun resetUnreadCount(chatId: String) {
         if (currentUserId.isEmpty()) return
 

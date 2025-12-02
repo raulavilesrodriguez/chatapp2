@@ -165,7 +165,7 @@ class AccountDataSource @Inject constructor(
 
 
     suspend fun deleteAccount() {
-        firebaseAuth.currentUser!!.delete().await()
+        firebaseAuth.currentUser?.delete()?.await()
 
     }
 

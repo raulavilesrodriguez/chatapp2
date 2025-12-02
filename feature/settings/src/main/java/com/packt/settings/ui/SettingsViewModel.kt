@@ -13,7 +13,6 @@ import com.packt.settings.domain.usecases.GetHasUser
 import com.packt.settings.domain.usecases.ResendVerificationCode
 import com.packt.settings.domain.usecases.SignInWithPhoneAuthCredential
 import com.packt.settings.domain.usecases.SignInWithVerificationId
-import com.packt.settings.domain.usecases.SignOut
 import com.packt.settings.domain.usecases.StartPhoneNumberVerification
 import com.packt.settings.domain.usecases.UploadPhoto
 import com.packt.settings.ui.model.SetUserData
@@ -47,7 +46,6 @@ class SettingsViewModel @Inject constructor(
     private val signInWithPhoneAuthCredential: SignInWithPhoneAuthCredential,
     private val resendVerificationCode: ResendVerificationCode,
     private val deleteAccountUseCase: DeleteAccount,
-    private val signOutUseCase: SignOut,
     private val getPhoneNumber: GetPhoneNumber,
     private val uploadPhoto: UploadPhoto,
     private val downloadPhoto: DownloadUrlPhoto,
@@ -189,10 +187,6 @@ class SettingsViewModel @Inject constructor(
             deleteAccountUseCase()
             _signInState.value = null
         }
-    }
-
-    fun signOut() {
-        signOutUseCase()
     }
 
     fun loginSuccess(openAndPopUp: (String, String) -> Unit) {

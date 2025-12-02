@@ -5,6 +5,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.packt.chat.data.datasource.FirestoreChatsDataSource
 import com.packt.chat.domain.IMessagesRepository
 import com.packt.chat.domain.models.Message
+import com.packt.domain.model.ChatMetadata
 import com.packt.domain.user.UserData
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -38,6 +39,10 @@ class MessagesRepository @Inject constructor(
 
     override suspend fun observeUser(uid: String): Flow<UserData?> {
         return dataSource.observeUser(uid)
+    }
+
+    override suspend fun observeChatMetadata(chatId: String): Flow<ChatMetadata?> {
+        return dataSource.observeChatMetadata(chatId)
     }
 
     override suspend fun resetUnreadCount(chatId: String) {

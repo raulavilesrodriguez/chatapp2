@@ -1,5 +1,6 @@
 package com.packt.settings.ui.edit
 
+import android.app.Activity
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -65,15 +68,18 @@ import com.packt.ui.avatar.Avatar
 import com.packt.ui.composables.ProfileToolBar
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditScreen(
     openScreen: (String) -> Unit,
     popUp: () -> Unit,
+    clearAndNavigate: (String) -> Unit,
     viewModel: EditViewModel = hiltViewModel()
 ){
     val userData by viewModel.uiState.collectAsState()
     val isSaving by viewModel.isSaving.collectAsState()
     var showBottomSheet by remember { mutableStateOf(false) }
+    var showDialogSignOut by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.reloadUserData()
@@ -96,7 +102,8 @@ fun EditScreen(
         onNameClick = {viewModel.onName(openScreen)},
         onEditPhotoClick = { showBottomSheet = true },
         backClick = popUp,
-        isSaving = isSaving
+        isSaving = isSaving,
+        onSignOut = {showDialogSignOut = true}
     )
 
     if (showBottomSheet) {
@@ -107,6 +114,34 @@ fun EditScreen(
                 imagePicker.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                 )
+            }
+        )
+    }
+    if (showDialogSignOut){
+        val context = LocalContext.current
+        val activity = context as? Activity
+
+        AlertDialog(
+            onDismissRequest = { showDialogSignOut = false},
+            title = {Text(stringResource(R.string.sign_out))},
+            text = {Text(stringResource(R.string.sign_out_text))},
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDialogSignOut = false
+                        viewModel.signOut(clearAndNavigate)
+                        //activity?.finishAffinity() // cerrar app
+                    }
+                ) {
+                    Text(stringResource(R.string.sign_out))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {showDialogSignOut = false}
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
             }
         )
     }
@@ -187,7 +222,8 @@ fun EditScreenContent(
     onNameClick: () -> Unit,
     onEditPhotoClick: () -> Unit,
     backClick: () -> Unit,
-    isSaving: Boolean
+    isSaving: Boolean,
+    onSignOut: () -> Unit
 ){
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
@@ -204,6 +240,7 @@ fun EditScreenContent(
                 isSaving = isSaving,
                 onNameClick = onNameClick,
                 onEditPhotoClick = onEditPhotoClick,
+                onSignOut = onSignOut,
                 modifier = Modifier
                     .padding(innerPadding)
                     .navigationBarsPadding() // evita superponerse con la parte inferior
@@ -218,6 +255,7 @@ fun Profile(
     isSaving: Boolean,
     onNameClick: () -> Unit,
     onEditPhotoClick: () -> Unit,
+    onSignOut: () -> Unit,
     modifier: Modifier = Modifier
 ){
     Column(
@@ -272,8 +310,9 @@ fun Profile(
         ){
             ItemProfile(icon = R.drawable.name, title = R.string.user_name, data= userData?.name ?:"") {onNameClick() }
             ItemProfile(icon = R.drawable.phone, title = R.string.user_number, data= userData?.number ?:"" ){}
-            ItemProfile(icon = R.drawable.info, title = R.string.info, data= "en el gym" ){}
-            ItemProfile(icon = R.drawable.link, title = R.string.links, data= "enlaces") { }
+            ItemProfile(icon = R.drawable.sign_out, title = R.string.sign_out, data= stringResource(R.string.sign_out_data, userData?.name ?:"")) { onSignOut() }
+            //ItemProfile(icon = R.drawable.info, title = R.string.info, data= "en el gym" ){}
+            //ItemProfile(icon = R.drawable.link, title = R.string.links, data= "enlaces") { }
         }
     }
 }
@@ -334,7 +373,8 @@ fun EditScreenPreview(){
             onNameClick = {},
             onEditPhotoClick = {},
             backClick = {},
-            isSaving = false
+            isSaving = false,
+            onSignOut = {}
         )
     }
 }

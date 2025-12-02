@@ -48,4 +48,13 @@ class AppState(
         }
     }
 
+    /**
+     * route La nueva ruta a la que se va a navegar
+     * popUpToRoute la ruta hasta la cual se debe limpiar, esta no se elimina
+    fun navigateAndClearUntil(route: String, popUpToRoute: String) {
+        navController.navigate(route) {
+            launchSingleTop = true
+            popUpTo(popUpToRoute) { inclusive = false }
+        }
+    } */
 }

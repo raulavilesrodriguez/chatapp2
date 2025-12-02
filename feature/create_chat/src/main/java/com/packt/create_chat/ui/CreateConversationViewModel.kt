@@ -4,12 +4,12 @@ import android.util.Log
 import com.packt.chat.feature.create_chat.R
 import com.packt.create_chat.domain.usecases.ChatExists
 import com.packt.create_chat.domain.usecases.CreateChat
+import com.packt.create_chat.domain.usecases.CreateChatId
 import com.packt.create_chat.domain.usecases.DownloadUrlPhoto
 import com.packt.create_chat.domain.usecases.GetCurrentUserId
 import com.packt.create_chat.domain.usecases.GetUser
 import com.packt.create_chat.domain.usecases.GetUsers
 import com.packt.create_chat.domain.usecases.SearchUsers
-import com.packt.create_chat.domain.usecases.UpdateChatInfo
 import com.packt.create_chat.domain.usecases.UploadPhoto
 import com.packt.domain.model.ChatMetadata
 import com.packt.domain.user.UserData
@@ -34,9 +34,9 @@ import kotlin.coroutines.cancellation.CancellationException
 class CreateConversationViewModel @Inject constructor(
     private val getUsers: GetUsers,
     private val searchUsers: SearchUsers,
+    private val createChatId: CreateChatId,
     private val createChat: CreateChat,
     private val currentUserIdUseCase: GetCurrentUserId,
-    private val updateChatInfo: UpdateChatInfo,
     private val chatExists: ChatExists,
     private val getUser: GetUser,
     private val uploadPhoto: UploadPhoto,
@@ -119,7 +119,8 @@ class CreateConversationViewModel @Inject constructor(
     fun createChatRoom(uid: String, openScreen: (String, String) -> Unit){
         val participants = setOf(currentUserId, uid).toList()
         launchCatching {
-            val chatId = createChat(participants, isGroup = false)
+            val chatId = createChatId(participants, isGroup = false)
+            createChat(participants, chatId, isGroup = false)
             openScreen(NavRoutes.Chat.replace("{chatId}", chatId), NavRoutes.NewConversation)
         }
     }
@@ -189,9 +190,9 @@ class CreateConversationViewModel @Inject constructor(
                 SnackbarManager.showMessage(R.string.chat_already_exists)
                 return@launchCatching
             }
-            val chatId = createChat(participantsGroupIds, isGroup = true)
+            val chatId = createChatId(participantsGroupIds, isGroup = true)
             val finalPhotoUrl = onSavePhoto(chatId)
-            updateChatInfo(chatId, finalGroupName, finalPhotoUrl)
+            createChat(participantsGroupIds, chatId, isGroup = true, finalGroupName, finalPhotoUrl)
             _uiStateChatMetadata.value = _uiStateChatMetadata.value.copy(
                 chatId = chatId,
                 participants = participantsGroupIds,
@@ -205,7 +206,7 @@ class CreateConversationViewModel @Inject constructor(
             participantsGroupIds = mutableListOf()
             _uiStateChatMetadata.value = ChatMetadata()
             //Navigation to chat screen
-            openAndPopUp(NavRoutes.Chat.replace("{chatId}", chatId), NavRoutes.SetGroupChat)
+            openAndPopUp(NavRoutes.Chat.replace("{chatId}", chatId), NavRoutes.GroupChat)
         }
     }
 

@@ -19,6 +19,9 @@
     <string name="user_name">Nombre</string>
     <string name="user_number">Número móvil</string>
     <string name="sign_in">Regístrate</string>
+    <string name="sign_out">Salir de ChatApp</string>
+    <string name="sign_out_text">Quieres cerrar ChatApp?</string>
+    <string name="sign_out_data">Sesión: %s</string>
     <string name="send">Enviar</string>
     <string name="cancel">Cancelar</string>
     <string name="made_by">Elaborado por: Raúl Avilés Rodríguez Tec</string>

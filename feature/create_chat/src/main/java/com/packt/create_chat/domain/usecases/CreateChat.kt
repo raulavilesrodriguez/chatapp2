@@ -6,7 +6,13 @@ import javax.inject.Inject
 class CreateChat @Inject constructor(
     private val repository: IStoreUsersRepository
 ) {
-    suspend operator fun invoke(participants: List<String>, isGroup: Boolean): String {
-        return repository.createChat(participants, isGroup)
+    suspend operator fun invoke(
+        participants: List<String>,
+        chatId: String,
+        isGroup: Boolean,
+        groupName: String?=null,
+        groupPhotoUrl: String?=null
+    ) {
+        return repository.createChat(participants, chatId, isGroup, groupName, groupPhotoUrl)
     }
 }

@@ -13,6 +13,7 @@ import com.packt.chat.domain.usecases.GetMessagesPaged
 import com.packt.chat.domain.usecases.GetUser
 import com.packt.chat.domain.usecases.GetUsers
 import com.packt.chat.domain.usecases.LeftUserFromGroup
+import com.packt.chat.domain.usecases.ObserveChatMetadata
 import com.packt.chat.domain.usecases.ObserveUser
 import com.packt.chat.domain.usecases.ResetUnreadCount
 import com.packt.chat.domain.usecases.SearchUsers
@@ -52,6 +53,7 @@ class ChatViewModel @Inject constructor(
     private val getInitialChatRoomInfo: GetInitialChatRoomInfo,
     val getUser: GetUser,
     private val observeUser: ObserveUser,
+    private val observeChatMetadata: ObserveChatMetadata,
     private val resetUnreadCount: ResetUnreadCount,
     private val setUserActiveInChat: SetUserActiveInChat,
     private val clearUserActiveStatus: ClearUserActiveStatus,
@@ -166,38 +168,49 @@ class ChatViewModel @Inject constructor(
 
         chatInfoJob = launchCatching {
             setUserActiveInChat(chatId)
+            resetUnreadCount(chatId)
             try {
-                resetUnreadCount(chatId)
-                _chatMetadata.value = getInitialChatRoomInfo(chatId) ?: return@launchCatching
+                //_chatMetadata.value = getInitialChatRoomInfo(chatId) ?: return@launchCatching
                 // inicia la carga de mensajes en una corrutina hija, para que sea mas rapido
                 launchCatching {
                     loadInitialMessages(chatId)
                 }
-                val participants: List<String> = _chatMetadata.value?.participants ?: emptyList()
-                 val otherParticipantsIds = participants.filter { it != currentUserId }
 
-                if(otherParticipantsIds.isNotEmpty()){
-                    // un mapa to have update the user data
-                    val participantMap = mutableMapOf<String, UserData>()
-                    otherParticipantsIds.forEach{ participantId ->
-                        val job = launchCatching {
-                            observeUser(participantId)
-                                .flowOn(Dispatchers.IO) //la escucha de firestore ocurre en hilo de fondo observeUser()
-                                .collect { user ->
-                                    if(user != null){
-                                        // synchronized para evitar condiciones de carrera
-                                        synchronized(participantMap){
-                                            participantMap[participantId] = user
-                                            _uiState.value = participantMap.values.toList()
+                launchCatching {
+                    observeChatMetadata(chatId)
+                        .flowOn(Dispatchers.IO)
+                        .collect { metadata ->
+                            if(metadata != null){
+                                _chatMetadata.value = metadata
+                                val participants = metadata.participants
+                                val otherParticipantsIds: List<String> = participants.filter { it != currentUserId }
+                                Log.d("CHATVIEWMODEL", "participants: $participants")
+                                Log.d("CHATVIEWMODEL", "otherParticipantsIds: $otherParticipantsIds")
+
+                                if(otherParticipantsIds.isNotEmpty()){
+                                    // un mapa to have update the user data
+                                    val participantMap = mutableMapOf<String, UserData>()
+                                    otherParticipantsIds.forEach{ participantId ->
+                                        val job = launchCatching {
+                                            observeUser(participantId)
+                                                .flowOn(Dispatchers.IO) //la escucha de firestore ocurre en hilo de fondo observeUser()
+                                                .collect { user ->
+                                                    if(user != null){
+                                                        // synchronized para evitar condiciones de carrera
+                                                        synchronized(participantMap){
+                                                            participantMap[participantId] = user
+                                                            _uiState.value = participantMap.values.toList()
+                                                        }
+                                                    }
+                                                }
                                         }
+                                        userObservationJobs.add(job)
                                     }
                                 }
+                            }
                         }
-                        userObservationJobs.add(job)
-                    }
-                } else {
-                    _uiState.value = emptyList()
-                }
+                }.also { userObservationJobs.add(it) }
+
             } catch (ie: Throwable){
                 Log.e("DEBUG LOAD MESSAGES", "Error in charge chat: ${ie.message}", ie)
             }
@@ -356,7 +369,12 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onActionGroupClick(action: Int, chatId: String, openScreen: (String) -> Unit){
+    fun onActionGroupClick(
+        action: Int,
+        chatId: String,
+        openScreen: (String) -> Unit,
+        onNavigatePopup: (String, String) -> Unit
+        ){
         when(ActionsGroup.getById(action)){
             ActionsGroup.ADD -> {
                 openScreen(NavRoutes.NewParticipantsGroup)
@@ -365,7 +383,7 @@ class ChatViewModel @Inject constructor(
                 launchCatching(snackbar = false) {
                     cancelAllListeners()
                     leftUserFromGroup(chatId)
-                    openScreen(NavRoutes.ConversationsList)
+                    onNavigatePopup(NavRoutes.ConversationsList, NavRoutes.Chat.replace("{chatId}", chatId))
                 }
             }
         }
@@ -392,6 +410,7 @@ class ChatViewModel @Inject constructor(
             val uids = _selectedParticipants.value.map { it.uid }
             val chatIdGroup = _chatMetadata.value?.chatId ?: return@launchCatching
             addUsersToGroup(chatIdGroup, uids)
+            clearParticipants()
             //Navigation to chat screen
             openAndPopUp(NavRoutes.Chat.replace("{chatId}", chatIdGroup), NavRoutes.NewParticipantsGroup)
         }

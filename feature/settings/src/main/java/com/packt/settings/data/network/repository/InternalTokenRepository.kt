@@ -10,4 +10,8 @@ class InternalTokenRepository @Inject constructor(
     override suspend fun storeToken(uid: String, token: String) {
         dataSource.storeFCMToken(uid, token)
     }
+
+    override suspend fun clearFCMToken(uid: String) {
+        dataSource.clearFCMToken(uid)
+    }
 }

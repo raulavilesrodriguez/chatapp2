@@ -68,8 +68,11 @@ class FirestoreUsersDataSource @Inject constructor(
         awaitClose { listenerRegistration.remove() }
     }
 
-    suspend fun createChat(participants: List<String>, isGroup: Boolean = false): String {
-        val chatId = if(isGroup){
+    fun createChatId(
+        participants: List<String>,
+        isGroup: Boolean = false,
+    ): String{
+        return if(isGroup){
             // id unico and random
             firestore.collection(CHATS_COLLECTION).document().id
         } else {
@@ -80,7 +83,15 @@ class FirestoreUsersDataSource @Inject constructor(
                 participants.sorted().joinToString("_")
             }
         }
+    }
 
+    suspend fun createChat(
+        participants: List<String>,
+        chatId: String,
+        isGroup: Boolean = false,
+        groupName: String? = null,
+        groupPhotoUrl: String? = null
+    ) {
         val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
 
         // transactions para asegurar atomicidad, se crea el chat o no se crea nada
@@ -97,19 +108,21 @@ class FirestoreUsersDataSource @Inject constructor(
                     "chatId" to chatId,
                     "participants" to participants,
                     "lastMessage" to null,
-                    "updatedAt" to null,
+                    "updatedAt" to FieldValue.serverTimestamp(),
                     "lastMessageSenderId" to null,
                     "lastMessageType" to null,
                     "unreadCount" to emptyMap<String, Int>(),
                     "createdAt" to FieldValue.serverTimestamp(),
-                    "isGroup" to isGroup
+                    "isGroup" to isGroup,
+                    "groupName" to groupName,
+                    "groupPhotoUrl" to groupPhotoUrl
                 )
                 transaction.set(chatRef, chatData)
             }
-            // update entradas de CONVERSATION for each user
+            // update entradas de SUBCOLLECTION CONVERSATION for each user
             userConvSnapshots.forEach { (userConvRef, userConvSnapshot) ->
                 if (!userConvSnapshot.exists()) {
-                    // Si el usuario no tiene la entrada (porque la borró o es un chat nuevo), la creamos.
+                    // Si el usuario no tiene la entrada (porque la borró o es un chat nuevo), se crea.
                     transaction.set(userConvRef, mapOf(
                         "chatId" to chatId,
                         "clearedTimestamp" to FieldValue.serverTimestamp(),
@@ -122,7 +135,6 @@ class FirestoreUsersDataSource @Inject constructor(
                 }
             }
         }.await()
-        return chatId
     }
 
     suspend fun updateChatInfo(

@@ -31,8 +31,6 @@ import kotlinx.coroutines.CoroutineScope
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -197,6 +195,7 @@ private fun NavGraphBuilder.addChat(appState: AppState){
             ChatScreen(
                 chatId = chatId,
                 openScreen = {route -> appState.navigate(route) },
+                onNavigatePopup = {route, popUp -> appState.navigateAndPopUp(route, popUp)},
                 onBackClick = { appState.popUp() },
                 viewModel = viewModel
             )
@@ -221,7 +220,8 @@ private fun NavGraphBuilder.editUser(appState: AppState){
     composable(NavRoutes.EditUser) {
         EditScreen(
             openScreen = {route -> appState.navigate(route) },
-            popUp = { appState.popUp() }
+            popUp = { appState.popUp() },
+            clearAndNavigate = {route -> appState.clearAndNavigate(route) }
         )
     }
 }
@@ -241,18 +241,20 @@ private fun NavGraphBuilder.addCreateGroupGraph(appState: AppState){
         route = NavRoutes.CreateGroupGraph
     ){
         composable(NavRoutes.GroupChat) { backStackEntry ->
-            val viewModel: CreateConversationViewModel = hiltViewModel(
-                backStackEntry.findStartDestination(appState.navController)
-            )
+            val parenEntry = remember(backStackEntry) {
+                appState.navController.getBackStackEntry(NavRoutes.CreateGroupGraph)
+            }
+            val viewModel: CreateConversationViewModel = hiltViewModel(parenEntry)
             CreateGroup(
                 openScreen = { route -> appState.navigate(route) },
                 viewModel = viewModel
             )
         }
         composable(NavRoutes.SetGroupChat) { backStackEntry ->
-            val viewModel: CreateConversationViewModel = hiltViewModel(
-                backStackEntry.findStartDestination(appState.navController)
-            )
+            val parenEntry = remember(backStackEntry) {
+                appState.navController.getBackStackEntry(NavRoutes.CreateGroupGraph)
+            }
+            val viewModel: CreateConversationViewModel = hiltViewModel(parenEntry)
             SetGroupChatScreen(
                 openAndPopUp = {route, popUp -> appState.navigateAndPopUp(route, popUp)},
                 popUp = { appState.popUp() },
@@ -262,8 +264,9 @@ private fun NavGraphBuilder.addCreateGroupGraph(appState: AppState){
     }
 }
 
+/**
 private fun NavBackStackEntry.findStartDestination(navController: NavController): NavBackStackEntry {
     return this.destination.parent?.let { parent ->
         navController.getBackStackEntry(parent.route!!)
     } ?: this
-}
+} */
