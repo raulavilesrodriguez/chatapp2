@@ -1,6 +1,5 @@
 package com.packt.settings.ui.edit
 
-import android.app.Activity
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -66,6 +65,7 @@ import com.packt.settings.ui.model.DEFAULT_AVATAR_URL
 import com.packt.ui.photo.pickImageLauncher
 import com.packt.ui.avatar.Avatar
 import com.packt.ui.composables.ProfileToolBar
+import com.packt.ui.profile.ItemEditProfile
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -118,9 +118,6 @@ fun EditScreen(
         )
     }
     if (showDialogSignOut){
-        val context = LocalContext.current
-        val activity = context as? Activity
-
         AlertDialog(
             onDismissRequest = { showDialogSignOut = false},
             title = {Text(stringResource(R.string.sign_out))},
@@ -130,7 +127,6 @@ fun EditScreen(
                     onClick = {
                         showDialogSignOut = false
                         viewModel.signOut(clearAndNavigate)
-                        //activity?.finishAffinity() // cerrar app
                     }
                 ) {
                     Text(stringResource(R.string.sign_out))
@@ -308,55 +304,14 @@ fun Profile(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.Start
         ){
-            ItemProfile(icon = R.drawable.name, title = R.string.user_name, data= userData?.name ?:"") {onNameClick() }
-            ItemProfile(icon = R.drawable.phone, title = R.string.user_number, data= userData?.number ?:"" ){}
-            ItemProfile(icon = R.drawable.sign_out, title = R.string.sign_out, data= stringResource(R.string.sign_out_data, userData?.name ?:"")) { onSignOut() }
+            ItemEditProfile(icon = R.drawable.name, title = R.string.user_name, data= userData?.name ?:"") {onNameClick() }
+            ItemEditProfile(icon = R.drawable.phone, title = R.string.user_number, data= userData?.number ?:"" ){}
+            ItemEditProfile(icon = R.drawable.sign_out, title = R.string.sign_out, data= stringResource(R.string.sign_out_data, userData?.name ?:"")) { onSignOut() }
             //ItemProfile(icon = R.drawable.info, title = R.string.info, data= "en el gym" ){}
             //ItemProfile(icon = R.drawable.link, title = R.string.links, data= "enlaces") { }
         }
     }
 }
-
-@Composable
-fun ItemProfile(
-    @DrawableRes icon: Int,
-    @StringRes title: Int,
-    data: String,
-    onClick: () -> Unit
-){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Absolute.Left
-    ){
-        Icon(
-            painter = painterResource(id = icon),
-            contentDescription = null
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Column(
-            modifier =  Modifier
-                .padding(start = 4.dp)
-                .fillMaxWidth(0.80f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start
-        ) {
-            Text(
-                text = stringResource(id = title),
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = data,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
-
-
 
 @Preview(showBackground = true)
 @Composable

@@ -2,8 +2,10 @@ package com.packt.chat.module
 
 import com.packt.chat.data.repository.ChatRoomRepository
 import com.packt.chat.data.repository.MessagesRepository
+import com.packt.chat.data.repository.StorageRepository
 import com.packt.chat.domain.IChatRoomRepository
 import com.packt.chat.domain.IMessagesRepository
+import com.packt.chat.domain.IStorageRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -21,4 +23,9 @@ abstract class ChatModule {
     abstract fun providesChatRoomRepository(
         chatRoomRepository: ChatRoomRepository
     ): IChatRoomRepository
+
+    @Binds
+    abstract fun provideStorageRepository(
+        impl: StorageRepository
+    ): IStorageRepository
 }

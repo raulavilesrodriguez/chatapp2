@@ -8,4 +8,15 @@
     <string name="get_out_group">Salir del grupo</string>
     <string name="add_participant">Añadir participante</string>
     <string name="size_group">Miembros Grupo: %s</string>
+    <string name="user_name">Nombre</string>
+    <string name="user_number">Número móvil</string>
+    <string name="group_name">Nombre del Grupo</string>
+    <string name="group_participants">Participantes del Grupo</string>
+    <string name="details">Detalles</string>
+    <string name="error_cropping">Error al recortar</string>
+    <string name="error_saving">Error: %s</string>
+    <string name="save">Guardar</string>
+    <string name="label_name_group">Nombre del grupo</string>
+    <string name="placeholder_name_group">Escribe el nombre del grupo aquí</string>
+    <string name="comment_save_group">Los participantes del grupo verán este nombre</string>
 </resources>

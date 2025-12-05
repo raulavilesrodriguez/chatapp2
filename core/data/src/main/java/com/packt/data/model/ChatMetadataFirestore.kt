@@ -4,6 +4,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.PropertyName
 import com.packt.domain.model.ChatMetadata
 import com.packt.domain.model.ContentType
+import java.util.Date
 
 data class ChatMetadataFirestore(
     val chatId: String? = null,
@@ -44,4 +45,20 @@ data class ChatMetadataFirestore(
             groupPhotoUrl = groupPhotoUrl
         )
     }
+}
+
+fun ChatMetadata.toChatMetadataFirestore(): ChatMetadataFirestore {
+    return ChatMetadataFirestore(
+        chatId = chatId,
+        participants = participants,
+        lastMessage = lastMessage,
+        updatedAt = updatedAt?.let { Timestamp(Date(it)) },
+        lastMessageSenderId = lastMessageSenderId,
+        lastMessageType = lastMessageType?.name,
+        unreadCount = unreadCount,
+        createdAt = Timestamp(Date(createdAt)),
+        isGroup = isGroup,
+        groupName = groupName,
+        groupPhotoUrl = groupPhotoUrl
+    )
 }

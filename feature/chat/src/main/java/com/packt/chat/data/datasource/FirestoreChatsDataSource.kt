@@ -14,6 +14,7 @@ import com.packt.chat.data.model.FirestoreMessageModel
 import com.packt.chat.domain.models.Message
 import com.packt.data.model.ChatMetadataFirestore
 import com.packt.data.model.UserConversationsFirestore
+import com.packt.data.model.toChatMetadataFirestore
 import com.packt.domain.model.ChatMetadata
 import com.packt.domain.user.UserData
 import com.packt.ui.ext.normalizeName
@@ -185,6 +186,30 @@ class FirestoreChatsDataSource @Inject constructor(
             transaction.set(messagesRef.document(), messageModel)
             transaction.update(chatRef, updates)
         }.await()
+    }
+
+    suspend fun updateGroupChatDetails(
+        chatId: String,
+        newGroupName: String?,
+        newGroupPhotoUrl: String?
+        ) {
+        if (chatId.isBlank() || (newGroupName == null && newGroupPhotoUrl == null)) {
+            Log.w("FirestoreChatsDS", "No hay datos para actualizar o el chatId está vacío.")
+            return
+        }
+        val chatRef = firestore.collection(CHATS_COLLECTION).document(chatId)
+
+        val updates = mutableMapOf<String, Any?>()
+        newGroupName?.let { updates["groupName"] = it }
+        newGroupPhotoUrl?.let { updates["groupPhotoUrl"] = it }
+        updates["updatedAt"] = FieldValue.serverTimestamp()
+
+        try {
+            chatRef.update(updates).await()
+        } catch (e: Exception) {
+            Log.e("FirestoreChatsDS", "Error al actualizar detalles del grupo $chatId", e)
+            throw e
+        }
     }
 
     suspend fun getInitialChatRoomInfo(chatId:String): ChatMetadata? {

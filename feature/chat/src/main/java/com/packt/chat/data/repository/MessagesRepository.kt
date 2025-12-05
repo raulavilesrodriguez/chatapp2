@@ -74,4 +74,12 @@ class MessagesRepository @Inject constructor(
     override suspend fun searchUsers(namePrefix: String): Flow<List<UserData>> {
         return dataSource.searchUsers(namePrefix)
     }
+
+    override suspend fun updateGroupChatDetails(
+        chatId: String,
+        newGroupName: String?,
+        newGroupPhotoUrl: String?
+    ) {
+        dataSource.updateGroupChatDetails(chatId, newGroupName, newGroupPhotoUrl)
+    }
 }

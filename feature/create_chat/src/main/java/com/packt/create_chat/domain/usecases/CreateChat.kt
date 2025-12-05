@@ -13,6 +13,6 @@ class CreateChat @Inject constructor(
         groupName: String?=null,
         groupPhotoUrl: String?=null
     ) {
-        return repository.createChat(participants, chatId, isGroup, groupName, groupPhotoUrl)
+        repository.createChat(participants, chatId, isGroup, groupName, groupPhotoUrl)
     }
 }

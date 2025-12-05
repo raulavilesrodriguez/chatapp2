@@ -2,6 +2,8 @@ package com.packt.chat.ui
 
 import android.util.Log
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,12 +31,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -116,7 +121,8 @@ fun ChatScreen(
                 onBackClick() },
             onActionGroupClick = {action ->
                 if(chatId != null) viewModel.onActionGroupClick(action, chatId, openScreen, onNavigatePopup)
-            }
+            },
+            onClickToolBar = { viewModel.onClickToolBar(openScreen) }
         )
     }else{
         Column(
@@ -148,7 +154,8 @@ fun ChatScreenContent(
     optionsChat: List<Int>,
     optionsGroup: List<Int>,
     onActionChatClick :(Int) -> Unit,
-    onActionGroupClick :(Int) -> Unit
+    onActionGroupClick :(Int) -> Unit,
+    onClickToolBar: () -> Unit,
 ){
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing, // para que no se ponga encima de la parte superior del movil
@@ -159,6 +166,7 @@ fun ChatScreenContent(
                 otherParticipants = otherParticipants,
                 currentUser = currentUser,
                 chatMetadata = chatMetadata,
+                onClickToolBar = onClickToolBar,
                 actions = {
                     if(chatMetadata.isGroup){
                         DropdownContextMenu(
@@ -201,64 +209,81 @@ fun ChatToolbar(
     otherParticipants: List<UserData>,
     currentUser: UserData?,
     chatMetadata: ChatMetadata,
+    onClickToolBar: () -> Unit,
     actions: @Composable () -> Unit
 ){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 4.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Surface(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        IconButton(onClick = { onBackClick() }){
-            Icon(
-                painter = painterResource(id = iconBack),
-                contentDescription = "back"
-            )
-        }
-        Spacer(modifier = Modifier.width(8.dp))
-        Log.d("ChatScreen", "isGroup: $chatMetadata")
-        val displayName: String
-        val displayPhotoUrl: String
-        if(chatMetadata.isGroup){
-            displayName = chatMetadata.groupName ?: stringResource(R.string.unknow_group)
-            displayPhotoUrl = chatMetadata.groupPhotoUrl ?: DEFAULT_AVATAR_GROUP
-        } else {
-            displayName = when(otherParticipants.size){
-                0 -> "${currentUser?.name ?: ""} (${stringResource(R.string.you)})"
-                else -> otherParticipants[0].name?: stringResource(R.string.unknow_user)
-            }
-            displayPhotoUrl = when(otherParticipants.size){
-                0 -> currentUser?.photoUrl?: DEFAULT_AVATAR
-                else -> otherParticipants[0].photoUrl
-            }
-        }
-        Avatar(
-            photoUri = displayPhotoUrl,
-            size = 40.dp,
-            contentDescription = "avatar"
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Column(
-            verticalArrangement = Arrangement.Center
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = displayName,
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(bottom = 4.dp),
-                maxLines = 1
-            )
-            if(chatMetadata.isGroup){
-                Text(
-                    text = stringResource(R.string.size_group, chatMetadata.participants.size),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1
+            IconButton(onClick = { onBackClick() }){
+                Icon(
+                    painter = painterResource(id = iconBack),
+                    contentDescription = "back"
                 )
             }
+            Spacer(modifier = Modifier.width(8.dp))
+            Log.d("ChatScreen", "isGroup: $chatMetadata")
+            val displayName: String
+            val displayPhotoUrl: String
+            if(chatMetadata.isGroup){
+                displayName = chatMetadata.groupName ?: stringResource(R.string.unknow_group)
+                displayPhotoUrl = chatMetadata.groupPhotoUrl ?: DEFAULT_AVATAR_GROUP
+            } else {
+                displayName = when(otherParticipants.size){
+                    0 -> "${currentUser?.name ?: ""} (${stringResource(R.string.you)})"
+                    else -> otherParticipants[0].name?: stringResource(R.string.unknow_user)
+                }
+                displayPhotoUrl = when(otherParticipants.size){
+                    0 -> currentUser?.photoUrl?: DEFAULT_AVATAR
+                    else -> otherParticipants[0].photoUrl
+                }
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        //indication = null,
+                        onClick = { onClickToolBar() }
+                    )
+                    .padding(horizontal = 8.dp)
+            ){
+                Avatar(
+                    photoUri = displayPhotoUrl,
+                    size = 40.dp,
+                    contentDescription = "avatar"
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column(
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = displayName,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(bottom = 4.dp),
+                        maxLines = 1
+                    )
+                    if(chatMetadata.isGroup){
+                        Text(
+                            text = stringResource(R.string.size_group, chatMetadata.participants.size),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1
+                        )
+                    }
+                }
+            }
+            // emppuja todo hacia la derecha
+            //Spacer(modifier = Modifier.weight(1f))
+            actions()
         }
-        // emppuja todo hacia la derecha
-        Spacer(modifier = Modifier.weight(1f))
-        actions()
     }
 }
 
@@ -281,6 +306,7 @@ fun SendMessageBox(
                 .fillMaxWidth(0.85f)
                 .align(Alignment.CenterStart)
                 .height(56.dp),
+            shape = RoundedCornerShape(16.dp),
         )
         IconButton(
             modifier = Modifier
@@ -390,6 +416,7 @@ fun ChatToolbarPreview(){
             otherParticipants = participants,
             currentUser = currentUser,
             chatMetadata = ChatMetadata(),
+            onClickToolBar = {},
             actions = {}
         )
     }

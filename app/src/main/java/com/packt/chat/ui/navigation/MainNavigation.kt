@@ -53,6 +53,8 @@ import com.packt.ui.navigation.NavRoutes
 import androidx.navigation.navigation
 import com.packt.chat.ui.ChatViewModel
 import com.packt.chat.ui.NewParticipantsGroup
+import com.packt.chat.ui.details.DetailsScreen
+import com.packt.chat.ui.details.EditNameGroup
 import com.packt.create_chat.ui.CreateConversationViewModel
 
 @Composable
@@ -210,6 +212,32 @@ private fun NavGraphBuilder.addChat(appState: AppState){
             NewParticipantsGroup(
                 openAndPopUp = {route, popUp -> appState.navigateAndPopUp(route, popUp)},
                 onPopUp = { appState.popUp() },
+                viewModel = viewModel
+            )
+        }
+        composable(
+            route = NavRoutes.Details
+        ) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                appState.navController.getBackStackEntry(NavRoutes.CreateChatGroup)
+            }
+            val viewModel: ChatViewModel = hiltViewModel(parentEntry)
+            DetailsScreen(
+                onNavigatePopup = {route, popUp -> appState.navigateAndPopUp(route, popUp)},
+                onBackClick = { appState.popUp() },
+                viewModel = viewModel
+            )
+        }
+        composable(
+            route = NavRoutes.EditNameGroup
+        ){ backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                appState.navController.getBackStackEntry(NavRoutes.CreateChatGroup)
+            }
+            val viewModel: ChatViewModel = hiltViewModel(parentEntry)
+            EditNameGroup(
+                openScreen = {route, popUp -> appState.navigateAndPopUp(route, popUp)},
+                popUp = { appState.popUp() },
                 viewModel = viewModel
             )
         }

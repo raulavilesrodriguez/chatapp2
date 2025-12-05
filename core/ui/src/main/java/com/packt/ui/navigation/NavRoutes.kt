@@ -17,6 +17,8 @@ object NavRoutes {
     }
     const val CreateChatGroup = "create_chat_group"
     const val NewParticipantsGroup = "new_participants_group"
+    const val Details = "details"
+    const val EditNameGroup = "edit_name_group"
 
     const val CreateGroupGraph = "create_group_graph"
     const val GroupChat = "group_chat"

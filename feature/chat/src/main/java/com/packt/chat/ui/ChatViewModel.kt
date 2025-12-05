@@ -6,6 +6,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.packt.chat.domain.usecases.AddUsersToGroup
 import com.packt.chat.domain.usecases.ClearUserActiveStatus
 import com.packt.chat.domain.usecases.DeleteChatForCurrentUser
+import com.packt.chat.domain.usecases.DownloadUrlPhoto
 import com.packt.chat.domain.usecases.GetCurrentUserId
 import com.packt.chat.domain.usecases.GetInitialChatRoomInfo
 import com.packt.chat.domain.usecases.GetMessages
@@ -19,6 +20,8 @@ import com.packt.chat.domain.usecases.ResetUnreadCount
 import com.packt.chat.domain.usecases.SearchUsers
 import com.packt.chat.domain.usecases.SendMessage
 import com.packt.chat.domain.usecases.SetUserActiveInChat
+import com.packt.chat.domain.usecases.UpdateGroupChatDetails
+import com.packt.chat.domain.usecases.UploadPhoto
 import com.packt.chat.ui.model.Message
 import com.packt.chat.ui.model.MessageContent
 import com.packt.domain.model.ChatMetadata
@@ -62,6 +65,9 @@ class ChatViewModel @Inject constructor(
     private val addUsersToGroup: AddUsersToGroup,
     private val getUsers: GetUsers,
     private val searchUsers: SearchUsers,
+    private val uploadPhoto: UploadPhoto,
+    private val downloadPhoto: DownloadUrlPhoto,
+    private val updateGroupChatDetails: UpdateGroupChatDetails
     ) : BaseViewModel() {
 
     private val _sendText = MutableStateFlow("")
@@ -86,6 +92,8 @@ class ChatViewModel @Inject constructor(
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
     private val _selectedParticipants = MutableStateFlow<Set<UserData>>(emptySet())
     val selectedParticipants: StateFlow<Set<UserData>> = _selectedParticipants.asStateFlow()
+    private val _isSaving = MutableStateFlow(false)
+    val isSaving: StateFlow<Boolean> = _isSaving.asStateFlow()
 
     private var lastDocument: DocumentSnapshot? = null  // referencia al último doc para paginación
     private var allMessagesLoaded = false
@@ -414,5 +422,42 @@ class ChatViewModel @Inject constructor(
             //Navigation to chat screen
             openAndPopUp(NavRoutes.Chat.replace("{chatId}", chatIdGroup), NavRoutes.NewParticipantsGroup)
         }
+    }
+
+    fun onClickToolBar(openScreen: (String) -> Unit){
+        Log.d("REQUEST OF TOOLBAR", "onClickToolBar: Llegue hasta aqui")
+        openScreen(NavRoutes.Details)
+    }
+
+    fun onNameGroup(onNavigatePopup: (String, String) -> Unit){
+        onNavigatePopup(NavRoutes.EditNameGroup, NavRoutes.Details)
+    }
+
+    fun updateNameGroup(newName: String){
+        _chatMetadata.value = _chatMetadata.value?.copy(groupName = newName)
+    }
+
+    fun onSaveNameGroup(openScreen: (String, String) -> Unit){
+        launchCatching {
+            val chatId = _chatMetadata.value?.chatId ?: return@launchCatching
+            val nameGroup = _chatMetadata.value?.groupName ?: return@launchCatching
+            updateGroupChatDetails(chatId, newGroupName = nameGroup)
+            openScreen(NavRoutes.Chat.replace("{chatId}", chatId), NavRoutes.EditNameGroup)
+        }
+    }
+
+    fun onSavePhotoGroup(newPhotoUri: String, onNavigatePopup: (String, String) -> Unit){
+        launchCatching {
+            _isSaving.value = true
+            val chatId = _chatMetadata.value?.chatId ?: return@launchCatching
+            val remotePath = "profile_images/${chatId}.jpg"
+            // Upload photo to Firebase Storage
+            uploadPhoto(newPhotoUri, remotePath)
+            // Download URL of the uploaded photo
+            val finalPhotoUrl = downloadPhoto(remotePath)
+            _chatMetadata.value = _chatMetadata.value?.copy(groupPhotoUrl = finalPhotoUrl)
+            updateGroupChatDetails(chatId, newGroupPhotoUrl = finalPhotoUrl)
+            onNavigatePopup(NavRoutes.Chat.replace("{chatId}", chatId), NavRoutes.Details)
+        }.invokeOnCompletion { _isSaving.value = false }
     }
 }
