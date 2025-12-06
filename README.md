@@ -33,7 +33,7 @@ users/{uid}                      // Each user's profile
     ├   └── updatedAt: Timestamp
     └── contacts/{uid}             // Subcollection of contacts
         ├── uid: "uid456"
-        └── nickName: "Laura Mecanica"
+        └── nickName: "raul a"
 
 
 chats/{chatId}                   // A chat between 2 or more users
