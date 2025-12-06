@@ -25,4 +25,6 @@ interface IMessagesRepository {
     suspend fun getUsers(): Flow<List<UserData>>
     suspend fun searchUsers(namePrefix: String): Flow<List<UserData>>
     suspend fun updateGroupChatDetails(chatId: String, newGroupName: String?, newGroupPhotoUrl: String?)
+    suspend fun getContacts(): Flow<List<UserData>>
+    suspend fun searchContacts(namePrefix: String): Flow<List<UserData>>
 }

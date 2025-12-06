@@ -82,4 +82,12 @@ class MessagesRepository @Inject constructor(
     ) {
         dataSource.updateGroupChatDetails(chatId, newGroupName, newGroupPhotoUrl)
     }
+
+    override suspend fun getContacts(): Flow<List<UserData>> {
+        return dataSource.getContacts()
+    }
+
+    override suspend fun searchContacts(namePrefix: String): Flow<List<UserData>> {
+        return dataSource.searchContacts(namePrefix)
+    }
 }

@@ -14,4 +14,7 @@ interface IStoreUsersRepository {
     suspend fun chatExists(participants: List<String>, groupName: String?): Boolean
     suspend fun uploadPhoto(localPhoto: String, remotePath: String)
     suspend fun downloadUrlPhoto(remotePath: String) : String
+    suspend fun addContact(number:String): Boolean
+    suspend fun getContacts(): Flow<List<UserData>>
+    suspend fun searchContacts(namePrefix: String): Flow<List<UserData>>
 }

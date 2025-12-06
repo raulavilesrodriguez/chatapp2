@@ -2,18 +2,22 @@ package com.packt.create_chat.ui
 
 import android.util.Log
 import com.packt.chat.feature.create_chat.R
+import com.packt.create_chat.domain.usecases.AddContact
 import com.packt.create_chat.domain.usecases.ChatExists
 import com.packt.create_chat.domain.usecases.CreateChat
 import com.packt.create_chat.domain.usecases.CreateChatId
 import com.packt.create_chat.domain.usecases.DownloadUrlPhoto
+import com.packt.create_chat.domain.usecases.GetContacts
 import com.packt.create_chat.domain.usecases.GetCurrentUserId
 import com.packt.create_chat.domain.usecases.GetUser
 import com.packt.create_chat.domain.usecases.GetUsers
+import com.packt.create_chat.domain.usecases.SearchContacts
 import com.packt.create_chat.domain.usecases.SearchUsers
 import com.packt.create_chat.domain.usecases.UploadPhoto
 import com.packt.domain.model.ChatMetadata
 import com.packt.domain.user.UserData
 import com.packt.ui.avatar.DEFAULT_AVATAR_GROUP
+import com.packt.ui.ext.numberFirebaseEcu
 import com.packt.ui.navigation.NavRoutes
 import com.packt.ui.snackbar.SnackbarManager
 import com.packt.ui.viewmodel.BaseViewModel
@@ -40,7 +44,10 @@ class CreateConversationViewModel @Inject constructor(
     private val chatExists: ChatExists,
     private val getUser: GetUser,
     private val uploadPhoto: UploadPhoto,
-    private val downloadUrlPhoto: DownloadUrlPhoto
+    private val downloadUrlPhoto: DownloadUrlPhoto,
+    private val addContact: AddContact,
+    private val getContacts: GetContacts,
+    private val searchContacts: SearchContacts,
     ): BaseViewModel() {
 
     private val _searchText = MutableStateFlow("")
@@ -66,6 +73,9 @@ class CreateConversationViewModel @Inject constructor(
 
     private val _selectedParticipants = MutableStateFlow<Set<UserData>>(emptySet())
     val selectedParticipants: StateFlow<Set<UserData>> = _selectedParticipants.asStateFlow()
+
+    private val _numberContact = MutableStateFlow("")
+    val numberContact: StateFlow<String> = _numberContact.asStateFlow()
 
     private var user: UserData? = null
 
@@ -95,7 +105,7 @@ class CreateConversationViewModel @Inject constructor(
     private fun fetchAllUsers() {
         _isLoading.value = true
         searchJob = launchCatching {
-            getUsers()
+            getContacts()
                 .collect { users ->
                     _searchResults.value = users
                     _isLoading.value = false
@@ -107,7 +117,7 @@ class CreateConversationViewModel @Inject constructor(
     private fun performSearch(query: String) {
         _isLoading.value = true
         searchJob = launchCatching {
-            searchUsers(query)
+            searchContacts(query)
                 .collect { users ->
                     _searchResults.value = users
                     _isLoading.value = false
@@ -231,7 +241,18 @@ class CreateConversationViewModel @Inject constructor(
         openScreen(NavRoutes.NewContact)
     }
 
-    fun addNewContact(number: String){
+    fun updateNumberContact(newNumber: String){
+        _numberContact.value = newNumber
+    }
 
+    fun addNewContact(number: String, openAndPopUp: (String, String) -> Unit){
+        launchCatching {
+            val contactAdded = addContact(number.numberFirebaseEcu())
+            if(contactAdded){
+                openAndPopUp(NavRoutes.NewConversation, NavRoutes.NewContact)
+            } else {
+                SnackbarManager.showMessage(R.string.error_adding_contact)
+            }
+        }
     }
 }

@@ -13,8 +13,9 @@ import com.google.firebase.firestore.toObject
 import com.packt.chat.data.model.FirestoreMessageModel
 import com.packt.chat.domain.models.Message
 import com.packt.data.model.ChatMetadataFirestore
+import com.packt.data.model.UserContactsFirestore
 import com.packt.data.model.UserConversationsFirestore
-import com.packt.data.model.toChatMetadataFirestore
+import com.packt.data.model.toUserContacts
 import com.packt.domain.model.ChatMetadata
 import com.packt.domain.user.UserData
 import com.packt.ui.ext.normalizeName
@@ -22,6 +23,7 @@ import com.packt.ui.snackbar.SnackbarManager
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 import javax.inject.Inject
@@ -415,6 +417,107 @@ class FirestoreChatsDataSource @Inject constructor(
         awaitClose { listenerRegistration.remove() }
     }
 
+    fun searchContacts(namePrefix: String): Flow<List<UserData>> = callbackFlow {
+        val contactRef = firestore.collection(USERS_COLLECTION)
+            .document(currentUserId)
+            .collection(USER_CONTACTS_COLLECTION)
+
+        val listener = contactRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                Log.w("FirestoreUserContacts SEARCH", "Listen of SEARCH failed CONTACTOS.", error)
+                close(error)
+                return@addSnapshotListener
+            }
+            val userContacts = snapshot?.documents?.mapNotNull { doc ->
+                doc.toObject(UserContactsFirestore::class.java)?.toUserContacts()
+            } ?: emptyList()
+
+            if(userContacts.isEmpty()){
+                trySend(emptyList()).isSuccess
+                return@addSnapshotListener
+            }
+
+            launch {
+                val usersTotal: MutableList<UserData> = mutableListOf()
+                val currentUser = getUser(currentUserId)
+                if(currentUser != null) usersTotal.add(currentUser)
+
+                val fullUserDataList = userContacts.mapNotNull { userContact ->
+                    try {
+                        val uid = userContact.uid
+                        val userDoc = firestore.collection(USERS_COLLECTION)
+                            .document(uid)
+                            .get()
+                            .await()
+                        if(userDoc.exists()){
+                            val user = userDoc.toObject(UserData::class.java)
+                            user
+                        } else {
+                            null
+                        }
+                    } catch (e: Exception) {
+                        Log.e("FirestorUserContacts", "Error fetching CONTACTOS for chat: ${userContact.uid}", e)
+                        null
+                    }
+                }
+                usersTotal.addAll(fullUserDataList)
+                val filteredContacts = if(namePrefix.isBlank()){
+                    usersTotal
+                } else {
+                    val normalizedPrefix = namePrefix.normalizeName()
+                    usersTotal.filter { it.nameLowercase?.startsWith(normalizedPrefix) == true }
+                }
+                val sortedFilteredContacts = filteredContacts.sortedBy { it.nameLowercase }
+                trySend(sortedFilteredContacts).isSuccess
+            }
+        }
+        awaitClose{ listener.remove() }
+    }
+
+    fun getContacts(): Flow<List<UserData>> = callbackFlow {
+        val contactRef = firestore.collection(USERS_COLLECTION)
+            .document(currentUserId)
+            .collection(USER_CONTACTS_COLLECTION)
+        val listener = contactRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                Log.w("FirestoreUserContacts", "Listen failed CONTACTOS.", error)
+                close(error)
+                return@addSnapshotListener
+            }
+            val userContacts = snapshot?.documents?.mapNotNull { doc ->
+                doc.toObject(UserContactsFirestore::class.java)?.toUserContacts()
+            } ?: emptyList()
+            launch {
+                val usersTotal: MutableList<UserData> = mutableListOf()
+                val currentUser = getUser(currentUserId)
+                if(currentUser != null) usersTotal.add(currentUser)
+
+                val fullUserDataList = userContacts.mapNotNull { userContact ->
+                    try {
+                        val uid = userContact.uid
+                        val userDoc = firestore.collection(USERS_COLLECTION)
+                            .document(uid)
+                            .get()
+                            .await()
+                        if(userDoc.exists()){
+                            val user = userDoc.toObject(UserData::class.java)
+                            user
+                        } else {
+                            null
+                        }
+                    } catch (e: Exception) {
+                        Log.e("FirestorUserContacts", "Error fetching CONTACTOS for chat: ${userContact.uid}", e)
+                        null
+                    }
+                }
+                usersTotal.addAll(fullUserDataList)
+                val fullUserDataListSorted = usersTotal.sortedBy { it.nameLowercase }
+                trySend(fullUserDataListSorted).isSuccess
+            }
+        }
+        awaitClose{ listener.remove() }
+    }
+
     companion object {
         private const val CHATS_COLLECTION = "chats"
         private const val MESSAGES_COLLECTION = "messages"
@@ -424,5 +527,6 @@ class FirestoreChatsDataSource @Inject constructor(
         private const val USER_CONVERSATIONS_COLLECTION = "conversations"
         private const val ORDER_BY_FIELD_USERS = "name"
         private const val ORDER_BY_FIELD_LOWER_USERS = "nameLowercase"
+        private const val USER_CONTACTS_COLLECTION = "contacts"
     }
 }

@@ -55,4 +55,16 @@ class StoreUsersRepository @Inject constructor(
     override suspend fun downloadUrlPhoto(remotePath: String): String {
         return dataSource.downloadUrlPhoto(remotePath)
     }
+
+    override suspend fun addContact(number: String): Boolean {
+        return dataSource.addContact(number)
+    }
+
+    override suspend fun getContacts(): Flow<List<UserData>> {
+        return dataSource.getContacts()
+    }
+
+    override suspend fun searchContacts(namePrefix: String): Flow<List<UserData>> {
+        return dataSource.searchContacts(namePrefix)
+    }
 }

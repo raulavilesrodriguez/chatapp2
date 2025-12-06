@@ -7,6 +7,7 @@ import com.packt.chat.domain.usecases.AddUsersToGroup
 import com.packt.chat.domain.usecases.ClearUserActiveStatus
 import com.packt.chat.domain.usecases.DeleteChatForCurrentUser
 import com.packt.chat.domain.usecases.DownloadUrlPhoto
+import com.packt.chat.domain.usecases.GetContacts
 import com.packt.chat.domain.usecases.GetCurrentUserId
 import com.packt.chat.domain.usecases.GetInitialChatRoomInfo
 import com.packt.chat.domain.usecases.GetMessages
@@ -17,6 +18,7 @@ import com.packt.chat.domain.usecases.LeftUserFromGroup
 import com.packt.chat.domain.usecases.ObserveChatMetadata
 import com.packt.chat.domain.usecases.ObserveUser
 import com.packt.chat.domain.usecases.ResetUnreadCount
+import com.packt.chat.domain.usecases.SearchContacts
 import com.packt.chat.domain.usecases.SearchUsers
 import com.packt.chat.domain.usecases.SendMessage
 import com.packt.chat.domain.usecases.SetUserActiveInChat
@@ -67,7 +69,9 @@ class ChatViewModel @Inject constructor(
     private val searchUsers: SearchUsers,
     private val uploadPhoto: UploadPhoto,
     private val downloadPhoto: DownloadUrlPhoto,
-    private val updateGroupChatDetails: UpdateGroupChatDetails
+    private val updateGroupChatDetails: UpdateGroupChatDetails,
+    private val getContacts: GetContacts,
+    private val searchContacts: SearchContacts
     ) : BaseViewModel() {
 
     private val _sendText = MutableStateFlow("")
@@ -122,7 +126,7 @@ class ChatViewModel @Inject constructor(
     private fun fetchAllUsers() {
         _isLoading.value = true
         searchJob = launchCatching {
-            getUsers()
+            getContacts()
                 .collect { users ->
                     _searchResults.value = users
                     _isLoading.value = false
@@ -134,7 +138,7 @@ class ChatViewModel @Inject constructor(
     private fun performSearch(query: String) {
         _isLoading.value = true
         searchJob = launchCatching {
-            searchUsers(query)
+            searchContacts(query)
                 .collect { users ->
                     _searchResults.value = users
                     _isLoading.value = false

@@ -15,4 +15,11 @@
     <string name="members_group">Miembros del Grupo (%s)</string>
     <string name="choose_photo">Selecciona una foto (opcional)</string>
     <string name="info_new_contact">Ingresa el número de teléfono de tu contacto</string>
+    <string name="error_adding_contact">No existe ese contacto con ese número</string>
+    <string name="available_only_ecuador">Actualmente disponible solo Ecuador</string>
+    <string name="add_contact">Agregar Contacto</string>
+    <string name="number_contact">Número móvil</string>
+    <string name="add_number_contact">Ingresa el número</string>
+    <string name="register">Registrar</string>
+    <string name="cancel">Cancelar</string>
 </resources>
