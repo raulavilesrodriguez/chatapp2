@@ -5,6 +5,7 @@
     <string name="you">Tú</string>
     <string name="warning_participants">Debes seleccionar al menos 1 contacto</string>
     <string name="contacts">Contactos</string>
+    <string name="add_new_contact">Agregar nuevo contacto"</string>
     <string name="chat_already_exists">Mira el chat de Grupo ya existe</string>
     <string name="error_cropping">Error al recortar</string>
     <string name="error_saving">Error: %s</string>
@@ -13,4 +14,5 @@
     <string name="name_group">Nombre del Grupo (opcional)</string>
     <string name="members_group">Miembros del Grupo (%s)</string>
     <string name="choose_photo">Selecciona una foto (opcional)</string>
+    <string name="info_new_contact">Ingresa el número de teléfono de tu contacto</string>
 </resources>

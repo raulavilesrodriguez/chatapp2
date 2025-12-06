@@ -116,12 +116,12 @@ class CreateConversationViewModel @Inject constructor(
         searchJob?.invokeOnCompletion { if (it is CancellationException) _isLoading.value = false }
     }
 
-    fun createChatRoom(uid: String, openScreen: (String, String) -> Unit){
+    fun createChatRoom(uid: String, openAndPopUp: (String, String) -> Unit){
         val participants = setOf(currentUserId, uid).toList()
         launchCatching {
             val chatId = createChatId(participants, isGroup = false)
             createChat(participants, chatId, isGroup = false)
-            openScreen(NavRoutes.Chat.replace("{chatId}", chatId), NavRoutes.NewConversation)
+            openAndPopUp(NavRoutes.Chat.replace("{chatId}", chatId), NavRoutes.NewConversation)
         }
     }
 
@@ -225,5 +225,13 @@ class CreateConversationViewModel @Inject constructor(
         } finally {
             _isSaving.value = false
         }
+    }
+
+    fun openScreenAddNewContact(openScreen: (String) -> Unit){
+        openScreen(NavRoutes.NewContact)
+    }
+
+    fun addNewContact(number: String){
+
     }
 }

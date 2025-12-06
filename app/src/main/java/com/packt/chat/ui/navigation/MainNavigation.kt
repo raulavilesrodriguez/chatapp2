@@ -56,6 +56,7 @@ import com.packt.chat.ui.NewParticipantsGroup
 import com.packt.chat.ui.details.DetailsScreen
 import com.packt.chat.ui.details.EditNameGroup
 import com.packt.create_chat.ui.CreateConversationViewModel
+import com.packt.create_chat.ui.newContact.AddNewContact
 
 @Composable
 fun MainNavigation(){
@@ -88,6 +89,7 @@ fun MainNavigation(){
                     addSettings(appState)
                     addConversationsList(appState)
                     addNewConversation(appState)
+                    addNewContact(appState)
                     addChat(appState)
                     addCreateGroupGraph(appState)
                     editUser(appState)
@@ -165,10 +167,20 @@ private fun NavGraphBuilder.addConversationsList(appState: AppState){
     }
 }
 
+private fun NavGraphBuilder.addNewContact(appState: AppState) {
+    composable(NavRoutes.NewContact){
+        AddNewContact(
+            openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) },
+            onBackClick = { appState.popUp() }
+        )
+    }
+}
+
 private fun NavGraphBuilder.addNewConversation(appState: AppState){
     composable(NavRoutes.NewConversation) {
         CreateConversationScreen(
-            openScreen = {route, popUp -> appState.navigateAndPopUp(route, popUp) },
+            openAndPopUp = { route, popUp -> appState.navigateAndPopUp(route, popUp) },
+            openScreen = { route -> appState.navigate(route) },
             popUp = { appState.popUp() }
         )
     }

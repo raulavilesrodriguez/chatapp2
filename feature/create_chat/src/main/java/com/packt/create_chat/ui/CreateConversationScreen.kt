@@ -2,15 +2,18 @@ package com.packt.create_chat.ui
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,10 +35,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.packt.chat.feature.create_chat.R
 import com.packt.domain.user.UserData
 import com.packt.ui.composables.SearchField
+import com.packt.ui.profile.ItemEditProfile
 
 @Composable
 fun CreateConversationScreen(
-    openScreen: (String, String) -> Unit,
+    openAndPopUp: (String, String) -> Unit,
+    openScreen: (String) -> Unit,
     popUp: () -> Unit,
     viewModel: CreateConversationViewModel = hiltViewModel()
 ){
@@ -49,9 +54,10 @@ fun CreateConversationScreen(
         updateSearchText = viewModel::updateSearchText,
         searchResults = searchResults,
         isLoading = isLoading,
-        onUserClick = { uid -> viewModel.createChatRoom(uid, openScreen) },
+        onUserClick = { uid -> viewModel.createChatRoom(uid, openAndPopUp) },
         backClick = popUp,
-        currentUserUid = currentUserId
+        currentUserUid = currentUserId,
+        onAddNewContactClick = { viewModel.openScreenAddNewContact(openScreen) }
     )
 }
 
@@ -63,7 +69,8 @@ fun CreateConversationScreenContent(
     isLoading: Boolean,
     onUserClick: (uid: String) -> Unit,
     backClick: () -> Unit,
-    currentUserUid: String
+    currentUserUid: String,
+    onAddNewContactClick: () -> Unit
 ){
     var showSearchField by remember { mutableStateOf(false) }
     var showToolBar by remember { mutableStateOf(true) }
@@ -99,24 +106,53 @@ fun CreateConversationScreenContent(
             }
         },
         content = { innerPadding ->
-            if(!isLoading){
-                UserList(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .navigationBarsPadding(), // evita superponerse con la parte inferior
-                    users = searchResults,
-                    onUserClick = onUserClick,
-                    currentUserUid = currentUserUid
-                )
-            } else {
-                CircularProgressIndicator(
-                    modifier = Modifier.padding(innerPadding),
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
+            Column(modifier = Modifier.padding(innerPadding)){
+                AddNewContact(onAddNewContactClick = onAddNewContactClick)
 
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                )
+
+                if(!isLoading){
+                    UserList(
+                        modifier = Modifier
+                            .navigationBarsPadding(), // evita superponerse con la parte inferior
+                        users = searchResults,
+                        onUserClick = onUserClick,
+                        currentUserUid = currentUserUid
+                    )
+                } else {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                }
+            }
         }
     )
+}
+
+@Composable
+private fun AddNewContact(
+    onAddNewContactClick: () -> Unit
+){
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.Start
+    ){
+        ItemEditProfile(
+            icon = R.drawable.person_add,
+            title = R.string.add_new_contact,
+            data = stringResource(R.string.info_new_contact)
+        )
+        { onAddNewContactClick()}
+    }
 }
 
 @Composable
@@ -209,7 +245,8 @@ fun CreateConversationScreenContentPreview(){
             isLoading = false,
             onUserClick = {},
             backClick = {},
-            currentUserUid = ""
+            currentUserUid = "",
+            onAddNewContactClick = {}
         )
     }
 }

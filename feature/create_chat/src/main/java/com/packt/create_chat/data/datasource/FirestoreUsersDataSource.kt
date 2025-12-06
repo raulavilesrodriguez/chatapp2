@@ -207,5 +207,6 @@ class FirestoreUsersDataSource @Inject constructor(
         private const val ORDER_BY_FIELD_LOWER = "nameLowercase"
         private const val CHATS_COLLECTION = "chats"
         private const val USER_CONVERSATIONS_COLLECTION = "conversations"
+        private const val USER_CONTACTS_COLLECTION = "contacts"
     }
 }
