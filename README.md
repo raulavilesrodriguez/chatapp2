@@ -32,7 +32,8 @@ users/{uid}                      // Each user's profile
     ├   ├── blocked: true
     ├   └── updatedAt: Timestamp
     └── contacts/{uid}             // Subcollection of contacts
-        └── uid: "uid456"
+        ├── uid: "uid456"
+        └── nickName: "Laura Mecanica"
 
 
 chats/{chatId}                   // A chat between 2 or more users
