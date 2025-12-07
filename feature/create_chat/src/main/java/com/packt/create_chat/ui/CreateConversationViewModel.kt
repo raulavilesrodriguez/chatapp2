@@ -6,6 +6,7 @@ import com.packt.create_chat.domain.usecases.AddContact
 import com.packt.create_chat.domain.usecases.ChatExists
 import com.packt.create_chat.domain.usecases.CreateChat
 import com.packt.create_chat.domain.usecases.CreateChatId
+import com.packt.create_chat.domain.usecases.DeleteContact
 import com.packt.create_chat.domain.usecases.DownloadUrlPhoto
 import com.packt.create_chat.domain.usecases.GetContacts
 import com.packt.create_chat.domain.usecases.GetCurrentUserId
@@ -48,6 +49,7 @@ class CreateConversationViewModel @Inject constructor(
     private val addContact: AddContact,
     private val getContacts: GetContacts,
     private val searchContacts: SearchContacts,
+    private val deleteContact: DeleteContact
     ): BaseViewModel() {
 
     private val _searchText = MutableStateFlow("")
@@ -255,4 +257,11 @@ class CreateConversationViewModel @Inject constructor(
             }
         }
     }
+
+    fun onDeleteContact(uid: String){
+        launchCatching {
+            deleteContact(uid)
+        }
+    }
+
 }

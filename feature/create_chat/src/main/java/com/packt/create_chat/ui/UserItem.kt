@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,7 +23,7 @@ import com.packt.domain.user.UserData
 import com.packt.ui.avatar.Avatar
 
 @Composable
-fun UserItem(user: UserData, currentUserUid: String){
+fun UserItem(user: UserData, currentUserUid: String, onDeleteContact: (uid:String) -> Unit){
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -40,8 +43,16 @@ fun UserItem(user: UserData, currentUserUid: String){
             } else {user.name ?: ""}
             Text(
                 text = displayName,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
             )
+        }
+        Spacer(modifier = Modifier.weight(1f))
+        if(currentUserUid != user.uid){
+            IconButton(
+                onClick = { onDeleteContact(user.uid) }
+            ) {
+                Icon(painter = painterResource(R.drawable.twotone_cancel), contentDescription = "delete")
+            }
         }
     }
 }
@@ -56,7 +67,8 @@ fun UserItemPreview(){
                 photoUrl = "https://i.pravatar.cc/150?u=1",
                 uid = "1y"
             ),
-            currentUserUid = "1y"
+            currentUserUid = "1y2",
+            onDeleteContact = {}
         )
     }
 }

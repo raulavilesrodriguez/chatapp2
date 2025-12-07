@@ -330,6 +330,14 @@ class FirestoreUsersDataSource @Inject constructor(
         awaitClose{ listener.remove() }
     }
 
+    suspend fun deleteContact(uid: String){
+        if(currentUserId.isEmpty()) return
+
+        firestore.collection(USERS_COLLECTION).document(currentUserId)
+            .collection(USER_CONTACTS_COLLECTION)
+            .document(uid).delete().await()
+    }
+
     companion object {
         private const val USERS_COLLECTION = "users"
         private const val ORDER_BY_FIELD = "name"

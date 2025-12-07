@@ -57,7 +57,8 @@ fun CreateConversationScreen(
         onUserClick = { uid -> viewModel.createChatRoom(uid, openAndPopUp) },
         backClick = popUp,
         currentUserUid = currentUserId,
-        onAddNewContactClick = { viewModel.openScreenAddNewContact(openScreen) }
+        onAddNewContactClick = { viewModel.openScreenAddNewContact(openScreen) },
+        onDeleteContact = { uid -> viewModel.onDeleteContact(uid) }
     )
 }
 
@@ -70,7 +71,8 @@ fun CreateConversationScreenContent(
     onUserClick: (uid: String) -> Unit,
     backClick: () -> Unit,
     currentUserUid: String,
-    onAddNewContactClick: () -> Unit
+    onAddNewContactClick: () -> Unit,
+    onDeleteContact: (uid:String) -> Unit
 ){
     var showSearchField by remember { mutableStateOf(false) }
     var showToolBar by remember { mutableStateOf(true) }
@@ -121,7 +123,8 @@ fun CreateConversationScreenContent(
                             .navigationBarsPadding(), // evita superponerse con la parte inferior
                         users = searchResults,
                         onUserClick = onUserClick,
-                        currentUserUid = currentUserUid
+                        currentUserUid = currentUserUid,
+                        onDeleteContact = onDeleteContact
                     )
                 } else {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
@@ -246,7 +249,8 @@ fun CreateConversationScreenContentPreview(){
             onUserClick = {},
             backClick = {},
             currentUserUid = "",
-            onAddNewContactClick = {}
+            onAddNewContactClick = {},
+            onDeleteContact = {}
         )
     }
 }

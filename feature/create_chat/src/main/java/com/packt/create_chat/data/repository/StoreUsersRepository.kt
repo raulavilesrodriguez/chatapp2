@@ -67,4 +67,8 @@ class StoreUsersRepository @Inject constructor(
     override suspend fun searchContacts(namePrefix: String): Flow<List<UserData>> {
         return dataSource.searchContacts(namePrefix)
     }
+
+    override suspend fun deleteContact(uid: String) {
+        dataSource.deleteContact(uid)
+    }
 }

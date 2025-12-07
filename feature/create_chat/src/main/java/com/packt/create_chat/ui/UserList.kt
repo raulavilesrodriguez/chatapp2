@@ -21,7 +21,8 @@ fun UserList(
     modifier: Modifier = Modifier,
     users: List<UserData>,
     onUserClick: (uid: String) -> Unit,
-    currentUserUid: String
+    currentUserUid: String,
+    onDeleteContact: (uid:String) -> Unit
 ){
     Text(
         text = stringResource(R.string.contacts),
@@ -35,7 +36,7 @@ fun UserList(
                 modifier = Modifier.fillMaxWidth()
                     .clickable { onUserClick(user.uid)}
             ) {
-                UserItem(user = user, currentUserUid = currentUserUid)
+                UserItem(user = user, currentUserUid = currentUserUid, onDeleteContact = onDeleteContact)
             }
         }
     }

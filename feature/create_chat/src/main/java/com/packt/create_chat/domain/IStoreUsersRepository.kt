@@ -17,4 +17,5 @@ interface IStoreUsersRepository {
     suspend fun addContact(number:String): Boolean
     suspend fun getContacts(): Flow<List<UserData>>
     suspend fun searchContacts(namePrefix: String): Flow<List<UserData>>
+    suspend fun deleteContact(uid: String)
 }
