@@ -19,4 +19,5 @@
     <string name="label_name_group">Nombre del grupo</string>
     <string name="placeholder_name_group">Escribe el nombre del grupo aquí</string>
     <string name="comment_save_group">Los participantes del grupo verán este nombre</string>
+    <string name="participant_unknown">Usuario salió del grupo</string>
 </resources>

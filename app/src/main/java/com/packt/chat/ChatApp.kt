@@ -16,8 +16,8 @@ class ChatApp: Application() {
 
         val firebaseAppCheck = FirebaseAppCheck.getInstance()
         firebaseAppCheck.installAppCheckProviderFactory(
-            DebugAppCheckProviderFactory.getInstance()
-            //PlayIntegrityAppCheckProviderFactory.getInstance()
+            //DebugAppCheckProviderFactory.getInstance()
+            PlayIntegrityAppCheckProviderFactory.getInstance()
         )
     }
 }

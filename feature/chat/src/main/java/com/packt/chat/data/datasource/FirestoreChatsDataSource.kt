@@ -139,9 +139,19 @@ class FirestoreChatsDataSource @Inject constructor(
         // para asegurar que todo acurra de manera atomica todo al mismo tiempo
         firestore.runTransaction { transaction ->
             val otherParticipantsIds = participants.filter { it != currentUserId }
-            val recipientDocs = otherParticipantsIds.map {
+
+            val recipientUserDocs = otherParticipantsIds.map {
                 val userRef = firestore.collection(USERS_COLLECTION).document(it)
                 transaction.get(userRef)
+            }
+
+            val recipientConvSnapshots = otherParticipantsIds.map { uid ->
+                val userConversationsRef = firestore.collection(USERS_COLLECTION)
+                    .document(uid)
+                    .collection(USER_CONVERSATIONS_COLLECTION)
+                    .document(chatId)
+                // referencia con el snapshot
+                userConversationsRef to transaction.get(userConversationsRef)
             }
 
             // update ChatMetadataFirestore
@@ -152,7 +162,7 @@ class FirestoreChatsDataSource @Inject constructor(
                 "updatedAt" to FieldValue.serverTimestamp()
             )
 
-            recipientDocs.forEach { userDoc ->
+            recipientUserDocs.forEach { userDoc ->
                 val recipient = userDoc.toObject(UserData::class.java)
                 val recipientId = userDoc.id
                 //  Si el destinatario NO está en este chat, incrementa su contador.
@@ -161,12 +171,9 @@ class FirestoreChatsDataSource @Inject constructor(
                     // unreadCount es un mapa por eso se usa el punto
                     updates["unreadCount.$recipientId"] = FieldValue.increment(1)
                 }
-                val userConversationsRef = firestore.collection(USERS_COLLECTION)
-                    .document(userDoc.id)
-                    .collection(USER_CONVERSATIONS_COLLECTION)
-                    .document(chatId)
+            }
 
-                val userConvSnapshot = transaction.get(userConversationsRef)
+            recipientConvSnapshots.forEach { (userConversationsRef, userConvSnapshot) ->
                 if(!userConvSnapshot.exists()){
                     // tiempo currentUser
                     val now = Date()

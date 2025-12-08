@@ -19,10 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.packt.chat.feature.chat.R
 import com.packt.chat.ui.model.Message
 import com.packt.chat.ui.model.MessageContent
 import com.packt.domain.user.UserData
@@ -50,7 +52,7 @@ fun MessageItem(message: Message, otherParticipants: List<UserData>){
                 Spacer(modifier = Modifier.height(8.dp))
             } else {
                 Text(
-                    text = otherParticipant?.name?:"",
+                    text = otherParticipant?.name?: stringResource(R.string.participant_unknown),
                     fontWeight = FontWeight.Bold
                 )
             }
