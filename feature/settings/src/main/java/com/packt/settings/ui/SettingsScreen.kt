@@ -100,6 +100,7 @@ fun SettingsScreenContent(
     var showWarningDialog by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    val errorSavingText = stringResource(R.string.error_saving)
 
     val uCropLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -114,8 +115,12 @@ fun SettingsScreenContent(
             }
         } else if (result.resultCode == UCrop.RESULT_ERROR) {
             val cropError = UCrop.getError(result.data!!)
-            val errorMessage = context.getString(
-                R.string.error_saving, cropError?.message ?: "")
+            //val errorMessage = context.getString(
+              //  R.string.error_saving, cropError?.message ?: "")
+            val errorMessage = String.format(
+                errorSavingText,
+                cropError?.message ?: ""
+            )
             SnackbarManager.showMessage(errorMessage)
             //Toast.makeText(context, "Error: ${cropError?.message}", Toast.LENGTH_SHORT).show()
         }
